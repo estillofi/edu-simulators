@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Площадь на клетках</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Тетрадь в клетку на карточке онлайн-школы: слева поле с фигурой, справа задание и ответ. */
+:root{
+  --bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;
+  --teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#E3F5F8;--orange:#FF5B00;--orange-soft:#FFF0E6;
+  --ok:#1E8E5A;--ok-soft:#E5F5EC;--warn:#C2410C;--warn-soft:#FFF1E8;
+  --paper:#FFFFFF;--grid:#CFE2F2;--fig:#1B3A52;--fill:rgba(0,163,185,.06);--cell:rgba(0,163,185,.30);--row:rgba(255,91,0,.10);--piece:rgba(0,163,185,.16);
+  --font:"Raleway",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;
+  --paper:#13283A;--grid:#22405A;--fig:#E8F0F5;--fill:rgba(43,195,214,.07);--cell:rgba(43,195,214,.32);--row:rgba(255,122,46,.14);--piece:rgba(43,195,214,.18);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;
+  --paper:#13283A;--grid:#22405A;--fig:#E8F0F5;--fill:rgba(43,195,214,.07);--cell:rgba(43,195,214,.32);--row:rgba(255,122,46,.14);--piece:rgba(43,195,214,.18);
+  color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--text);font:16px/1.55 var(--font);font-variant-numeric:lining-nums}
+.page{padding-inline:clamp(10px,1.6vw,20px);padding-block:14px 40px;display:grid;gap:14px;max-width:1280px;margin:0 auto}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px 20px}
+.brand{margin:0 0 6px;display:inline-flex;align-items:center;gap:8px;color:var(--ink);font-weight:800;font-size:15px;letter-spacing:.01em}
+.eyebrow{margin:0;color:var(--teal-ink);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+h1{margin:2px 0 0;color:var(--ink);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.1}
+.levels{display:flex;flex-wrap:wrap;gap:6px}
+.levels button{border:0;border-radius:32px;background:var(--card);color:var(--ink);font:700 15px var(--font);padding:9px 18px;box-shadow:0 0 0 1px var(--line);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.levels button .score{font:700 12px var(--mono);color:var(--muted)}
+.levels button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:none}
+.levels button[aria-pressed="true"] .score{color:rgba(255,255,255,.8)}
+.work{display:grid;gap:14px;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);align-items:start}
+@media (max-width:900px){.work{grid-template-columns:1fr}}
+.board{position:relative;background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:12px;min-width:0}
+.board svg{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none}
+.kori{position:absolute;right:14px;bottom:10px;display:flex;align-items:flex-end;gap:2px;pointer-events:none;max-width:60%}
+.kori img{width:clamp(84px,13vw,150px);height:auto}
+.bubble{background:var(--teal-soft);color:var(--ink);font-weight:700;font-size:clamp(13px,1.4vw,16px);line-height:1.3;padding:10px 14px;border-radius:22px 22px 4px 22px;margin-bottom:clamp(40px,6vw,70px);box-shadow:0 0 0 1.5px var(--teal)}
+.panel{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:20px 22px;display:grid;gap:14px;min-width:0}
+.panel h2{margin:0;color:var(--ink);font-size:21px;font-weight:800;text-wrap:balance}
+.panel p{margin:0}
+.tools{display:flex;flex-wrap:wrap;gap:8px}
+.btn{border:0;border-radius:32px;background:var(--teal);color:#fff;font:700 15px var(--font);padding:10px 18px;cursor:pointer}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+.btn.accent{background:var(--orange)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.levels button:focus-visible,.unit button:focus-visible,.choice button:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.answer{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.answer label{color:var(--ink);font-weight:800;font-size:22px}
+.answer input{width:5.2em;font:700 24px var(--mono);color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:14px;padding:6px 10px;text-align:center}
+.answer input:focus{outline:none;border-color:var(--teal);background:var(--card)}
+.answer input[data-state="ok"]{border-color:var(--ok);background:var(--ok-soft)}
+.answer input[data-state="miss"]{border-color:var(--warn);background:var(--warn-soft)}
+.unit,.choice{display:inline-flex;gap:4px;background:var(--bg);border-radius:32px;padding:4px}
+.unit button,.choice button{border:0;background:transparent;color:var(--ink);font:700 16px var(--font);padding:7px 14px;border-radius:32px;cursor:pointer}
+.unit button[aria-pressed="true"],.choice button[aria-pressed="true"]{background:var(--card);box-shadow:0 0 0 2px var(--teal)}
+.feedback{border-radius:16px;padding:12px 14px;background:var(--bg);color:var(--ink);font-size:15px}
+.feedback:empty{display:none}
+.feedback[data-kind="ok"]{background:var(--ok-soft)}
+.feedback[data-kind="miss"]{background:var(--warn-soft)}
+.help ol{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:8px}
+.help li{background:var(--teal-soft);border-radius:14px;padding:10px 14px;font-size:15px;color:var(--ink)}
+.help li b{display:block;color:var(--teal-ink);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.ask{display:grid;gap:8px;background:var(--orange-soft);border-radius:18px;padding:12px 14px;color:var(--ink);font-weight:600}
+.hint-line{font-size:14px;color:var(--muted)}
+details.teacher{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:4px 20px}
+details.teacher summary{cursor:pointer;color:var(--ink);font-weight:800;padding:12px 0}
+.log{display:grid;gap:6px;padding:0 0 16px;margin:0;list-style:none;font-size:14px}
+.log li{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:baseline}
+.log code{font:500 12px var(--mono);color:var(--muted)}
+.chip{font-size:12px;font-weight:700;border-radius:32px;padding:2px 8px}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}.chip.miss{background:var(--warn-soft);color:var(--warn)}
+.note{color:var(--muted);font-size:14px;margin:0 0 10px}
+.cell-hit{fill:transparent;cursor:pointer}
+.cell-hit:hover{fill:var(--cell);opacity:.35}
+@media (max-width:640px){.kori{position:static;justify-content:flex-end;max-width:none;margin-top:6px}.bubble{margin-bottom:34px}}
+@media (prefers-reduced-motion:reduce){#piece{transition:none!important}}
+</style>
+
+<div class="page">
+  <header class="head">
+    <div>
+      <p class="brand">Онлайн-школа Корифей</p>
+      <p class="eyebrow">Математика · 3 класс · Площадь</p>
+      <h1>Площадь на клетках</h1>
+    </div>
+    <div class="levels" role="group" aria-label="Уровень задания">
+      <button type="button" data-level="base" aria-pressed="true">Базовый <span class="score" data-score="base"></span></button>
+      <button type="button" data-level="mid" aria-pressed="false">Повышенный <span class="score" data-score="mid"></span></button>
+      <button type="button" data-level="hard" aria-pressed="false">Сложный <span class="score" data-score="hard"></span></button>
+    </div>
+  </header>
+
+  <div class="work">
+    <section class="board" aria-label="Фигура на клетчатой бумаге">
+      <svg id="sheet" role="img" aria-label="Фигура на клетках"></svg>
+      <div class="kori" id="kori" hidden><div class="bubble" id="bubble">А кривую не посчитать!</div><img alt="Кори" src="data:image/webp;base64,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"></div>
+    </section>
+
+    <section class="panel" aria-label="Задание">
+      <h2 id="task">Найди площадь фигуры</h2>
+      <p id="task-text"></p>
+      <div class="tools" id="tools-hard" hidden>
+        <button class="btn accent" type="button" id="cut">Отрезать по пунктиру</button>
+        <button class="btn" type="button" id="move" disabled>Перенести треугольник</button>
+      </div>
+      <div class="ask" id="ask" hidden>
+        <span>Треугольник переехал. Площадь фигуры изменилась?</span>
+        <div class="choice" role="group" aria-label="Изменилась ли площадь"><button type="button" data-changed="yes" aria-pressed="false">Да</button><button type="button" data-changed="no" aria-pressed="false">Нет</button></div>
+      </div>
+      <p class="hint-line">Нажимай на клетки внутри фигуры, чтобы закрасить посчитанные квадратики.</p>
+      <div class="answer">
+        <label for="ans">S =</label>
+        <input id="ans" inputmode="numeric" autocomplete="off" aria-label="Площадь, число">
+        <div class="unit" role="group" aria-label="Единица"><button type="button" data-unit="cm" aria-pressed="false">см</button><button type="button" data-unit="cm2" aria-pressed="false">см²</button></div>
+        <button class="btn" type="button" id="check">Проверить</button>
+      </div>
+      <p class="feedback" id="fb" role="status"></p>
+      <div class="help" id="help"><ol></ol><button class="btn ghost" type="button" id="help-next">Нужна подсказка</button></div>
+      <div class="tools"><button class="btn ghost" type="button" id="clear">Стереть закраску</button></div>
+    </section>
+  </div>
+
+  <details class="teacher">
+    <summary>Для учителя: что видно по ответам</summary>
+    <p class="note">Каждая ошибка распознаётся по числу и записывается с кодом заблуждения из узла «Периметр и площадь — разные мерки» (math_nsh_perimeter_vs_area). Здесь — журнал одного ученика на этой странице, никуда не отправляется.</p>
+    <ul class="log" id="log"><li>Пока пусто.</li></ul>
+  </details>
+</div>
+
+<script>
+(() => {
+const C = 40;
+const NS = "http://www.w3.org/2000/svg";
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => [...document.querySelectorAll(s)];
+const rnd = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+
+// Коды из базы: узел math_nsh_perimeter_vs_area и смежные. Локальные коды помечены local.
+const CODES = {
+  area_counted_along_edge: "Принимает длину контура (периметр) за площадь",
+  area_counts_border: "Считает только клетки вдоль края",
+  area_is_sum_of_sides: "Складывает стороны вместо умножения",
+  rearranged_changes_size: "Считает, что перестановка части меняет площадь",
+  area_unit_cm: "Пишет площадь в см, а не в см² (local)",
+  area_counted_cutouts: "Считает вырезы как часть фигуры (local)",
+  partial_cells_ignored: "Отбрасывает кусочки клеток у наклонного края (local)",
+  bbox_with_triangles: "Считает весь прямоугольник вокруг наклонной фигуры (local)",
+};
+
+const state = { level: "base", fig: null, painted: new Set(), unit: null, help: 0, solved: { base: 0, mid: 0, hard: 0 }, tries: 0, cut: false, moved: false, changed: null };
+const log = [];
+
+// ── Фигуры. Клетка (x, y), y вверх. ──
+// Фигуры с референса урока: по одной на уровень, одинаковые у всех учеников.
+function rectFig() {
+  const w = 8, h = 3;
+  const cells = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) cells.push([x, y]);
+  return cellFig("base", cells, { w, h, sides: w + h });
+}
+function stepFig() {
+  const w = 7, h = 2;
+  const cells = [];
+  for (let x = 0; x < 7; x++) cells.push([x, 0]);
+  for (const x of [1, 2, 3, 5, 6]) cells.push([x, 1]);
+  return cellFig("mid", cells, { w, h });
+}
+function cellFig(level, cells, extra) {
+  const set = new Set(cells.map(([x, y]) => `${x},${y}`));
+  const has = (x, y) => set.has(`${x},${y}`);
+  const edges = [];
+  let border = 0;
+  for (const [x, y] of cells) {
+    let onEdge = false;
+    if (!has(x, y - 1)) { edges.push([[x, y], [x + 1, y]]); onEdge = true; }
+    if (!has(x + 1, y)) { edges.push([[x + 1, y], [x + 1, y + 1]]); onEdge = true; }
+    if (!has(x, y + 1)) { edges.push([[x + 1, y + 1], [x, y + 1]]); onEdge = true; }
+    if (!has(x - 1, y)) { edges.push([[x, y + 1], [x, y]]); onEdge = true; }
+    if (onEdge) border++;
+  }
+  return { level, cells, set, outline: [traceLoop(edges)], area: cells.length, perimeter: edges.length, border, bbox: extra.w * extra.h, ...extra };
+}
+function traceLoop(edges) {
+  const next = new Map(edges.map(([a, b]) => [a.join(","), b]));
+  const start = edges[0][0];
+  const pts = [start];
+  let cur = edges[0][1];
+  while (cur.join(",") !== start.join(",")) { pts.push(cur); cur = next.get(cur.join(",")); }
+  return pts.filter((p, i) => {
+    const a = pts[(i - 1 + pts.length) % pts.length], b = pts[(i + 1) % pts.length];
+    return !((a[0] === p[0] && p[0] === b[0]) || (a[1] === p[1] && p[1] === b[1]));
+  });
+}
+function paraFig() {
+  const b = 4, h = 3, s = 2;
+  const full = [];
+  for (let y = 0; y < h; y++) for (let x = 0; x < b + s; x++) {
+    const leftAt = (yy) => (s * yy) / h;
+    if (x >= leftAt(y + 1) - 1e-9 && x + 1 <= b + leftAt(y) + 1e-9) full.push([x, y]);
+  }
+  return { level: "hard", b, h, s, w: b + s, area: b * h, full, fullCount: full.length, bbox: (b + s) * h, perimeterish: 2 * (b + h), sides: b + h };
+}
+
+// ── Рисование ──
+const sheet = $("#sheet");
+let geo = null;
+function el(tag, attrs, parent) {
+  const n = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function draw() {
+  const f = state.fig;
+  const cols = f.w + 4, rows = f.h + 4;
+  const ox = 2, oy = 2;
+  const X = (x) => (ox + x) * C;
+  const Y = (y) => (oy + f.h - y) * C;
+  geo = { X, Y };
+  sheet.setAttribute("viewBox", `0 0 ${cols * C} ${rows * C}`);
+  sheet.innerHTML = "";
+  el("rect", { x: 0, y: 0, width: cols * C, height: rows * C, fill: "var(--paper)", rx: 18 }, sheet);
+  const g = el("g", { stroke: "var(--grid)", "stroke-width": 1.2 }, sheet);
+  for (let i = 0; i <= cols; i++) el("line", { x1: i * C, y1: 0, x2: i * C, y2: rows * C }, g);
+  for (let j = 0; j <= rows; j++) el("line", { x1: 0, y1: j * C, x2: cols * C, y2: j * C }, g);
+  // Масштаб «1 см» — одна клетка.
+  el("line", { x1: 0.5 * C, y1: 1.1 * C, x2: 1.5 * C, y2: 1.1 * C, stroke: "var(--fig)", "stroke-width": 4, "stroke-linecap": "butt" }, sheet);
+  const t = el("text", { x: C, y: 0.82 * C, "text-anchor": "middle", fill: "var(--fig)", "font-family": "var(--font)", "font-weight": 700, "font-size": 17 }, sheet);
+  t.textContent = "1 см";
+
+  const rowsLayer = el("g", { id: "rows" }, sheet);
+  const paintLayer = el("g", { id: "paint" }, sheet);
+  const shapeLayer = el("g", {}, sheet);
+  const hitLayer = el("g", {}, sheet);
+
+  if (f.level !== "hard") {
+    el("path", { d: polyD(f.outline[0], X, Y), fill: "var(--fill)", stroke: "none" }, shapeLayer);
+    el("path", { d: polyD(f.outline[0], X, Y), fill: "none", stroke: "var(--fig)", "stroke-width": 4, "stroke-linejoin": "miter" }, shapeLayer);
+    for (const [x, y] of f.cells) hit(x, y);
+  } else {
+    const { b, h, s } = f;
+    const shift = state.moved && !state.animating ? b : 0;
+    if (!state.cut) {
+      el("path", { d: polyD([[0, 0], [b, 0], [b + s, h], [s, h]], X, Y), fill: "var(--fill)", stroke: "var(--fig)", "stroke-width": 4, "stroke-linejoin": "miter" }, shapeLayer);
+      dashed(s, 0, s, h);
+      dashed(b, 0, b, h);
+    } else {
+      el("path", { d: polyD([[s, 0], [b, 0], [b + s, h], [s, h]], X, Y), fill: "var(--fill)", stroke: "var(--fig)", "stroke-width": 4, "stroke-linejoin": "miter" }, shapeLayer);
+      if (state.moved) dashed(b, 0, b + s, h, "var(--orange)");
+      else dashed(b, 0, b, h);
+      const piece = el("g", { id: "piece", style: `transition:transform .9s cubic-bezier(.32,.72,0,1);transform:translateX(${shift * C}px)` }, shapeLayer);
+      el("path", { d: polyD([[0, 0], [s, 0], [s, h]], X, Y), fill: "var(--piece)", stroke: "var(--orange)", "stroke-width": 4, "stroke-linejoin": "miter" }, piece);
+      piece.addEventListener("click", () => { if (!state.moved) moveTriangle(); });
+      piece.style.cursor = state.moved ? "default" : "pointer";
+    }
+    const cells = state.moved ? rectCells(s, b + s, h) : f.full;
+    for (const [x, y] of cells) hit(x, y);
+    // Кусочки у края: нажатие объясняет, а не красит.
+    if (!state.moved) for (let y = 0; y < h; y++) for (let x = 0; x < b + s; x++) {
+      if (!f.full.some(([a, c]) => a === x && c === y)) {
+        const r = el("rect", { x: X(x), y: Y(y + 1), width: C, height: C, class: "cell-hit", style: "cursor:help" }, hitLayer);
+        r.addEventListener("click", () => say("miss", "Это кусочек клетки — целым квадратиком его не покрыть. Попробуй отрезать треугольник и переставить."));
+      }
+    }
+  }
+  for (const key of state.painted) {
+    const [x, y] = key.split(",").map(Number);
+    el("rect", { x: X(x) + 3, y: Y(y + 1) + 3, width: C - 6, height: C - 6, rx: 6, fill: "var(--cell)" }, paintLayer);
+  }
+  if (state.help >= 2) showRows(rowsLayer);
+
+  function hit(x, y) {
+    const r = el("rect", { x: X(x), y: Y(y + 1), width: C, height: C, class: "cell-hit" }, hitLayer);
+    r.addEventListener("click", () => { const k = `${x},${y}`; state.painted.has(k) ? state.painted.delete(k) : state.painted.add(k); draw(); });
+  }
+  function dashed(x1, y1, x2, y2, color = "var(--fig)") {
+    el("line", { x1: X(x1), y1: Y(y1), x2: X(x2), y2: Y(y2), stroke: color, "stroke-width": 3, "stroke-dasharray": "10 8" }, shapeLayer);
+  }
+}
+const polyD = (pts, X, Y) => `M${pts.map(([x, y]) => `${X(x)} ${Y(y)}`).join("L")}Z`;
+const rectCells = (x0, x1, h) => { const out = []; for (let y = 0; y < h; y++) for (let x = x0; x < x1; x++) out.push([x, y]); return out; };
+
+// Подсказка 2: ряды подсвечены через один — видно «ряды по N».
+function showRows(layer) {
+  const f = state.fig;
+  const { X, Y } = geo;
+  if (f.level === "base") {
+    for (let y = 0; y < f.h; y += 2) el("rect", { x: X(0), y: Y(y + 1), width: f.w * C, height: C, fill: "var(--row)" }, layer);
+  } else if (f.level === "mid") {
+    // Разрез на прямоугольники: по столбцам одинаковой высоты.
+    let start = 0;
+    const colH = (x) => f.cells.filter(([a]) => a === x).map(([, y]) => y).sort().join(",");
+    for (let x = 1; x <= f.w; x++) {
+      if (x === f.w || colH(x) !== colH(start)) {
+        if (x < f.w) el("line", { x1: X(x), y1: Y(0), x2: X(x), y2: Y(f.h), stroke: "var(--orange)", "stroke-width": 3, "stroke-dasharray": "6 6" }, layer);
+        start = x;
+      }
+    }
+  }
+}
+
+function moveTriangle() {
+  state.moved = true;
+  $("#move").disabled = true;
+  state.painted.clear();
+  state.animating = true;
+  draw();
+  state.animating = false;
+  const p = $("#piece");
+  if (p) { void p.getBoundingClientRect(); p.style.transform = `translateX(${state.fig.b * C}px)`; }
+  $("#ask").hidden = false;
+  $("#bubble").textContent = "Получился прямоугольник!";
+}
+
+// ── Задание ──
+const TEXT = {
+  base: ["Найди площадь прямоугольника", "Сторона клетки — 1 см. Сколько квадратиков по 1 см² покрывают фигуру?"],
+  mid: ["Найди площадь фигуры", "Сторона клетки — 1 см. Фигура не прямоугольник, но её можно разрезать на прямоугольники."],
+  hard: ["Найди площадь фигуры с наклонными сторонами", "Сторона клетки — 1 см. По клеткам сосчитать мешают кусочки у наклонного края."],
+};
+const HELP = {
+  base: [["Вопрос", "Сколько квадратиков в одном ряду? А сколько таких рядов?"], ["Подсказка", "Ряды подсвечены через один. Площадь = квадратиков в ряду × число рядов."], ["Пример", "Прямоугольник 5 × 3: три ряда по 5 квадратиков. 5 · 3 = 15 см²."]],
+  mid: [["Вопрос", "На какие прямоугольники можно разрезать эту фигуру?"], ["Подсказка", "Оранжевые линии делят фигуру на прямоугольники. Найди площадь каждого и сложи."], ["Пример", "Куски 2 × 1, 3 × 2 и 1 × 2: 2 + 6 + 2 = 10 см²."]],
+  hard: [["Вопрос", "Кривой край не посчитать по клеткам. А если отрезать кусочек и переставить?"], ["Подсказка", "Отрежь треугольник по пунктиру и перенеси вправо. Получится прямоугольник, а площадь не изменится."], ["Пример", "Снизу 4 клетки, высота 3 клетки. После перестановки — прямоугольник 4 × 3: 12 см²."]],
+};
+function newTask(level = state.level) {
+  state.level = level;
+  state.fig = level === "base" ? rectFig() : level === "mid" ? stepFig() : paraFig();
+  Object.assign(state, { painted: new Set(), unit: null, help: 0, tries: 0, cut: false, moved: false, changed: null });
+  $$("[data-level]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.level === level)));
+  $("#task").textContent = TEXT[level][0];
+  $("#task-text").textContent = TEXT[level][1];
+  $("#tools-hard").hidden = level !== "hard";
+  $("#cut").disabled = false;
+  $("#move").disabled = true;
+  $("#ask").hidden = true;
+  $$("[data-changed]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+  $("#kori").hidden = level !== "hard";
+  $("#bubble").textContent = "А кривую не посчитать!";
+  $("#ans").value = "";
+  $("#ans").removeAttribute("data-state");
+  $$("[data-unit]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+  say("", "");
+  $("#help ol").innerHTML = "";
+  $("#help-next").disabled = false;
+  $("#help-next").textContent = "Нужна подсказка";
+  draw();
+}
+
+function say(kind, text) { const fb = $("#fb"); fb.dataset.kind = kind; fb.textContent = text; }
+function record(code, extra = "") {
+  log.push({ level: state.level, code, text: code ? CODES[code] : "Верно", extra, try: state.tries });
+  const names = { base: "Базовый", mid: "Повышенный", hard: "Сложный" };
+  $("#log").innerHTML = log.slice().reverse().map((e) => `<li><span class="chip ${e.code ? "miss" : "ok"}">${e.code ? "ошибка" : "верно"}</span>${names[e.level]}, попытка ${e.try}: ${e.text}${e.extra ? ` · ${e.extra}` : ""}${e.code ? ` <code>${e.code}</code>` : ""}</li>`).join("");
+}
+
+function check() {
+  const f = state.fig;
+  const raw = $("#ans").value.trim();
+  const n = Number(raw.replace(",", "."));
+  const inp = $("#ans");
+  if (!raw || !Number.isFinite(n)) { say("miss", "Запиши число — сколько квадратиков."); return; }
+  if (!state.unit) { say("miss", "Выбери единицу: см или см²."); return; }
+  state.tries++;
+  let code = null, msg = "";
+  if (n === f.area && state.unit === "cm2") {
+    inp.dataset.state = "ok";
+    state.solved[f.level]++;
+    updateScores();
+    const how = f.level === "base" ? `${f.w} · ${f.h} = ${f.area} см²` : f.level === "hard" ? `${f.b} · ${f.h} = ${f.area} см²` : `${f.area} см²`;
+    say("ok", `Верно: ${how}.${state.tries === 1 ? " С первого раза!" : ""}${f.level === "hard" ? " Все три уровня по силам!" : " Попробуй следующий уровень."}`);
+    record(null, how);
+    return;
+  }
+  inp.dataset.state = "miss";
+  if (n === f.area && state.unit === "cm") { code = "area_unit_cm"; msg = "Число верное, а единица — нет. См меряют длину. Площадь меряют квадратиками: см²."; }
+  else if (f.level !== "hard" && n === f.perimeter) { code = "area_counted_along_edge"; msg = "Это длина контура — сколько нитки нужно, чтобы обвести фигуру. Площадь — сколько квадратиков её покрывают."; }
+  else if (f.level !== "hard" && n === f.border && f.border !== f.area) { code = "area_counts_border"; msg = "Посчитаны только клетки у края. Квадратики внутри тоже покрывают фигуру."; }
+  else if ((f.level === "base" || f.level === "hard") && n === f.sides) { code = "area_is_sum_of_sides"; msg = `Стороны сложили: ${f.level === "base" ? f.w : f.b} + ${f.h}. А площадь — ряды квадратиков: умножай.`; }
+  else if (f.level === "mid" && n === f.bbox) { code = "area_counted_cutouts"; msg = "Это площадь целого прямоугольника вокруг фигуры. Вырезы не покрыты — их квадратики не считаются."; }
+  else if (f.level === "hard" && n === f.fullCount && !state.moved) { code = "partial_cells_ignored"; msg = "Сосчитаны только целые клетки. Кусочки у краёв тоже часть фигуры — переставь треугольник, и они сложатся в целые."; }
+  else if (f.level === "hard" && n === f.bbox) { code = "bbox_with_triangles"; msg = "Это прямоугольник вокруг всей фигуры, вместе с пустыми треугольниками. Отрежь и переставь — посмотри, что остаётся."; }
+  else if (f.level === "hard" && n === f.perimeterish) { code = "area_counted_along_edge"; msg = "Похоже на длину контура. Площадь — сколько квадратиков покрывают фигуру."; }
+  else { msg = "Не сходится. Закрась квадратики и пересчитай — или открой подсказку."; }
+  if (state.unit === "cm" && code !== "area_unit_cm") msg += " И проверь единицу: площадь — в см².";
+  say("miss", msg);
+  record(code, `ответ ${raw} ${state.unit === "cm" ? "см" : "см²"}`);
+}
+
+function updateScores() {
+  for (const k of ["base", "mid", "hard"]) $(`[data-score="${k}"]`).textContent = state.solved[k] ? "✓" : "";
+}
+
+// ── События ──
+$$("[data-level]").forEach((b) => b.addEventListener("click", () => newTask(b.dataset.level)));
+$$("[data-unit]").forEach((b) => b.addEventListener("click", () => { state.unit = b.dataset.unit; $$("[data-unit]").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); }));
+$("#check").addEventListener("click", check);
+$("#ans").addEventListener("keydown", (e) => { if (e.key === "Enter") check(); });
+$("#clear").addEventListener("click", () => { state.painted.clear(); draw(); });
+$("#cut").addEventListener("click", () => { state.cut = true; $("#cut").disabled = true; $("#move").disabled = false; $("#bubble").textContent = "Отрезали! Теперь перенеси"; draw(); });
+$("#move").addEventListener("click", moveTriangle);
+$$("[data-changed]").forEach((b) => b.addEventListener("click", () => {
+  $$("[data-changed]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  if (b.dataset.changed === "yes") { say("miss", "Ничего не добавили и не выбросили — тот же кусок просто переехал. Значит, квадратиков столько же: площадь не изменилась."); record("rearranged_changes_size"); }
+  else { say("ok", "Да, не изменилась: кусок переехал, но не пропал. Теперь найди площадь прямоугольника."); }
+}));
+$("#help-next").addEventListener("click", () => {
+  const list = HELP[state.level];
+  if (state.help >= list.length) return;
+  const [title, text] = list[state.help];
+  const li = document.createElement("li");
+  li.innerHTML = `<b>${title}</b>${text}`;
+  $("#help ol").appendChild(li);
+  state.help++;
+  $("#help-next").textContent = state.help >= list.length ? "Подсказок больше нет" : "Ещё подсказка";
+  $("#help-next").disabled = state.help >= list.length;
+  if (state.help === 2) draw();
+});
+
+newTask("base");
+})();
+</script>
+
+</body>
+</html>

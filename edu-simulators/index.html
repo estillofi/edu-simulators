@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тренажёры онлайн-школы Корифей</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap">
+<style>
+/* Каталог: шапка школы и список тренажёров карточками. */
+:root{--bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;--teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#E3F5F8;
+  --font:"Raleway",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;--teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font)}
+.page{max-width:960px;margin:0 auto;padding:24px clamp(12px,3vw,24px) 48px;display:grid;gap:20px}
+.brand{margin:0;color:var(--ink);font-weight:800}
+h1{margin:4px 0 0;color:var(--ink);font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.1}
+.list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+a.card{display:grid;gap:6px;background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:20px 22px;text-decoration:none;color:inherit}
+a.card:hover,a.card:focus-visible{box-shadow:0 0 0 2px var(--teal);outline:none}
+.tag{color:var(--teal-ink);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.card h2{margin:0;color:var(--ink);font-size:20px;font-weight:800}
+.card p{margin:0;font-size:15px}
+.note{color:var(--muted);font-size:14px;margin:0}
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <p class="brand">Онлайн-школа Корифей</p>
+    <h1>Тренажёры</h1>
+  </header>
+  <div class="list">
+    <a class="card" href="math-3/area/">
+      <span class="tag">Математика · 3 класс</span>
+      <h2>Площадь на клетках</h2>
+      <p>Прямоугольник, ступенчатая фигура и параллелограмм: закрась квадратики, разрежь и переставь.</p>
+    </a>
+  </div>
+  <p class="note">Тренажёры работают в браузере и не собирают личные данные.</p>
+</main>
+</body>
+</html>
