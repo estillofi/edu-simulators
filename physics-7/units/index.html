@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Единицы и приставки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Тетрадь онлайн-школы: слева прогноз и задания, справа лестница степеней; на телефоне — прогноз, лестница, задания. */
+:root{
+  --bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;
+  --teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#E3F5F8;--orange:#FF5B00;--orange-soft:#FFF0E6;
+  --ok:#1E8E5A;--ok-soft:#E5F5EC;--warn:#C2410C;--warn-soft:#FFF1E8;
+  --font:"Raleway",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --math:"STIX Two Text","Cambria Math",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font);font-variant-numeric:lining-nums}
+.page{padding-inline:clamp(10px,1.6vw,20px);padding-block:14px 40px;display:grid;gap:14px;max-width:1320px;margin:0 auto}
+.brand{margin:0 0 6px;color:var(--ink);font-weight:800;font-size:15px}
+.eyebrow{margin:0;color:var(--teal-ink);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+h1{margin:2px 0 0;color:var(--ink);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.1;text-wrap:balance}
+.lead{margin:6px 0 0;max-width:760px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tabs button{border:0;border-radius:32px;background:var(--card);color:var(--ink);font:700 14px var(--font);padding:9px 16px 9px 9px;box-shadow:0 0 0 1px var(--line);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.tabs .n{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--bg);font-size:12px}
+.tabs button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:none}
+.tabs button[aria-pressed="true"] .n{background:rgba(255,255,255,.22)}
+.tabs button[data-done] .n{background:var(--ok-soft);color:var(--ok)}
+.work{display:grid;gap:14px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"pred model" "tasks model";align-items:start}
+@media (max-width:980px){.work{grid-template-columns:1fr;grid-template-areas:"pred" "model" "tasks"}}
+.card{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:20px 22px;display:grid;gap:14px;min-width:0}
+@media (max-width:520px){.card{padding:16px}}
+.card h2{margin:0;color:var(--ink);font-size:20px;font-weight:800;text-wrap:balance}
+.card p{margin:0}
+.label{color:var(--teal-ink);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.pred{grid-area:pred}.model{grid-area:model;position:relative}.tasks{grid-area:tasks}
+@media (min-width:981px){.model{position:sticky;top:12px}}
+.m{font-family:var(--math);font-size:1.15em;color:var(--ink);white-space:nowrap}
+.kori{display:flex;align-items:flex-end;gap:10px}
+.kori img{width:84px;height:auto;flex:none}
+.bubble{background:var(--teal-soft);color:var(--ink);font-weight:700;padding:10px 14px;border-radius:20px 20px 20px 4px;box-shadow:0 0 0 1.5px var(--teal);margin-bottom:24px}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choices button{border:0;border-radius:32px;background:var(--bg);color:var(--ink);font:600 17px var(--math);padding:9px 16px;cursor:pointer}
+.choices button[aria-pressed="true"]{background:var(--teal-soft);box-shadow:0 0 0 2px var(--teal)}
+.choices button:disabled{cursor:default}
+.btn{border:0;border-radius:32px;background:var(--teal);color:#fff;font:700 15px var(--font);padding:10px 18px;cursor:pointer}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.fb{border-radius:16px;padding:10px 14px;background:var(--bg);color:var(--ink);font-size:15px}
+.fb:empty{display:none}
+.fb[data-kind="ok"]{background:var(--ok-soft)}
+.fb[data-kind="miss"]{background:var(--warn-soft)}
+.fb[data-kind="info"]{background:var(--teal-soft)}
+.lock{position:absolute;inset:0;border-radius:28px;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;place-items:center;text-align:center;padding:24px;color:var(--ink);font-weight:700;z-index:2}
+.seg{display:inline-flex;flex-wrap:wrap;gap:4px;background:var(--bg);border-radius:32px;padding:4px}
+.seg button{border:0;background:transparent;color:var(--ink);font:600 14px var(--font);padding:7px 14px;border-radius:32px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);box-shadow:0 0 0 2px var(--teal)}
+.seg button[data-done]::after{content:" ✓";color:var(--ok)}
+.note{font-size:14px;color:var(--muted)}
+
+/* Лестница степеней: строка — степень десяти, на ней единицы. */
+.ladder{display:grid;gap:0;background:var(--bg);border-radius:20px;padding:10px 12px}
+.rung{display:grid;grid-template-columns:64px 18px minmax(0,1fr);align-items:center;min-height:26px;border-radius:10px}
+.rung .p{font:600 14px var(--math);color:var(--muted);text-align:right;padding-right:8px;white-space:nowrap}
+.rung .rail{align-self:stretch;position:relative}
+.rung .rail::before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--line)}
+.rung .rail::after{content:"";position:absolute;left:4px;top:50%;width:10px;height:2px;background:var(--line)}
+.rung.has .rail::after{left:3px;top:calc(50% - 6px);width:12px;height:12px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 2px var(--teal)}
+.rung.on{background:var(--teal-soft)}
+.rung.on .p{color:var(--ink)}
+.rung .us{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;padding:2px 0}
+.u{border:0;border-radius:12px;background:var(--card);color:var(--ink);font:700 15px var(--font);padding:3px 10px;cursor:pointer;box-shadow:0 0 0 1px var(--line)}
+.u small{font-weight:500;color:var(--muted);margin-left:4px}
+.u[data-role="from"]{box-shadow:0 0 0 2px var(--teal);background:var(--teal-soft)}
+.u[data-role="to"]{box-shadow:0 0 0 2px var(--orange);background:var(--orange-soft)}
+.si{font:700 10px var(--font);color:var(--teal-ink);letter-spacing:.08em;margin-left:4px;vertical-align:1px}
+.factor{font-size:15px;color:var(--ink);background:var(--bg);border-radius:16px;padding:10px 14px}
+.factor:empty{display:none}
+.factor .m{font-size:1.2em}
+.pic{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;background:var(--bg);border-radius:20px;padding:12px 14px}
+.pic svg{width:132px;height:auto;display:block}
+@media (max-width:420px){.pic{grid-template-columns:1fr;justify-items:center}}
+
+/* Задание: число · 10^n единица. */
+.q{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;color:var(--ink);font-size:18px}
+.q .m{font-size:1.3em}
+.ans{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font:500 22px var(--math);color:var(--ink)}
+.in{width:6.2em;font:600 20px var(--mono);color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:12px;padding:5px 8px;text-align:center}
+.in.sm{width:3.2em;font-size:15px;padding:2px 4px;border-radius:9px;transform:translateY(-.55em)}
+.in:focus{outline:none;border-color:var(--teal);background:var(--card)}
+.in[data-state="ok"]{border-color:var(--ok);background:var(--ok-soft)}
+.in[data-state="miss"]{border-color:var(--warn);background:var(--warn-soft)}
+.ten{display:inline-flex;align-items:flex-start}
+.unit{font:700 19px var(--font);color:var(--ink);margin-left:4px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.streak{display:flex;gap:5px;align-items:center;font-size:13px;color:var(--muted)}
+.streak i{width:12px;height:12px;border-radius:50%;background:var(--bg);box-shadow:inset 0 0 0 1.5px var(--line)}
+.streak i[data-on]{background:var(--ok);box-shadow:none}
+.help ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.help li{background:var(--teal-soft);border-radius:14px;padding:10px 14px;font-size:15px;color:var(--ink)}
+.help li b{display:block;color:var(--teal-ink);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.sol{font:500 16px var(--math);color:var(--ink);background:var(--bg);border-radius:14px;padding:10px 14px;display:grid;gap:4px}
+details.teacher{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:4px 20px}
+details.teacher summary{cursor:pointer;color:var(--ink);font-weight:800;padding:12px 0}
+.log{display:grid;gap:6px;padding:0 0 16px;margin:0;list-style:none;font-size:14px}
+.sum{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.tag{font-size:12px;font-weight:700;border-radius:32px;padding:2px 8px;white-space:nowrap}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}.tag.miss{background:var(--warn-soft);color:var(--warn)}.tag.info{background:var(--teal-soft);color:var(--teal-ink)}
+</style>
+
+<div class="page">
+  <header>
+    <p class="brand">Онлайн-школа Корифей</p>
+    <p class="eyebrow">Физика · 7 класс · тренажёр</p>
+    <h1>Единицы и приставки</h1>
+    <p class="lead">В задачах дают миллиграммы, литры и квадратные сантиметры, а считать надо в СИ: килограммы, квадратные и кубические метры. Каждая единица стоит на своей ступени лестницы степеней. Перевести — значит посчитать ступени и понять, в какую сторону сдвинуть степень.</p>
+  </header>
+  <nav class="tabs" id="tabs" aria-label="Тренажёры"></nav>
+  <div class="work">
+    <section class="card pred" id="pred" aria-label="Прогноз"></section>
+    <section class="card model" id="model" aria-label="Лестница степеней"></section>
+    <section class="card tasks" id="tasks" aria-label="Задания"></section>
+  </div>
+  <details class="teacher">
+    <summary>Для учителя: что видно по ответам</summary>
+    <p class="note" style="margin:0 0 10px">Каждый прогноз, ошибка, подсказка и показанное решение записываются с кодом заблуждения. Журнал живёт только на этой странице и никуда не отправляется.</p>
+    <div class="sum" id="sum"></div>
+    <ul class="log" id="log"><li>Пока пусто.</li></ul>
+  </details>
+</div>
+
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const KORI = "data:image/webp;base64,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";
+
+// ── Десятичные числа без потерь: x = m · 10^e ──
+const norm = ({ m, e }) => { if (m === 0n) return { m: 0n, e: 0 }; while (m % 10n === 0n) { m /= 10n; e++; } return { m, e }; };
+function dec(text) {
+  let s = String(text ?? "").trim().replace(/\s+/g, "").replace(/,/g, ".").replace(/[−–]/g, "-");
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+  const neg = s[0] === "-";
+  s = s.replace(/^[-+]/, "");
+  const [i, f = ""] = s.split(".");
+  let m = BigInt((i || "0") + f);
+  if (neg) m = -m;
+  return norm({ m, e: -f.length });
+}
+const shift = (x, k) => norm({ m: x.m, e: x.e + k });
+const same = (a, b) => a.m === b.m && a.e === b.e;
+const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+const sup = (n) => String(n).replace("-", "⁻").replace(/\d/g, (d) => SUP[d]);
+const ten = (n) => `10${sup(n)}`;
+function stdParts(x) {
+  const s = (x.m < 0n ? -x.m : x.m).toString();
+  const n = x.e + s.length - 1;
+  const a = s.length > 1 ? `${s[0]},${s.slice(1)}` : s;
+  return { a: (x.m < 0n ? "−" : "") + a, n };
+}
+const fmtStd = (x) => { const { a, n } = stdParts(x); return n === 0 ? a : a === "1" ? ten(n) : `${a} · ${ten(n)}`; };
+function fmtDec(x) {
+  const neg = x.m < 0n;
+  let s = (neg ? -x.m : x.m).toString();
+  let int, frac = "";
+  if (x.e >= 0) int = s + "0".repeat(x.e);
+  else { const k = -x.e; s = s.padStart(k + 1, "0"); int = s.slice(0, s.length - k); frac = s.slice(s.length - k); }
+  if (int.length > 4) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return (neg ? "−" : "") + int + (frac ? "," + frac : "");
+}
+const fmtNice = (x) => { const { n } = stdParts(x); return n >= -3 && n <= 5 ? fmtDec(x) : fmtStd(x); };
+const isStd = (x) => { const s = (x.m < 0n ? -x.m : x.m).toString(); return s.length + x.e === 1; };
+
+// ── Единицы: p — ступень, степень десяти относительно основы ──
+const Q = {
+  prefix: { title: "Приставки", base: "", pow: 1, rungs: true,
+    units: [
+      { id: "Г", p: 9, name: "гига" }, { id: "М", p: 6, name: "мега" }, { id: "к", p: 3, name: "кило" }, { id: "г", p: 2, name: "гекто" },
+      { id: "—", p: 0, name: "основная единица" }, { id: "д", p: -1, name: "деци" }, { id: "с", p: -2, name: "санти" }, { id: "м", p: -3, name: "милли" },
+      { id: "мк", p: -6, name: "микро" }, { id: "н", p: -9, name: "нано" } ] },
+  mass: { title: "Масса", base: "г", pow: 1,
+    units: [ { id: "т", p: 6, alias: "Мг" }, { id: "кг", p: 3, si: true }, { id: "г", p: 0 }, { id: "мг", p: -3 }, { id: "мкг", p: -6 } ] },
+  area: { title: "Площадь", base: "м²", pow: 2,
+    units: [ { id: "км²", p: 6 }, { id: "м²", p: 0, si: true }, { id: "дм²", p: -2 }, { id: "см²", p: -4 }, { id: "мм²", p: -6 } ] },
+  volume: { title: "Объём", base: "м³", pow: 3,
+    units: [ { id: "м³", p: 0, si: true }, { id: "дм³", p: -3 }, { id: "л", p: -3 }, { id: "см³", p: -6 }, { id: "мл", p: -6 }, { id: "мм³", p: -9 } ] },
+};
+// Единицы с приставками для вкладки «Приставки»: [единица, ступень, основа].
+const FAM = {
+  "нм": [-9, "м"], "мкм": [-6, "м"], "мм": [-3, "м"], "см": [-2, "м"], "дм": [-1, "м"], "м": [0, "м"], "км": [3, "м"],
+  "мкс": [-6, "с"], "мс": [-3, "с"], "с": [0, "с"],
+  "Па": [0, "Па"], "гПа": [2, "Па"], "кПа": [3, "Па"], "МПа": [6, "Па"],
+  "Дж": [0, "Дж"], "кДж": [3, "Дж"], "МДж": [6, "Дж"],
+  "мВт": [-3, "Вт"], "Вт": [0, "Вт"], "кВт": [3, "Вт"], "МВт": [6, "Вт"], "ГВт": [9, "Вт"],
+  "мН": [-3, "Н"], "Н": [0, "Н"], "кН": [3, "Н"],
+};
+const QNAME = { "м": "длина", "с": "время", "Па": "давление", "Дж": "энергия", "Вт": "мощность", "Н": "сила" };
+function unitOf(q, id) {
+  if (q === "prefix") { const [p, base] = FAM[id]; return { id, p, base }; }
+  return Q[q].units.find((u) => u.id === id);
+}
+const isLitre = (id) => id === "л" || id === "мл";
+const pOn = (q, id) => Q[q].units.find((u) => u.id === id)?.p ?? (q === "prefix" ? FAM[id]?.[0] : undefined);
+
+// ── Задания: [откуда, куда] и значения по уровням ──
+const POOLS = {
+  prefix: [
+    [["км","м"],["м","км"],["мм","м"],["м","мм"],["мс","с"],["с","мс"],["кПа","Па"],["Па","кПа"],["МПа","Па"],["кДж","Дж"],["МВт","Вт"],["мкм","м"],["кН","Н"],["мН","Н"],["см","м"],["гПа","Па"],["ГВт","Вт"],["нм","м"]],
+    [["мм","мкм"],["мкм","мм"],["кВт","МВт"],["МВт","кВт"],["МДж","кДж"],["нм","мкм"],["км","мм"],["мкс","мс"],["МПа","кПа"],["гПа","кПа"],["мкм","см"],["ГВт","кВт"]],
+    [["450","нм","м"],["2,5","МПа","Па"],["0,3","мкс","с"],["1,2","кВт","Вт"],["36","км","м"],["0,8","мм","м"],["750","гПа","Па"],["0,05","МДж","Дж"],["120","мН","Н"],["5,6","мкм","м"]],
+  ],
+  mass: [
+    [["г","кг"],["кг","г"],["мг","г"],["г","мг"],["т","кг"],["кг","т"],["мкг","мг"],["мг","мкг"]],
+    [["мг","кг"],["кг","мг"],["мкг","г"],["г","мкг"],["т","г"],["мкг","кг"],["т","мг"]],
+    [["10","мг","кг"],["4","мг","мкг"],["2,5","т","кг"],["0,4","мг","кг"],["350","мкг","кг"],["0,05","г","кг"],["1,5","т","кг"],["250","г","кг"],["0,02","т","кг"],["800","мкг","мг"]],
+  ],
+  area: [
+    [["м²","дм²"],["дм²","м²"],["дм²","см²"],["см²","дм²"],["см²","мм²"],["мм²","см²"]],
+    [["м²","см²"],["см²","м²"],["мм²","м²"],["м²","мм²"],["км²","м²"],["м²","км²"],["мм²","дм²"]],
+    [["250","см²","м²"],["0,5","м²","см²"],["1,2","км²","м²"],["40","мм²","м²"],["0,03","м²","см²"],["600","см²","м²"],["2,4","дм²","м²"],["15","мм²","см²"]],
+  ],
+  volume: [
+    [["мл","см³"],["л","дм³"],["л","мл"],["мл","л"],["дм³","см³"],["см³","дм³"],["м³","дм³"],["дм³","м³"]],
+    [["см³","м³"],["м³","см³"],["л","м³"],["м³","л"],["мл","м³"],["м³","мл"],["мм³","см³"]],
+    [["300","мл","см³"],["300","мл","м³"],["0,02","м³","л"],["2,5","л","м³"],["750","см³","м³"],["0,5","л","м³"],["1,2","м³","л"],["250","мл","м³"],["4","мм³","см³"]],
+  ],
+};
+const MIXED = [
+  ["mass","0,4","мг","кг"],["mass","2,5","т","кг"],["mass","350","мкг","кг"],["mass","10","мг","кг"],["mass","60","г","кг"],
+  ["area","250","см²","м²"],["area","40","мм²","м²"],["area","1,5","см²","м²"],["area","0,2","км²","м²"],
+  ["volume","300","мл","м³"],["volume","2,5","л","м³"],["volume","750","см³","м³"],["volume","40","л","м³"],["volume","0,5","мл","м³"],
+  ["prefix","2,5","МПа","Па"],["prefix","450","нм","м"],["prefix","0,3","мкс","с"],["prefix","36","км","м"],["prefix","1,2","МДж","Дж"],
+];
+const SMALL = ["1","2","3","4","5","6","7","8","9","20","30","50"];
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+const kOf = (t) => unitOf(t.q, t.from).p - unitOf(t.q, t.to).p;
+function makeTask(tab, level) {
+  if (tab === "mixed") { const [q, v, from, to] = pick(MIXED); return { q, v, from, to, level: 2 }; }
+  const pool = POOLS[tab][level];
+  const item = pick(pool);
+  return item.length === 3 ? { q: tab, v: item[0], from: item[1], to: item[2], level } : { q: tab, v: pick(SMALL), from: item[0], to: item[1], level };
+}
+const answerOf = (t) => shift(dec(t.v), kOf(t));
+
+// ── Разбор ошибки ──
+const MSG = {
+  DIR_INVERTED: (t) => { const up = kOf(t) < 0; return `Множитель верный, а направление обратное. ${t.to} ${up ? "крупнее" : "мельче"}, чем ${t.from}, значит число должно стать ${up ? "меньше" : "больше"}.`; },
+  MASS_KG_BASE: () => "Приставки ставят к грамму, а не к килограмму: 1 мг = 10⁻³ г, а в килограмме ещё 10³ г. Иди через граммы: мг → г → кг.",
+  PREFIX_VALUE: () => "Проверь значение приставки: мк (микро) = 10⁻⁶, м (милли) = 10⁻³, М (мега) = 10⁶, н (нано) = 10⁻⁹.",
+  AREA_LINEAR: () => "Похоже, площадь переведена как длина. Площадь — квадрат: 1 м = 10² см, поэтому 1 м² = 10² · 10² = 10⁴ см².",
+  VOL_LINEAR: () => "Похоже, объём переведён как длина или площадь. Объём — куб: 1 дм = 10 см, поэтому 1 дм³ = 10 · 10 · 10 = 10³ см³.",
+  LITRE: () => "Запомни пару равенств: 1 л = 1 дм³ = 10⁻³ м³ и 1 мл = 1 см³.",
+  OFF_BY_ONE: () => "Почти: ответ отличается ровно в 10 раз. Пересчитай ступени на лестнице.",
+  EXP_OTHER: () => "Степень не та. Найди обе единицы на лестнице и посчитай ступени между ними.",
+  DIGITS: () => "Цифры числа при переводе не меняются — сдвигается только запятая, то есть степень десяти. Проверь число.",
+  FORMAT: () => "Запиши число (например 2,5) и, если нужно, показатель степени (например −4).",
+};
+function diagnose(t, got) {
+  const want = answerOf(t);
+  const g = stdParts(got), w = stdParts(want);
+  if (g.a !== w.a) return "DIGITS";
+  const d = g.n - w.n;
+  const k = kOf(t), ks = k + d;
+  const ids = [t.from, t.to];
+  if (k !== 0 && ks === -k) return "DIR_INVERTED";
+  if (t.q === "volume" && (ids.some(isLitre) || k === 0) && Math.abs(d) === 3) return "LITRE";
+  if (t.q === "area" && k !== 0 && Math.abs(ks * 2) === Math.abs(k)) return "AREA_LINEAR";
+  if (t.q === "volume" && k !== 0 && (Math.abs(ks * 3) === Math.abs(k) || Math.abs(ks * 3) === Math.abs(k * 2))) return "VOL_LINEAR";
+  if (t.q === "mass" && ids.includes("кг") && Math.abs(d) === 3) return "MASS_KG_BASE";
+  if (Math.abs(d) === 3 && ids.some((id) => /^(мк|М|н|Г)/.test(id))) return "PREFIX_VALUE";
+  if (Math.abs(d) === 1) return "OFF_BY_ONE";
+  return "EXP_OTHER";
+}
+const CODE_TEACHER = {
+  DIR_INVERTED: "Путает направление: к крупной единице умножает", MASS_KG_BASE: "Ставит приставку к килограмму (мг → кг через 10⁻³)",
+  PREFIX_VALUE: "Путает значения приставок (мк/м, М/к)", AREA_LINEAR: "Переводит площадь как длину", VOL_LINEAR: "Переводит объём как длину или площадь",
+  LITRE: "Не знает, что 1 л = 1 дм³, 1 мл = 1 см³", OFF_BY_ONE: "Ошибается на одну ступень (в 10 раз)", EXP_OTHER: "Степень не та, причина не распознана",
+  DIGITS: "Меняет цифры числа, а не степень", FORMAT: "Запись не число", PRED_TRAP: "Прогноз попал в ловушку", SHOWN: "Открыл решение", HELP: "Открыл подсказку",
+};
+
+// ── Подсказки и решение ──
+function reason(t) {
+  const F = unitOf(t.q, t.from), T = unitOf(t.q, t.to), k = kOf(t);
+  if (t.q === "prefix" || t.q === "mass") {
+    const base = t.q === "mass" ? "г" : F.base;
+    const parts = [F, T].filter((u) => u.p !== 0).map((u) => `1 ${u.id} = ${ten(u.p)} ${base}`);
+    return `${parts.join(", ")}, значит 1 ${t.from} = ${ten(k)} ${t.to}${t.q === "mass" ? " (иди через граммы)" : ""}.`;
+  }
+  if (t.q === "area") return `1 ${t.from.replace("²", "")} = ${ten(k / 2)} ${t.to.replace("²", "")}, а площадь — квадрат: 1 ${t.from} = (${ten(k / 2)})² ${t.to} = ${ten(k)} ${t.to}.`;
+  const lit = (id) => (id === "л" ? "1 л = 1 дм³" : id === "мл" ? "1 мл = 1 см³" : "");
+  const notes = [lit(t.from), lit(t.to)].filter(Boolean).join(", ");
+  return `${notes ? notes + ". " : ""}Объём — куб: каждая ступень длины даёт три ступени объёма, значит 1 ${t.from} = ${ten(k)} ${t.to}.`;
+}
+function solution(t) {
+  const k = kOf(t), want = answerOf(t);
+  const v = fmtDec(dec(t.v));
+  const lines = [reason(t)];
+  lines.push(k === 0 ? `${v} ${t.from} = ${v} ${t.to}.` : `${v} ${t.from} = ${v} · ${ten(k)} ${t.to} = ${fmtStd(want)} ${t.to}.`);
+  const nice = fmtNice(want);
+  if (nice !== fmtStd(want)) lines.push(`Без степени: ${nice} ${t.to}.`);
+  return lines;
+}
+function hints(t) {
+  const k = kOf(t);
+  const up = k < 0;
+  const kind = t.q === "area" ? " Единицы квадратные — ступени длины удваиваются." : t.q === "volume" ? " Единицы кубические — ступени длины утраиваются." : "";
+  const other = { ...t, v: t.v === "3" ? "7" : "3" };
+  return [
+    ["Вопрос", `Какая единица крупнее: ${t.from} или ${t.to}? При переходе к более крупной единице число уменьшается, к более мелкой — увеличивается.`],
+    ["Подсказка", `На лестнице от ${t.from} до ${t.to} — ${Math.abs(k)} ${steps(Math.abs(k))} ${up ? "вверх" : "вниз"}. Значит, умножаем на ${ten(k)}.${kind}`],
+    ["Пример", solution(other).join(" ")],
+  ];
+}
+const steps = (n) => (n % 10 === 1 && n % 100 !== 11 ? "ступень" : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? "ступени" : "ступеней");
+
+// ── Вкладки ──
+const TABS = [
+  { id: "prefix", n: 1, title: "Приставки", q: "prefix",
+    kori: "Микро — это сколько? 1 мкм = ? м",
+    options: [["10⁻³", "trap"], ["10⁻⁶", "ok"], ["10⁻⁹", "miss"], ["10⁶", "miss"]],
+    after: { ok: "Верно: мк (микро) — 10⁻⁶. Миллиметр — 10⁻³ м, микрометр в тысячу раз меньше.", trap: "Это милли: 1 мм = 10⁻³ м. Микро в тысячу раз меньше: 1 мкм = 10⁻⁶ м.", miss: "Нет. Микро — это 10⁻⁶: миллионная доля. Посмотри на лестницу справа." } },
+  { id: "mass", n: 2, title: "Масса", q: "mass",
+    kori: "В СИ масса — в килограммах. 10 мг — это сколько кг?",
+    options: [["10⁻²", "trap"], ["10⁻⁵", "ok"], ["10⁻⁸", "miss"], ["10⁴", "miss"]],
+    after: { ok: "Верно: 10 мг = 10 · 10⁻⁶ кг = 10⁻⁵ кг. От мг до кг шесть ступеней: мг → г → кг.", trap: "Ловушка: приставку «милли» поставили к килограмму. Но мг — это тысячная доля грамма: 10 мг = 10 · 10⁻³ г = 10 · 10⁻⁶ кг = 10⁻⁵ кг.", miss: "Нет. 1 мг = 10⁻³ г, 1 г = 10⁻³ кг, значит 10 мг = 10 · 10⁻⁶ кг = 10⁻⁵ кг." } },
+  { id: "area", n: 3, title: "Площадь", q: "area",
+    kori: "1 м = 100 см. А 1 м² — это сколько см²?",
+    options: [["100", "trap"], ["1000", "miss"], ["10 000", "ok"], ["1 000 000", "miss"]],
+    after: { ok: "Верно: квадрат 1 м × 1 м — это 100 × 100 = 10 000 квадратиков 1 см × 1 см. 1 м² = 10⁴ см².", trap: "Ловушка: перевели как длину. Квадрат 1 м × 1 м — это 100 рядов по 100 квадратиков: 1 м² = 10 000 см² = 10⁴ см².", miss: "Нет. Квадрат 1 м × 1 м: 100 рядов по 100 квадратных сантиметров — 10 000 см²." } },
+  { id: "volume", n: 4, title: "Объём и литры", q: "volume",
+    kori: "Сколько кубометров в одном литре?",
+    options: [["1", "trap"], ["10⁻³", "ok"], ["10⁻⁶", "miss"], ["10³", "miss"]],
+    after: { ok: "Верно: 1 л = 1 дм³, а в кубометре 10 × 10 × 10 = 1000 кубических дециметров. 1 л = 10⁻³ м³.", trap: "Ловушка: литр — это не кубометр. 1 л = 1 дм³, а 1 м³ = 1000 л. Значит, 1 л = 10⁻³ м³.", miss: "Нет. 1 л = 1 дм³, в одном м³ их 10 × 10 × 10 = 1000. 1 л = 10⁻³ м³." } },
+  { id: "mixed", n: 5, title: "Как в задаче", q: null,
+    kori: "Масса пылинки 0,4 мг. Что подставить в формулу в СИ?",
+    options: [["0,4 кг", "miss"], ["4 · 10⁻⁴ кг", "trap"], ["4 · 10⁻⁷ кг", "ok"], ["4 · 10² кг", "miss"]],
+    after: { ok: "Верно: 0,4 мг = 0,4 · 10⁻⁶ кг = 4 · 10⁻⁷ кг. Здесь лестница спрятана — попробуй без неё.", trap: "Ловушка: 4 · 10⁻⁴ — это граммы. До килограммов ещё 10⁻³: 4 · 10⁻⁷ кг. Здесь лестница спрятана — попробуй без неё.", miss: "Нет. 0,4 мг = 0,4 · 10⁻³ г = 0,4 · 10⁻⁶ кг = 4 · 10⁻⁷ кг. Здесь лестница спрятана — попробуй без неё." } },
+];
+const LEVELS = ["Один шаг", "Два шага", "С числом"];
+const NEED = 3;
+const state = Object.fromEntries(TABS.map((t) => [t.id, { pred: null, level: 0, streak: [0, 0, 0], done: [false, false, false], task: null, tries: 0, help: 0, explore: [], showLadder: t.id !== "mixed" }]));
+let cur = "prefix";
+const log = [];
+function note(code, text, kind = "miss") {
+  log.unshift({ code, text, kind, tab: TABS.find((t) => t.id === cur).title });
+  const counts = {};
+  for (const e of log) if (e.kind === "miss") counts[e.code] = (counts[e.code] || 0) + 1;
+  $("#sum").innerHTML = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<span class="tag miss">${CODE_TEACHER[c] || c} · ${n}</span>`).join("");
+  $("#log").innerHTML = log.slice(0, 60).map((e) => `<li><span class="tag ${e.kind}">${e.code}</span> ${e.tab}: ${e.text}</li>`).join("");
+}
+
+function renderTabs() {
+  $("#tabs").innerHTML = TABS.map((t) => `<button type="button" data-tab="${t.id}" aria-pressed="${t.id === cur}"${state[t.id].done[2] || (t.id === "mixed" && state.mixed.done[0]) ? " data-done" : ""}><span class="n">${t.n}</span>${t.title}</button>`).join("");
+}
+$("#tabs").addEventListener("click", (e) => { const b = e.target.closest("[data-tab]"); if (!b) return; cur = b.dataset.tab; render(); });
+
+function renderPred() {
+  const T = TABS.find((t) => t.id === cur), S = state[cur];
+  const fb = S.pred ? `<p class="fb" data-kind="${S.pred.kind === "ok" ? "ok" : "miss"}">${T.after[S.pred.kind]}</p>` : "";
+  $("#pred").innerHTML = `<span class="label">Прогноз</span>
+    <div class="kori"><img src="${KORI}" alt="Кори"><div class="bubble">${T.kori}</div></div>
+    <div class="choices">${T.options.map(([txt, kind], i) => `<button type="button" data-opt="${i}" aria-pressed="${S.pred?.i === i}"${S.pred ? " disabled" : ""}>${txt}</button>`).join("")}</div>${fb}`;
+}
+$("#pred").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-opt]"); if (!b || state[cur].pred) return;
+  const T = TABS.find((t) => t.id === cur), i = Number(b.dataset.opt), [txt, kind] = T.options[i];
+  state[cur].pred = { i, kind };
+  note(kind === "ok" ? "PRED_OK" : "PRED_TRAP", `прогноз «${T.kori}» → ${txt}`, kind === "ok" ? "ok" : "miss");
+  render();
+});
+
+// Лестница: строки от крупной ступени к мелкой.
+function ladderHTML(q, from, to, reveal) {
+  const def = Q[q];
+  const units = q === "prefix" ? def.units : def.units;
+  const ps = units.map((u) => u.p);
+  const hi = Math.max(...ps), lo = Math.min(...ps);
+  const fp = from ? pOn(q, from) ?? null : null, tp = to ? pOn(q, to) ?? null : null;
+  const range = fp !== null && tp !== null && reveal ? [Math.min(fp, tp), Math.max(fp, tp)] : null;
+  let rows = "";
+  for (let p = hi; p >= lo; p--) {
+    const here = units.filter((u) => u.p === p);
+    const role = (u) => (q === "prefix" ? (p === fp ? "from" : p === tp ? "to" : "") : u.id === from ? "from" : u.id === to ? "to" : "");
+    const btn = (u) => `<button type="button" class="u" data-u="${u.id}" data-role="${role(u)}">${u.id}${u.name ? `<small>${u.name}</small>` : ""}${u.alias ? `<small>= ${u.alias}</small>` : ""}${u.si ? `<span class="si">СИ</span>` : ""}</button>`;
+    rows += `<div class="rung${here.length ? " has" : ""}${range && p >= range[0] && p <= range[1] ? " on" : ""}"><span class="p">${ten(p)}</span><span class="rail"></span><span class="us">${here.map(btn).join(q === "volume" ? "<span class=\"note\">=</span>" : "")}</span></div>`;
+  }
+  return `<div class="ladder" role="group" aria-label="Лестница степеней: ${def.title}">${rows}</div>`;
+}
+const PIC = {
+  area: `<div class="pic"><svg viewBox="0 0 120 120" aria-hidden="true"><rect x="4" y="4" width="112" height="112" rx="3" fill="var(--teal-soft)" stroke="var(--ink)" stroke-width="1.5"/>${Array.from({ length: 9 }, (_, i) => `<path d="M${4 + 11.2 * (i + 1)} 4V116M4 ${4 + 11.2 * (i + 1)}H116" stroke="var(--teal)" stroke-width=".6"/>`).join("")}<rect x="4" y="104.8" width="11.2" height="11.2" fill="var(--orange)"/></svg><p><b class="m">1 дм² = 10 × 10 = 100 см²</b><br>Квадрат 1 дм × 1 дм: 10 рядов по 10 квадратиков 1 см × 1 см. Одна ступень длины (10 раз) — две ступени площади (100 раз).</p></div>`,
+  volume: (() => {
+    const s = 52, c = Math.cos(Math.PI / 6), at = (x, y, z) => [60 + (x - y) * c * s, 62 + (x + y) * 0.5 * s - z * s];
+    const P = (pts) => pts.map((p) => at(...p).map((v) => v.toFixed(1)).join(" ")).join(" L");
+    let g = "";
+    for (let i = 1; i < 10; i++) { const t = i / 10;
+      g += `<path d="M${P([[t, 0, 1], [t, 1, 1]])}M${P([[0, t, 1], [1, t, 1]])}M${P([[1, t, 0], [1, t, 1]])}M${P([[1, 0, t], [1, 1, t]])}M${P([[t, 1, 0], [t, 1, 1]])}M${P([[0, 1, t], [1, 1, t]])}" stroke="var(--teal)" stroke-width=".5" fill="none"/>`; }
+    const face = (pts, fill) => `<path d="M${P(pts)}Z" fill="${fill}" stroke="var(--ink)" stroke-width="1.2" stroke-linejoin="round"/>`;
+    const q = 0.9;
+    const small = face([[q, q, 1], [1, q, 1], [1, 1, 1], [q, 1, 1]], "var(--orange)") + face([[1, q, 1], [1, 1, 1], [1, 1, q], [1, q, q]], "var(--orange)") + face([[q, 1, 1], [1, 1, 1], [1, 1, q], [q, 1, q]], "var(--orange)");
+    return `<div class="pic"><svg viewBox="0 0 120 120" aria-hidden="true">${face([[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]], "var(--teal-soft)")}${face([[1, 0, 0], [1, 1, 0], [1, 1, 1], [1, 0, 1]], "var(--teal-soft)")}${face([[0, 1, 0], [1, 1, 0], [1, 1, 1], [0, 1, 1]], "var(--teal-soft)")}${g}${small}</svg><p><b class="m">1 л = 1 дм³ = 1000 см³ = 1000 мл</b><br>Куб 1 дм × 1 дм × 1 дм: 10 слоёв по 100 кубиков 1 см³. Одна ступень длины — три ступени объёма. А 1 м³ = 1000 л.</p></div>`;
+  })(),
+  mass: `<p class="note">В СИ масса — в килограммах, но приставки ставят к грамму: 1 кг = 10³ г, 1 мг = 10⁻³ г, поэтому 1 мг = 10⁻⁶ кг. Тонна — это мегаграмм: 1 т = 10⁶ г = 10³ кг.</p>`,
+  prefix: `<p class="note">Приставка — это степень десяти. Километр = 10³ м, мегапаскаль = 10⁶ Па, микросекунда = 10⁻⁶ с. Нажми на две приставки — лестница покажет, во сколько раз они отличаются.</p>`,
+};
+
+function renderModel() {
+  const T = TABS.find((t) => t.id === cur), S = state[cur];
+  const t = S.task;
+  const q = cur === "mixed" ? t?.q || "mass" : T.q;
+  if (!S.pred) { $("#model").innerHTML = `<span class="label">Лестница степеней</span><div style="min-height:320px"></div><div class="lock">Сначала сделай прогноз —<br>потом откроется лестница</div>`; return; }
+  if (!S.showLadder) {
+    $("#model").innerHTML = `<span class="label">Лестница степеней</span><h2>Попробуй без лестницы</h2><p>На контрольной лестницы не будет. Вспомни: приставка — степень десяти, площадь — квадрат, объём — куб, 1 л = 1 дм³.</p><button class="btn ghost" type="button" id="show-ladder">Показать лестницу</button>`;
+    return;
+  }
+  const [a, b] = S.explore;
+  const from = a ?? (t && t.q === q ? t.from : null), to = a ? b : t && t.q === q ? t.to : null;
+  const reveal = !!(a && b) || S.help >= 2;
+  let factor = "";
+  if (a && b) {
+    const k = pOn(q, a) - pOn(q, b);
+    const nameA = q === "prefix" ? `${a === "—" ? "" : a}м` : a, nameB = q === "prefix" ? `${b === "—" ? "" : b}м` : b;
+    factor = `<span class="m">1 ${nameA} = ${ten(k)} ${nameB}</span> — ${Math.abs(k)} ${steps(Math.abs(k))} ${k < 0 ? "вверх" : k > 0 ? "вниз" : ""}.${q === "prefix" ? " Пример на метрах." : ""}`;
+  } else if (a) factor = `Теперь нажми вторую единицу.`;
+  const ladderQ = q;
+  const fromL = q === "prefix" && !a && from ? from : from, toL = to;
+  $("#model").innerHTML = `<span class="label">Лестница степеней · ${Q[q].title.toLowerCase()}</span>
+    ${ladderHTML(ladderQ, a ? null : fromL, a ? null : toL, reveal)}
+    <p class="factor">${factor}</p>
+    ${a ? "" : t && t.q === q ? `<p class="note">Задание: от <b style="color:var(--teal-ink)">${t.from}</b> к <b style="color:var(--orange)">${t.to}</b>.${reveal ? "" : " Ступени между ними посчитай сам."}</p>` : ""}
+    ${PIC[q] || ""}
+    ${cur === "mixed" ? `<button class="btn ghost" type="button" id="hide-ladder">Спрятать лестницу</button>` : ""}`;
+  if (a && q === "prefix") {
+    $$(".u").forEach((u) => { if (u.dataset.u === a) u.dataset.role = "from"; if (u.dataset.u === b) u.dataset.role = "to"; });
+    const pa = pOn(q, a), pb = b ? pOn(q, b) : pa;
+    $$(".rung").forEach((r, i) => { const p = Math.max(...Q[q].units.map((u) => u.p)) - i; if (b && p >= Math.min(pa, pb) && p <= Math.max(pa, pb)) r.classList.add("on"); });
+  } else if (a) {
+    $$(".u").forEach((u) => { if (u.dataset.u === a) u.dataset.role = "from"; if (u.dataset.u === b) u.dataset.role = "to"; });
+    if (b) { const pa = pOn(q, a), pb = pOn(q, b), hi = Math.max(...Q[q].units.map((u) => u.p));
+      $$(".rung").forEach((r, i) => { const p = hi - i; if (p >= Math.min(pa, pb) && p <= Math.max(pa, pb)) r.classList.add("on"); }); }
+  }
+}
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+$("#model").addEventListener("click", (e) => {
+  const S = state[cur];
+  if (e.target.closest("#show-ladder")) { S.showLadder = true; note("HELP", "показал лестницу без подсказки", "info"); renderModel(); return; }
+  if (e.target.closest("#hide-ladder")) { S.showLadder = false; renderModel(); return; }
+  const u = e.target.closest("[data-u]"); if (!u) return;
+  if (S.explore.length !== 1) S.explore = [u.dataset.u]; else S.explore = [S.explore[0], u.dataset.u];
+  renderModel();
+});
+
+function renderTasks() {
+  const T = TABS.find((t) => t.id === cur), S = state[cur];
+  if (!S.pred) { $("#tasks").innerHTML = `<span class="label">Задания</span><p class="note">Задания откроются после прогноза.</p>`; return; }
+  if (!S.task) newTask();
+  const t = S.task;
+  const lvl = cur === "mixed" ? 0 : S.level;
+  const levels = cur === "mixed" ? `<p class="note">Задачи вперемешку: масса, площадь, объём, давление, энергия. Ответ — в СИ, лучше в стандартном виде a · 10ⁿ.</p>`
+    : `<div class="seg" role="group" aria-label="Уровень">${LEVELS.map((l, i) => `<button type="button" data-level="${i}" aria-pressed="${S.level === i}"${S.done[i] ? " data-done" : ""}>${l}</button>`).join("")}</div>`;
+  const qn = t.q === "prefix" ? ` <span class="note">(${QNAME[FAM[t.from][1]]})</span>` : "";
+  const hs = hints(t).slice(0, S.help);
+  $("#tasks").innerHTML = `<span class="label">Задания</span>${levels}
+    <div class="q">Переведи <span class="m">${fmtDec(dec(t.v))} ${t.from}</span> в <span class="m">${t.to}</span>${qn}</div>
+    <div class="ans"><input class="in" id="a-m" inputmode="decimal" autocomplete="off" aria-label="Число"><span>·</span><span class="ten">10<input class="in sm" id="a-n" inputmode="numeric" autocomplete="off" aria-label="Показатель степени десяти" placeholder="0"></span><span class="unit">${t.to}</span></div>
+    <div class="row"><button class="btn" type="button" id="check">Проверить</button><button class="btn ghost" type="button" id="hint"${S.help >= 3 ? " disabled" : ""}>${S.help ? "Ещё подсказка" : "Подсказка"}</button>${S.tries >= 2 ? `<button class="btn ghost" type="button" id="show">Показать решение</button>` : ""}<button class="btn ghost" type="button" id="next">Новое задание</button></div>
+    <p class="fb" id="fb"></p>
+    ${hs.length ? `<div class="help"><ol>${hs.map(([h, x]) => `<li><b>${h}</b>${x}</li>`).join("")}</ol></div>` : ""}
+    <div id="sol"></div>
+    <div class="streak" aria-label="Верно подряд">${Array.from({ length: NEED }, (_, i) => `<i${i < S.streak[lvl] ? " data-on" : ""}></i>`).join("")}<span>${S.done[lvl] ? "уровень пройден — можно дальше" : `верно с первой попытки подряд: ${S.streak[lvl]} из ${NEED}`}</span></div>
+    <p class="note">Можно писать десятичной дробью (0,00001) или в стандартном виде: 1 и показатель −5. Пустой показатель — это 10⁰ = 1.</p>`;
+}
+function newTask() {
+  const S = state[cur];
+  let t, guard = 0;
+  do { t = makeTask(cur, S.level); guard++; } while (S.task && guard < 8 && t.from === S.task.from && t.to === S.task.to && t.v === S.task.v);
+  S.task = t; S.tries = 0; S.help = 0; S.explore = [];
+}
+$("#tasks").addEventListener("click", (e) => {
+  const S = state[cur];
+  const lv = e.target.closest("[data-level]");
+  if (lv) { S.level = Number(lv.dataset.level); S.task = null; render(); return; }
+  if (e.target.closest("#next")) { newTask(); render(); return; }
+  if (e.target.closest("#hint")) { S.help = Math.min(3, S.help + 1); note("HELP", `подсказка ${S.help} к «${S.task.v} ${S.task.from} → ${S.task.to}»`, "info"); keep(() => render()); return; }
+  if (e.target.closest("#show")) { note("SHOWN", `решение «${S.task.v} ${S.task.from} → ${S.task.to}»`, "info"); S.streak[lvlOf()] = 0; $("#sol").innerHTML = `<div class="sol">${solution(S.task).map((l) => `<span>${l}</span>`).join("")}</div>`; return; }
+  if (e.target.closest("#check")) check();
+});
+$("#tasks").addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.matches(".in")) { e.preventDefault(); check(); } });
+const lvlOf = () => (cur === "mixed" ? 0 : state[cur].level);
+function keep(fn) { const m = $("#a-m")?.value ?? "", n = $("#a-n")?.value ?? ""; fn(); if ($("#a-m")) { $("#a-m").value = m; $("#a-n").value = n; } }
+let lastMantissa = null;
+function readAnswer() {
+  let m = $("#a-m").value.trim(), n = $("#a-n").value.trim().replace(/[−–]/g, "-");
+  const inline = m.replace(/\s+/g, "").match(/^(.*?)(?:[·*×x]10\^?\(?([-−–+]?\d+)\)?|e([-+]?\d+))$/i);
+  if (inline && (inline[2] || inline[3])) { m = inline[1] || "1"; n = String(Number((inline[2] || inline[3]).replace(/[−–]/g, "-")) + (n ? Number(n) : 0)); }
+  if (/^10\^?\(?[-−–+]?\d+\)?$/.test(m.replace(/\s+/g, ""))) { n = m.replace(/\s+/g, "").replace(/^10\^?\(?/, "").replace(/\)$/, "").replace(/[−–]/g, "-"); m = "1"; }
+  const x = dec(m);
+  if (!x || (n !== "" && !/^[-+]?\d+$/.test(n))) return null;
+  lastMantissa = x;
+  return shift(x, n === "" ? 0 : Number(n));
+}
+function check() {
+  const S = state[cur], t = S.task, fb = $("#fb");
+  const got = readAnswer();
+  const lvl = lvlOf();
+  const label = `${t.v} ${t.from} → ${t.to}`;
+  if (!got) { fb.dataset.kind = "miss"; fb.textContent = MSG.FORMAT(); return; }
+  S.tries++;
+  const want = answerOf(t);
+  const shown = `${fmtStd(got)} ${t.to}`;
+  if (same(got, want)) {
+    const first = S.tries === 1 && S.help === 0;
+    S.streak[lvl] = first ? S.streak[lvl] + 1 : 0;
+    const passed = S.streak[lvl] >= NEED && !S.done[lvl];
+    if (S.streak[lvl] >= NEED) S.done[lvl] = true;
+    note("OK", `${label}: ${shown}${first ? "" : ` (попытка ${S.tries}${S.help ? `, подсказок ${S.help}` : ""})`}`, "ok");
+    const stdNote = t.level === 2 && lastMantissa && !isStd(lastMantissa) && fmtNice(want) !== fmtStd(want) ? ` В стандартном виде: ${fmtStd(want)} ${t.to}.` : "";
+    const tail = passed ? (cur !== "mixed" && S.level < 2 ? ` Уровень «${LEVELS[S.level]}» пройден — попробуй «${LEVELS[S.level + 1]}».` : " Уровень пройден.") : "";
+    $("#a-m").dataset.state = "ok"; $("#a-n").dataset.state = "ok";
+    fb.dataset.kind = "ok";
+    fb.textContent = `Верно: ${fmtDec(dec(t.v))} ${t.from} = ${fmtNice(want)} ${t.to}.${stdNote}${tail}`;
+    renderTabs();
+    const streakEl = $(".streak");
+    if (streakEl) streakEl.outerHTML = `<div class="streak">${Array.from({ length: NEED }, (_, i) => `<i${i < S.streak[lvl] ? " data-on" : ""}></i>`).join("")}<span>${S.done[lvl] ? "уровень пройден — можно дальше" : `верно с первой попытки подряд: ${S.streak[lvl]} из ${NEED}`}</span></div>`;
+    $("#next").focus();
+    return;
+  }
+  S.streak[lvl] = 0;
+  const code = diagnose(t, got);
+  note(code, `${label}: ответ ${shown}, верно ${fmtStd(want)} ${t.to}`);
+  $("#a-m").dataset.state = "miss"; $("#a-n").dataset.state = "miss";
+  fb.dataset.kind = "miss";
+  fb.textContent = MSG[code](t);
+  if (S.tries === 2) keep(() => { renderTasks(); $("#fb").dataset.kind = "miss"; $("#fb").textContent = MSG[code](t); });
+}
+
+function render() { renderTabs(); renderPred(); renderModel(); renderTasks(); }
+render();
+})();
+</script>
+</body>
+</html>
