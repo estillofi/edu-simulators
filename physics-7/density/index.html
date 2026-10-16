@@ -1631,6 +1631,7 @@ function klBench({ svg, P, drag, onChange = () => {}, onTap = () => null, still 
   }
   return {
     slots, items, add, moveTo, kick,
+    get moving() { return moving; },
     slot(spec) { slots.set(spec.name, spec); return spec; },
     in(slotName) { return [...items.values()].filter((item) => item.slot === slotName && !item.flying); },
     bound(slotName) { return [...items.values()].filter((item) => item.slot === slotName); },
@@ -1835,8 +1836,10 @@ const comma = (v, d = 1) => (Number.isFinite(v) ? String(Math.round(v * 10 ** d)
 
 // ── Вариант: у каждого ученика свои тела и уровень воды ──
 const KEY = "kori-lab-density-seed";
-let seed = 0;
-try { seed = Number(localStorage.getItem(KEY)) || 0; } catch (_) {}
+// Вариант из ссылки (#v12345) — чтобы учитель и проверка открыли ровно этот вариант.
+const fromLink = Number((location.hash.match(/^#v(\d+)$/) || [])[1]) || 0;
+let seed = fromLink;
+if (!seed) try { seed = Number(localStorage.getItem(KEY)) || 0; } catch (_) {}
 if (!seed) { seed = (Math.random() * 2 ** 31) >>> 0; try { localStorage.setItem(KEY, String(seed)); } catch (_) {} }
 const V = MODEL.makeVariant(seed);
 const bodyOf = (id) => V.bodies.find((b) => b.id === id);
@@ -2330,7 +2333,7 @@ $("#show-answers").addEventListener("click", (event) => {
   pre.hidden = !pre.hidden;
   event.currentTarget.setAttribute("aria-expanded", String(!pre.hidden));
   const name = (id) => MODEL.MATERIALS.find((m) => m.id === id).name.toLowerCase();
-  pre.textContent = [`Вариант ${seed} · цена деления 2 мл · V₁ = ${V.V1} мл`, ...V.bodies.map((b) => `${b.letter}: m = ${comma(b.m)} г · V₂ = ${V.V1 + b.V} мл · V = ${b.V} см³ · ρ = ${comma(b.rho)} г/см³ (${name(b.mat)})`), `В в кг/м³: ${Math.round(bodyOf("C").rho * 1000)}`].join("\n");
+  pre.textContent = [`Вариант ${seed} · цена деления 2 мл · V₁ = ${V.V1} мл`, ...V.bodies.map((b) => `${b.letter}: m = ${comma(b.m)} г · V₂ = ${V.V1 + b.V} мл · V = ${b.V} см³ · ρ = ${comma(b.rho)} г/см³ (${name(b.mat)})`), `В в кг/м³: ${Math.round(bodyOf("C").rho * 1000)}`, `Открыть этот вариант: ${location.href.split("#")[0]}#v${seed}`].join("\n");
 });
 
 // Старт: стол в покое, вода налита, лупа на весах.
@@ -2339,6 +2342,9 @@ applyWater();
 setLupa("bal");
 updatePans();
 report();
+
+// Контракт kori-lab для проверки сценариев и встраивания: вариант, события, покой стола.
+window.koriLab = { lab: "density-7", seed, variant: V, events: log.events, count: (code) => log.count(code), idle: () => bench.moving === 0 };
 </script>
 </body>
 </html>
