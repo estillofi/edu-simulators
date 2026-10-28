@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Плотность твёрдого тела — ЛР</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>/* Лаборатория на одном экране: шапка с шагами, слева прибор, справа журнал шага. Ничего не скроллится на десктопе. */
+:root{
+  --bg:#EEF2F5;--card:#FFFFFF;--ink:#14324A;--text:#3F5F78;--muted:#7F93A3;--line:#DCE3E9;
+  --teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#DFF4F7;--orange:#FF5B00;--orange-soft:#FFEFE4;
+  --sky:#E7F1F8;--table:#C99A62;--table-dark:#9C7140;--glass:#EAF6FB;--water:#3FB6E8;--water-deep:#1E8FC6;
+  --gold-1:#FFE07A;--gold-2:#D7A426;--gold-3:#9A6B0E;--brass-1:#F6D27A;--brass-2:#C9962E;--brass-3:#8A6416;
+  --steel-1:#C9D3DC;--steel-2:#7E8D9A;--steel-3:#4D5B67;--al-1:#F3F6F8;--al-2:#BFC9D1;--al-3:#8C99A4;
+  --wood-1:#E9C48E;--wood-2:#C9955A;--wood-3:#9A6A35;
+  --font:"Raleway",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --head:64px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;--teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;--sky:#18303F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;--teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;--sky:#18303F;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 var(--font);font-variant-numeric:lining-nums}
+button{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+/* Шапка */
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:8px clamp(10px,1.4vw,18px);background:var(--card);box-shadow:0 1px 0 var(--line);position:sticky;top:0;z-index:5;min-height:var(--head)}
+.title{display:grid;line-height:1.15;margin-right:auto;min-width:0}
+.title small{color:var(--teal-ink);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.title b{color:var(--ink);font-size:17px;font-weight:800}
+.steps{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.steps button{border:0;background:var(--bg);color:var(--ink);font-weight:700;font-size:12.5px;border-radius:32px;padding:6px 11px 6px 6px;display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.steps button .n{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--card);font-size:11px}
+.steps button[aria-current="step"]{background:var(--teal);color:#fff}
+.steps button[aria-current="step"] .n{background:rgba(255,255,255,.25)}
+.steps button[data-seen]:not([aria-current]) .n{background:var(--teal-soft);color:var(--teal-ink)}
+.seg{display:inline-flex;gap:3px;background:var(--bg);border-radius:32px;padding:3px}
+.seg button{border:0;background:transparent;color:var(--ink);font-weight:700;font-size:13px;padding:6px 12px;border-radius:32px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--card);box-shadow:0 0 0 2px var(--teal)}
+.btn{border:0;border-radius:32px;background:var(--teal);color:#fff;font-weight:700;font-size:14px;padding:9px 16px;cursor:pointer;white-space:nowrap}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+.btn.warn{background:var(--orange)}
+.btn.sm{padding:6px 12px;font-size:13px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* Рабочая область: высота окна минус шапка */
+.work{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:12px;padding:12px clamp(10px,1.4vw,18px);height:calc(100dvh - var(--head));min-height:540px}
+@media (max-width:1060px){.work{grid-template-columns:1fr;height:auto}}
+.stage{background:var(--card);border-radius:24px;box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden;position:relative}
+@media (max-width:1060px){.stage{height:min(78vh,720px)}}
+.scene{flex:1;min-height:0;position:relative}
+.scene>svg{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;user-select:none}
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);background:var(--card)}
+.toolbar .say{flex:1 1 260px;min-width:0;color:var(--ink);font-size:14px}
+.toolbar .say[data-kind="env"]{color:#B4400A;font-weight:700}
+.lupa{position:absolute;width:clamp(150px,19%,230px);aspect-ratio:1;pointer-events:none}
+.lupa svg{width:100%;height:100%;display:block}
+.lupa.cyl{pointer-events:auto;touch-action:none}
+.lupa-cap{position:absolute;left:0;right:0;bottom:-26px;text-align:center;font-size:12.5px;font-weight:700;color:var(--ink)}
+
+/* Журнал */
+.panel{background:var(--card);border-radius:24px;box-shadow:0 0 0 1px var(--line);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.panel-head{padding:16px 18px 10px;border-bottom:1px solid var(--line)}
+.panel-head h2{margin:2px 0 0;color:var(--ink);font-size:20px;font-weight:800;line-height:1.2}
+.panel-head .kicker{color:var(--teal-ink);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.panel-body{flex:1;overflow:auto;padding:14px 18px 18px;display:grid;gap:14px;align-content:start}
+.panel-foot{display:flex;gap:8px;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--line)}
+.panel p{margin:0}
+.panel ol,.panel ul{margin:0;padding-left:20px;display:grid;gap:5px}
+.box{border-radius:16px;padding:12px 14px;background:var(--bg);color:var(--ink)}
+.box.note{background:var(--teal-soft)}
+.box.write{background:var(--orange-soft);border-left:4px solid var(--orange)}
+.box.write b:first-child{display:block;color:#B4400A;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.rules li{padding-left:2px}
+.rules li b{color:var(--ink)}
+.choices{display:flex;flex-wrap:wrap;gap:6px}
+.choices button{border:0;border-radius:32px;background:var(--bg);color:var(--ink);font-weight:700;font-size:14px;padding:8px 14px;cursor:pointer}
+.choices button[aria-pressed="true"]{background:var(--teal-soft);box-shadow:0 0 0 2px var(--teal)}
+.qcard{display:grid;gap:8px}
+.qcard h3{margin:0;color:var(--ink);font-size:15px}
+.qcard svg{width:100%;height:auto;background:#fff;border-radius:12px;box-shadow:0 0 0 1px var(--line)}
+.tbl{width:100%;border-collapse:separate;border-spacing:4px;font-size:13px}
+.tbl th{color:var(--muted);font-weight:700;text-align:left;font-size:12px;white-space:nowrap}
+.tbl td input,.tbl td select{width:100%;min-width:0;font:600 14px var(--mono);color:var(--ink);background:var(--bg);border:1px solid transparent;border-radius:9px;padding:5px 6px}
+.tbl td input:focus,.tbl td select:focus{outline:none;border-color:var(--teal);background:var(--card)}
+.tbl td.name{color:var(--ink);font-weight:700;white-space:nowrap}
+.tbl.tpl td{border-bottom:1px dashed var(--line);height:26px}
+.help ol{list-style:none;padding:0;margin:0 0 8px;display:grid;gap:6px}
+.help li{background:var(--teal-soft);border-radius:12px;padding:9px 12px;color:var(--ink);font-size:14px}
+.help li b{display:block;color:var(--teal-ink);font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.dens{display:grid;grid-template-columns:1fr auto;gap:2px 12px;font-size:13.5px}
+.dens span:nth-child(even){font-family:var(--mono);color:var(--ink);text-align:right}
+textarea{width:100%;font:14px var(--font);color:var(--ink);background:var(--bg);border:1px solid transparent;border-radius:10px;padding:8px}
+details.teacher summary{cursor:pointer;color:var(--ink);font-weight:800}
+.teacher .tbl td{font-family:var(--mono);color:var(--ink)}
+.dev{color:#B4400A}
+body.big-text .panel{font-size:17px}
+body.big-text .panel-head h2{font-size:24px}
+/* Цели переноса: видны, только когда предмет выбран или тащится */
+.zone{fill:transparent;stroke:none;pointer-events:none}
+svg.has-sel .zone{fill:rgba(0,163,185,.06);stroke:#00A3B9;stroke-width:2;stroke-dasharray:8 6;pointer-events:all;cursor:pointer}
+svg.has-sel .zone.over{fill:rgba(0,163,185,.18)}
+.item{cursor:grab}
+.item.sel>g,.item:focus-visible>g{filter:drop-shadow(0 0 4px #FF5B00) drop-shadow(0 0 2px #FF5B00)}
+.item:focus{outline:none}
+.item.dragging{cursor:grabbing;filter:drop-shadow(0 8px 6px rgba(11,34,51,.35))}
+#notebook{position:absolute;inset:0;overflow:auto;padding:18px 22px;color:var(--ink);background:var(--card)}
+#notebook h3{margin:0 0 6px;font-size:18px}
+#notebook .exam{background:#fff;border:1.5px solid #111;border-radius:6px;padding:14px 16px;color:#111;max-width:760px}
+#notebook .exam ol{margin:6px 0 0;padding-left:22px}
+#notebook .schemes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:14px;max-width:760px}
+#notebook .schemes figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px}
+#notebook .schemes figcaption{font-size:13px;color:#333;margin-top:4px}
+#notebook table{border-collapse:collapse;margin-top:14px;font-size:13px;background:#fff;color:#111}
+#notebook th,#notebook td{border:1px solid #111;padding:5px 8px;text-align:center}
+
+/* Шаг «Правила»: журнал на весь экран, приборов нет */
+.rules-mode .work{grid-template-columns:1fr}
+.rules-mode .stage,.rules-mode #screens{display:none}
+.rules-mode .panel-head,.rules-mode .panel-body,.rules-mode .panel-foot{padding-inline:clamp(18px,4vw,56px)}
+.rules-mode .panel-body{font-size:18px}
+.rules-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px 40px;align-items:start}
+.rules-col{display:grid;gap:16px;min-width:0}
+.rules-mode .rules{gap:9px}
+.parts svg{width:100%;max-width:520px;height:auto;background:#fff;border-radius:14px;box-shadow:0 0 0 1px var(--line);margin:8px 0}
+@media (max-width:860px){.rules-grid{grid-template-columns:1fr}}
+</style>
+<header class="top">
+  <div class="title"><small>Онлайн-школа Корифей · Физика · 7 класс</small><b>Определение плотности твёрдого тела</b></div>
+  <nav class="steps" id="steps" aria-label="Шаги работы"></nav>
+  <div class="seg" id="screens" role="group" aria-label="Прибор на экране">
+    <button type="button" data-sc="scales" aria-pressed="true">Весы</button><button type="button" data-sc="cyl" aria-pressed="false">Мензурка</button><button type="button" data-sc="ruler" aria-pressed="false">Линейка</button><button type="button" data-sc="notebook" aria-pressed="false">Тетрадь</button>
+  </div>
+  <div class="seg" id="mode" role="group" aria-label="Режим">
+    <button type="button" data-mode="teacher" aria-pressed="true">Ведёт учитель</button><button type="button" data-mode="student" aria-pressed="false">Ученик сам</button>
+  </div>
+  <button class="btn warn sm" type="button" id="reset">Сброс</button>
+</header>
+<main class="work">
+  <section class="stage" aria-label="Лабораторный стол">
+    <div class="scene">
+      <svg id="scene-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Лабораторный стол с прибором"></svg>
+      <div id="notebook" hidden></div>
+      <div id="lupa" class="lupa"></div>
+    </div>
+    <div class="toolbar" id="tools"></div>
+  </section>
+  <aside class="panel" aria-label="Журнал работы">
+    <div class="panel-head"><span class="kicker" id="p-kicker"></span><h2 id="p-title"></h2></div>
+    <div class="panel-body" id="p-body"></div>
+    <div class="panel-foot"><button class="btn ghost" type="button" id="prev">Назад</button><button class="btn" type="button" id="next">Дальше</button></div>
+  </aside>
+</main>
+<script>// Рисунки приборов: плоский фронтальный вид, яркие материалы. Все функции возвращают строки SVG.
+// Предмет рисуется от точки опоры (0,0) — середина низа — вверх (y < 0).
+const ART = (() => {
+  const r1 = (v) => Math.round(v * 10) / 10;
+  const defs = `<defs>
+    <linearGradient id="g-brass" x1="0" x2="1"><stop offset="0" stop-color="#8A6416"/><stop offset=".28" stop-color="#F6D27A"/><stop offset=".55" stop-color="#E0B04A"/><stop offset="1" stop-color="#7C5A12"/></linearGradient>
+    <linearGradient id="g-brass-top" x1="0" x2="1"><stop offset="0" stop-color="#B98A2A"/><stop offset=".4" stop-color="#FFE7A6"/><stop offset="1" stop-color="#A57A1E"/></linearGradient>
+    <linearGradient id="g-steel" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#A9B6C2"/><stop offset=".45" stop-color="#6F7F8D"/><stop offset="1" stop-color="#3E4B56"/></linearGradient>
+    <linearGradient id="g-al" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#C9D2DA"/><stop offset="1" stop-color="#8E9BA6"/></linearGradient>
+    <linearGradient id="g-wood" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F0CB92"/><stop offset="1" stop-color="#C38D4F"/></linearGradient>
+    <linearGradient id="g-gold" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#FFF0A8"/><stop offset=".45" stop-color="#E3B63A"/><stop offset="1" stop-color="#8E6510"/></linearGradient>
+    <linearGradient id="g-col" x1="0" x2="1"><stop offset="0" stop-color="#2E4A63"/><stop offset=".4" stop-color="#6E8FAA"/><stop offset="1" stop-color="#22394E"/></linearGradient>
+    <linearGradient id="g-beam" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#8FB0C9"/><stop offset=".5" stop-color="#3C6585"/><stop offset="1" stop-color="#1F3D55"/></linearGradient>
+    <linearGradient id="g-pan" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#E9EEF2"/><stop offset="1" stop-color="#9AA8B4"/></linearGradient>
+    <linearGradient id="g-table" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#D7A86F"/><stop offset=".12" stop-color="#C99A62"/><stop offset="1" stop-color="#A57745"/></linearGradient>
+    <linearGradient id="g-wall" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#F4F9FC"/><stop offset="1" stop-color="#DCEAF3"/></linearGradient>
+    <linearGradient id="g-case" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#7B4A26"/><stop offset="1" stop-color="#4E2C14"/></linearGradient>
+    <linearGradient id="g-glass" x1="0" x2="1"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/><stop offset=".12" stop-color="#E6F3F9" stop-opacity=".55"/><stop offset=".85" stop-color="#E6F3F9" stop-opacity=".35"/><stop offset="1" stop-color="#FFFFFF" stop-opacity=".9"/></linearGradient>
+    <linearGradient id="g-water" x1="0" x2="1"><stop offset="0" stop-color="#2E9FD6" stop-opacity=".55"/><stop offset=".5" stop-color="#5CC4EE" stop-opacity=".45"/><stop offset="1" stop-color="#2E9FD6" stop-opacity=".55"/></linearGradient>
+    <linearGradient id="g-ruler" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFF6D6"/><stop offset="1" stop-color="#F1DD9C"/></linearGradient>
+    <filter id="f-shadow" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0B2233" flood-opacity=".25"/></filter>
+  </defs>`;
+
+  // ── Гири ──
+  const GRAM = { 100: [30, 46], 50: [25, 38], 20: [20, 30], 10: [17, 25], 5: [14, 21], 2: [11.5, 17], 1: [10, 14] };
+  function weight(w) {
+    if (w.mg) {
+      const W = 22, H = 4;
+      return `<g><path d="M${-W / 2} 0h${W}v${-H}h${-W + 5}l-5 -5z" fill="url(#g-al)" stroke="#6E7C88" stroke-width=".8"/>
+        <text x="1" y="-0.5" font-size="7.5" font-weight="700" fill="#33414D" text-anchor="middle" font-family="var(--mono)">${w.mg}</text></g>`;
+    }
+    const [W, H] = GRAM[w.mass];
+    const neck = W * 0.34, knobW = W * 0.52, bodyH = H * 0.72;
+    return `<g>
+      <rect x="${-W / 2}" y="${-bodyH}" width="${W}" height="${bodyH}" rx="${W * 0.14}" fill="url(#g-brass)" stroke="#6B4E10" stroke-width=".8"/>
+      <rect x="${-W / 2 + 1}" y="${-bodyH + 2}" width="${W * 0.18}" height="${bodyH - 4}" rx="2" fill="#FFF3C8" opacity=".55"/>
+      <rect x="${-neck / 2}" y="${-H + (H - bodyH) * 0.55}" width="${neck}" height="${(H - bodyH) * 0.5}" fill="url(#g-brass)" stroke="#6B4E10" stroke-width=".6"/>
+      <rect x="${-knobW / 2}" y="${-H}" width="${knobW}" height="${(H - bodyH) * 0.55}" rx="${knobW * 0.3}" fill="url(#g-brass-top)" stroke="#6B4E10" stroke-width=".6"/>
+      <text x="0" y="${-bodyH / 2 + 3.5}" font-size="${Math.max(7, W * 0.36)}" font-weight="800" fill="#4A3305" text-anchor="middle" font-family="var(--mono)">${w.mass}</text>
+    </g>`;
+  }
+  const weightSize = (w) => (w.mg ? [22, 9] : GRAM[w.mass]);
+
+  // ── Тела ──
+  const MAT = {
+    al: { fill: "url(#g-al)", stroke: "#6F7E8A", text: "#33424F" },
+    steel: { fill: "url(#g-steel)", stroke: "#2C3741", text: "#F3F6F8" },
+    wood: { fill: "url(#g-wood)", stroke: "#8A5A26", text: "#4D2E0C" },
+    nugget: { fill: "url(#g-gold)", stroke: "#7A560C", text: "#3E2B05" },
+  };
+  // view: "front" — длина × высота, "side" — ширина × высота
+  function body(b, s, { view = "front", label = true } = {}) {
+    const m = MAT[b.skin];
+    const drops = b.wet ? [[-0.3, -0.35], [0.25, -0.6], [0.05, -0.15]].map(([dx, dy]) => `<path d="M${r1(dx * bw(b, s, view))} ${r1(dy * bh(b, s))}q3 5 0 7q-3 -2 0 -7z" fill="#3FB6E8" stroke="#1E8FC6" stroke-width=".6"/>`).join("") : "";
+    if (b.shape === "nugget") {
+      const W = 2.6 * s, H = 2.1 * s;
+      const pts = [[-0.5, 0], [-0.46, -0.45], [-0.3, -0.78], [-0.05, -1], [0.22, -0.9], [0.44, -0.62], [0.5, -0.25], [0.38, 0]].map(([x, y]) => `${r1(x * W)},${r1(y * H)}`).join(" ");
+      const facets = `<path d="M${r1(-0.3 * W)} ${r1(-0.78 * H)}L${r1(0.05 * W)} ${r1(-0.5 * H)}L${r1(0.44 * W)} ${r1(-0.62 * H)}M${r1(0.05 * W)} ${r1(-0.5 * H)}L${r1(0 * W)} 0M${r1(-0.46 * W)} ${r1(-0.45 * H)}L${r1(0.05 * W)} ${r1(-0.5 * H)}" stroke="#FFF6C8" stroke-width="1" opacity=".7" fill="none"/>`;
+      return `<g><polygon points="${pts}" fill="${m.fill}" stroke="${m.stroke}" stroke-width="1.2"/>${facets}${label ? badge(b.n, -0.32 * W, -0.62 * H, s) : ""}${drops}</g>`;
+    }
+    const W = (view === "side" ? b.a : b.l) * s, H = b.h * s;
+    const grain = b.skin === "wood" ? [0.25, 0.5, 0.75].map((k) => `<path d="M${r1(-W / 2 + 2)} ${r1(-H * k)}q${r1(W / 4)} ${r1(-H * 0.08)} ${r1(W / 2)} 0t${r1(W / 2 - 4)} 0" stroke="#A8743C" stroke-width=".9" fill="none" opacity=".7"/>`).join("") : "";
+    const shine = b.skin !== "wood" ? `<rect x="${r1(-W / 2 + 2)}" y="${r1(-H + 2)}" width="${r1(W - 4)}" height="${r1(Math.min(4, H * 0.18))}" rx="2" fill="#fff" opacity=".45"/>` : "";
+    const tag = label && W > 26 ? `<text x="${r1(W / 2 - 4)}" y="${r1(-H / 2 + 3.5)}" font-size="${Math.min(11, H * 0.45)}" font-weight="800" text-anchor="end" fill="${m.text}" font-family="var(--font)">${b.sym}</text>` : "";
+    return `<g><rect x="${r1(-W / 2)}" y="${r1(-H)}" width="${r1(W)}" height="${r1(H)}" rx="2" fill="${m.fill}" stroke="${m.stroke}" stroke-width="1.2"/>${grain}${shine}${tag}${label ? badge(b.n, -W / 2 + 7, -H + 7, s) : ""}${drops}</g>`;
+  }
+  const bw = (b, s, view) => (b.shape === "nugget" ? 2.6 : view === "side" ? b.a : b.l) * s;
+  const bh = (b, s) => (b.shape === "nugget" ? 2.1 : b.h) * s;
+  const badge = (n, x, y, s) => (s < 9 ? "" : `<g><circle cx="${r1(x)}" cy="${r1(y)}" r="6.5" fill="#14324A"/><text x="${r1(x)}" y="${r1(y + 3.3)}" font-size="9" font-weight="800" fill="#fff" text-anchor="middle" font-family="var(--font)">${n}</text></g>`);
+
+  // ── Весы ── Всё строится от оси коромысла; шкала — дуга окружности с центром в оси.
+  const B = { px: 430, py: 168, arm: 228, hang: 238, ptr: 292, arcR: 292, deg: 12, base: 556 };
+  function balanceStatic() {
+    const { px, py, base } = B;
+    const arc = arcScale(px, py, B.arcR, B.deg, { big: false });
+    return `<g filter="url(#f-shadow)">
+      <path d="M${px - 78} ${base}l14 -26h128l14 26z" fill="url(#g-col)" stroke="#132A3C" stroke-width="1.2"/>
+      <rect x="${px - 92}" y="${base - 2}" width="184" height="8" rx="3" fill="#1C3448"/>
+      <circle cx="${px - 70}" cy="${base + 3}" r="5" fill="#0F2233"/><circle cx="${px + 70}" cy="${base + 3}" r="5" fill="#0F2233"/>
+      <rect x="${px - 8}" y="${py + 6}" width="16" height="${base - py - 32}" rx="5" fill="url(#g-col)" stroke="#132A3C" stroke-width="1"/>
+      <rect x="${px - 54}" y="${py + B.arcR - 26}" width="108" height="40" rx="10" fill="#F7FBFE" stroke="#1C3448" stroke-width="1.4"/>
+      ${arc}
+      <text x="${px}" y="${base - 34}" text-anchor="middle" font-size="9" font-weight="700" fill="#BFD3E3" font-family="var(--font)">200 г</text>
+    </g>`;
+  }
+  // Дуга шкалы: деления через 1°, длинные через 5°. Одна и та же функция рисует шкалу на весах и в лупе.
+  function arcScale(cx, cy, R, deg, { big }) {
+    const ticks = [];
+    for (let d = -deg; d <= deg; d++) {
+      const a = (d * Math.PI) / 180;
+      const len = d === 0 ? (big ? 26 : 13) : d % 5 === 0 ? (big ? 20 : 10) : big ? 12 : 6;
+      const x1 = cx + R * Math.sin(a), y1 = cy + R * Math.cos(a);
+      const x2 = cx + (R + len) * Math.sin(a), y2 = cy + (R + len) * Math.cos(a);
+      ticks.push(`<line x1="${r1(x1)}" y1="${r1(y1)}" x2="${r1(x2)}" y2="${r1(y2)}" stroke="#14324A" stroke-width="${d === 0 ? (big ? 3 : 2) : d % 5 === 0 ? (big ? 2.2 : 1.4) : big ? 1.4 : 0.9}" stroke-linecap="round"/>`);
+    }
+    const a0 = (-deg * Math.PI) / 180, a1 = (deg * Math.PI) / 180;
+    const p = (a, r) => `${r1(cx + r * Math.sin(a))} ${r1(cy + r * Math.cos(a))}`;
+    const line = `<path d="M${p(a0, R)}A${R} ${R} 0 0 0 ${p(a1, R)}" fill="none" stroke="#14324A" stroke-width="${big ? 2 : 1.2}"/>`;
+    const lab = big ? [-10, -5, 0, 5, 10].map((d) => { const a = (d * Math.PI) / 180; return `<text x="${r1(cx + (R + 40) * Math.sin(a))}" y="${r1(cy + (R + 40) * Math.cos(a) + 6)}" font-size="17" font-weight="700" text-anchor="middle" fill="#14324A" font-family="var(--mono)">${Math.abs(d)}</text>`; }).join("") : "";
+    return line + ticks.join("") + lab;
+  }
+  // Коромысло со стрелкой — поворачивается целиком вокруг оси.
+  function beam() {
+    const { px, py, arm } = B;
+    const ends = [-1, 1].map((s) => `<g><rect x="${px + s * arm - 9}" y="${py - 9}" width="18" height="12" rx="3" fill="#1F3D55"/><path d="M${px + s * arm - 5} ${py + 3}l5 8l5 -8z" fill="#E0B04A" stroke="#6B4E10" stroke-width=".8"/>
+      <rect x="${px + s * (arm - 34) - 6}" y="${py - 8}" width="12" height="16" rx="3" fill="url(#g-brass)" stroke="#6B4E10" stroke-width=".7"/></g>`).join("");
+    return `<g>
+      <line x1="${px}" y1="${py}" x2="${px}" y2="${py + B.ptr}" stroke="#FF5B00" stroke-width="3.2" stroke-linecap="round"/>
+      <path d="M${px - 4} ${py + B.ptr - 16}L${px} ${py + B.ptr + 4}L${px + 4} ${py + B.ptr - 16}z" fill="#FF5B00"/>
+      <path d="M${px - arm} ${py - 4}Q${px} ${py - 22} ${px + arm} ${py - 4}L${px + arm} ${py + 4}Q${px} ${py - 6} ${px - arm} ${py + 4}z" fill="url(#g-beam)" stroke="#132A3C" stroke-width="1.2"/>
+      ${ends}
+      <circle cx="${px}" cy="${py}" r="11" fill="url(#g-brass)" stroke="#6B4E10" stroke-width="1"/><circle cx="${px}" cy="${py}" r="3.5" fill="#4A3305"/>
+    </g>`;
+  }
+  // Чаша на подвесе: (0,0) — точка подвеса на конце коромысла.
+  function pan(strips) {
+    const H = B.hang, W = 172;
+    const paper = Array.from({ length: strips }, (_, i) => `<rect x="${-40 + i * 6}" y="${H - 12 - i * 1.6}" width="80" height="2.2" fill="#FFFFFF" stroke="#C9D2DA" stroke-width=".6" transform="rotate(${(i % 2 ? -3 : 2)} 0 ${H - 12})"/>`).join("");
+    return `<g>
+      <path d="M0 6V22M-5 22h10" stroke="#1F3D55" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M0 22L${-W / 2 + 6} ${H - 10}M0 22L${W / 2 - 6} ${H - 10}" stroke="#4E6A80" stroke-width="1.6"/>
+      <path d="M${-W / 2} ${H - 10}Q0 ${H + 22} ${W / 2} ${H - 10}z" fill="url(#g-pan)" stroke="#3C5466" stroke-width="1.4"/>
+      <ellipse cx="0" cy="${H - 10}" rx="${W / 2}" ry="5" fill="#F4F7F9" stroke="#3C5466" stroke-width="1.2"/>
+      ${paper}
+    </g>`;
+  }
+  const panSurface = () => B.hang - 12; // где лежат предметы относительно точки подвеса
+
+  // ── Футляр с разновесом и лоток ──
+  function weightCase(x, y, w, h, holes) {
+    const slots = holes.map((s) => `<ellipse cx="${s.x}" cy="${s.y + 1}" rx="${s.w / 2 + 4}" ry="4" fill="#2A1608" opacity=".8"/><text x="${s.x}" y="${y + h - 6}" font-size="10" font-weight="700" text-anchor="middle" fill="#F6E3C8" font-family="var(--mono)">${s.label}</text>`).join("");
+    return `<g filter="url(#f-shadow)"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="url(#g-case)" stroke="#2E180A" stroke-width="1.4"/>
+      <rect x="${x + 8}" y="${y + 8}" width="${w - 16}" height="${h - 16}" rx="7" fill="#8E1F2B" opacity=".55"/>${slots}
+      <text x="${x + 12}" y="${y - 6}" font-size="12" font-weight="800" fill="#14324A" font-family="var(--font)">Разновес</text></g>`;
+  }
+  function tray(x, y, w, h, title = "Лоток с телами") {
+    return `<g filter="url(#f-shadow)"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#E9EEF2" stroke="#8496A5" stroke-width="1.4"/><rect x="${x + 6}" y="${y + 4}" width="${w - 12}" height="4" rx="2" fill="#fff" opacity=".8"/>
+      <text x="${x + 10}" y="${y - 8}" font-size="12" font-weight="800" fill="#14324A" font-family="var(--font)">${title}</text></g>`;
+  }
+  const room = (W, H, tableY) => `<rect x="0" y="0" width="${W}" height="${H}" fill="url(#g-wall)"/><rect x="0" y="${tableY}" width="${W}" height="${H - tableY}" fill="url(#g-table)"/><rect x="0" y="${tableY}" width="${W}" height="3" fill="#E8C18E"/>`;
+
+  // ── Мензурка: 100 мл, деления по 2 мл, подписи через 10 мл ──
+  const C = { cx: 540, top: 70, bottom: 540, inW: 132, zero: 532, pxml: 4.35 };
+  const levelY = (v) => C.zero - v * C.pxml;
+  function cylinder(level, bodyHtml) {
+    const { cx, top, bottom, inW } = C;
+    const x0 = cx - inW / 2, x1 = cx + inW / 2;
+    const ticks = [];
+    for (let v = 0; v <= 100; v += 2) {
+      const y = levelY(v), big = v % 10 === 0;
+      ticks.push(`<line x1="${x0}" y1="${r1(y)}" x2="${x0 + (big ? 26 : 14)}" y2="${r1(y)}" stroke="#14324A" stroke-width="${big ? 1.8 : 1}"/>`);
+      if (big && v > 0) ticks.push(`<text x="${x0 + 30}" y="${r1(y + 5)}" font-size="14" font-weight="700" fill="#14324A" font-family="var(--mono)">${v}</text>`);
+    }
+    const ly = levelY(level);
+    const water = `<path d="M${x0} ${r1(ly)}H${x1}V${bottom - 8}H${x0}z" fill="url(#g-water)"/>
+      <path d="M${x0} ${r1(ly)}H${x1}" fill="none" stroke="#1E8FC6" stroke-width="2"/>`;
+    return `<g>
+      <path d="M${cx - 92} ${bottom + 8}h184l-10 -18h-164z" fill="url(#g-col)" stroke="#132A3C" stroke-width="1.2"/>
+      <rect x="${x0 - 6}" y="${top}" width="${inW + 12}" height="${bottom - top}" rx="8" fill="#F6FBFE" opacity=".7"/>
+      ${water}
+      <g>${bodyHtml}</g>
+      <rect x="${x0 - 6}" y="${top}" width="${inW + 12}" height="${bottom - top}" rx="8" fill="url(#g-glass)" stroke="#7FA6BF" stroke-width="2"/>
+      <path d="M${x0 - 6} ${top + 4}q-10 -10 -16 -12" stroke="#7FA6BF" stroke-width="2" fill="none"/>
+      ${ticks.join("")}
+      <text x="${x1 - 8}" y="${top + 22}" font-size="14" font-weight="800" text-anchor="end" fill="#14324A" font-family="var(--font)">мл</text>
+    </g>`;
+  }
+
+  // ── Линейка: 0…len см, миллиметры ──
+  function ruler(x, y, len, s, vertical = false) {
+    const ticks = [];
+    for (let mm = 0; mm <= len * 10; mm++) {
+      const d = (mm / 10) * s, big = mm % 10 === 0, mid = mm % 5 === 0;
+      const L = big ? 18 : mid ? 12 : 7;
+      ticks.push(vertical ? `<line x1="${x}" y1="${r1(y - d)}" x2="${x + L}" y2="${r1(y - d)}" stroke="#2B2B2B" stroke-width="${big ? 1.4 : 0.8}"/>` : `<line x1="${r1(x + d)}" y1="${y}" x2="${r1(x + d)}" y2="${y + L}" stroke="#2B2B2B" stroke-width="${big ? 1.4 : 0.8}"/>`);
+      if (big) ticks.push(vertical ? `<text x="${x + 22}" y="${r1(y - d + 5)}" font-size="13" font-weight="700" fill="#2B2B2B" font-family="var(--mono)">${mm / 10}</text>` : `<text x="${r1(x + d)}" y="${y + 33}" font-size="13" font-weight="700" text-anchor="middle" fill="#2B2B2B" font-family="var(--mono)">${mm / 10}</text>`);
+    }
+    const body = vertical ? `<rect x="${x - 2}" y="${y - len * s - 14}" width="54" height="${len * s + 28}" rx="4" fill="url(#g-ruler)" stroke="#B89B4C" stroke-width="1.2"/>` : `<rect x="${x - 14}" y="${y - 2}" width="${len * s + 28}" height="46" rx="4" fill="url(#g-ruler)" stroke="#B89B4C" stroke-width="1.2"/>`;
+    const unit = vertical ? `<text x="${x + 22}" y="${y + 12}" font-size="11" fill="#2B2B2B" font-family="var(--font)">см</text>` : `<text x="${x + len * s + 6}" y="${y + 33}" font-size="11" fill="#2B2B2B" font-family="var(--font)">см</text>`;
+    return `<g filter="url(#f-shadow)">${body}${ticks.join("")}${unit}</g>`;
+  }
+
+  // ── Чертежи для тетради: чёрные линии, как в экзаменационных заданиях ──
+  function schemeBalance() {
+    return `<svg viewBox="0 0 320 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема: рычажные весы, тело на левой чаше, гири на правой">
+      <g fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M120 176h80M140 176l8 -14h24l8 14M160 162V44M60 40h200"/><circle cx="160" cy="40" r="4" fill="#111"/>
+        <path d="M60 40v14M60 54l-34 74M60 54l34 74M20 128h80q-40 22 -80 0"/><path d="M260 40v14M260 54l-34 74M260 54l34 74M220 128h80q-40 22 -80 0"/>
+        <path d="M160 40v104"/><path d="M140 150a24 24 0 0 0 40 0"/>
+        <rect x="40" y="104" width="40" height="24"/>
+        <path d="M232 128v-18h12v18M250 128v-12h9v12M264 128v-8h7v8"/>
+      </g>
+      <text x="60" y="186" font-size="12" text-anchor="middle" font-family="var(--font)">тело</text><text x="260" y="186" font-size="12" text-anchor="middle" font-family="var(--font)">гири</text>
+    </svg>`;
+  }
+  function schemeCylinder() {
+    return `<svg viewBox="0 0 320 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Схема: две мензурки, уровень воды V1 без тела и V2 с телом на нити">
+      <g fill="none" stroke="#111" stroke-width="2" stroke-linejoin="round">
+        <path d="M50 20v150h50V20M40 176h70"/><path d="M50 100h50" stroke-dasharray="5 4"/>
+        <path d="M200 20v150h50V20M190 176h70"/><path d="M200 78h50" stroke-dasharray="5 4"/><path d="M225 10v120"/><rect x="214" y="130" width="22" height="34"/>
+        ${[40, 60, 80, 100, 120, 140].map((y) => `<path d="M50 ${y}h8M200 ${y}h8"/>`).join("")}
+      </g>
+      <text x="108" y="104" font-size="13" font-family="var(--font)">V₁</text><text x="258" y="82" font-size="13" font-family="var(--font)">V₂</text>
+      <text x="75" y="188" font-size="11" text-anchor="middle" font-family="var(--font)">без тела</text><text x="225" y="188" font-size="11" text-anchor="middle" font-family="var(--font)">тело в воде</text>
+    </svg>`;
+  }
+  // Устройство весов: та же схема, что в тетради, с подписями частей.
+  function schemeParts() {
+    const lab = (x, y, tx, ty, t, anchor = "start") => `<path d="M${x} ${y}L${tx} ${ty}" stroke="#00A3B9" stroke-width="1.5"/><circle cx="${x}" cy="${y}" r="3" fill="#00A3B9"/><text x="${tx + (anchor === "end" ? -4 : 4)}" y="${ty + 5}" font-size="14" font-weight="700" text-anchor="${anchor}" fill="#14324A" font-family="var(--font)">${t}</text>`;
+    return `<svg viewBox="-60 0 520 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Устройство рычажных весов: коромысло, ось, чаши, стрелка, шкала, подставка">
+      <g transform="translate(70 30)" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M120 176h80M140 176l8 -14h24l8 14M160 162V44M60 40h200"/><circle cx="160" cy="40" r="4" fill="#111"/>
+        <path d="M60 40v14M60 54l-34 74M60 54l34 74M20 128h80q-40 22 -80 0"/><path d="M260 40v14M260 54l-34 74M260 54l34 74M220 128h80q-40 22 -80 0"/>
+        <path d="M160 40v104"/><path d="M140 150a24 24 0 0 0 40 0"/>
+      </g>
+      ${lab(150, 70, 70, 14, "коромысло", "end")}${lab(230, 70, 300, 14, "ось")}${lab(110, 162, 30, 200, "чаша", "end")}
+      ${lab(230, 160, 330, 120, "стрелка")}${lab(232, 182, 330, 160, "шкала-дуга")}${lab(250, 204, 330, 215, "подставка")}
+    </svg>`;
+  }
+
+  // Карточки прогноза в стиле экзаменационных рисунков
+  function card(items) {
+    const n = items.length, W = 300, H = 120;
+    const out = items.map((it, i) => {
+      const cx = ((i + 0.5) * W) / n;
+      const w = it.w, h = it.h;
+      return `<rect x="${r1(cx - w / 2)}" y="${86 - h}" width="${w}" height="${h}" fill="#fff" stroke="#111" stroke-width="2"/>
+        <text x="${r1(cx)}" y="${80 - h / 2 + 5}" font-size="13" font-weight="700" text-anchor="middle" font-family="var(--font)">${it.sym}</text>
+        <text x="${r1(cx)}" y="104" font-size="12" text-anchor="middle" font-family="var(--font)">${it.name}</text>
+        <text x="${r1(cx)}" y="118" font-size="12" text-anchor="middle" font-family="var(--mono)">${it.v}</text>`;
+    }).join("");
+    return `<svg viewBox="0 0 ${W} ${H + 4}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${items.map((i) => i.name + " " + i.v).join(", ")}"><path d="M10 86h280" stroke="#111" stroke-width="1"/>${out}</svg>`;
+  }
+
+  return { defs, weight, weightSize, body, bw, bh, B, balanceStatic, arcScale, beam, pan, panSurface, weightCase, tray, room, C, levelY, cylinder, ruler, schemeBalance, schemeCylinder, schemeParts, card, r1 };
+})();
+
+// Сцена: данные, состояние, три прибора на отдельных экранах, перетаскивание и физика весов.
+const LAB = (() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const NS = "http://www.w3.org/2000/svg";
+
+  // ── Данные. Числа фиксированы: класс сверяет результаты между собой. ──
+  const BODIES = [
+    { id: "b1", n: 1, name: "Алюминиевый брусок малый", short: "Al, малый", sym: "Al", skin: "al", shape: "brick", l: 5, a: 2, h: 2, V: 20, m: 54.0, rho: 2.7, mat: "Алюминий" },
+    { id: "b2", n: 2, name: "Алюминиевый брусок большой", short: "Al, большой", sym: "Al", skin: "al", shape: "brick", l: 6, a: 2.5, h: 2, V: 30, m: 81.0, rho: 2.7, mat: "Алюминий" },
+    { id: "b3", n: 3, name: "Стальной брусок", short: "сталь", sym: "сталь", skin: "steel", shape: "brick", l: 5, a: 2, h: 2, V: 20, m: 156.0, rho: 7.8, mat: "Сталь" },
+    { id: "b4", n: 4, name: "Деревянный брусок (сосна)", short: "сосна", sym: "сосна", skin: "wood", shape: "brick", l: 5, a: 2, h: 2, V: 20, m: 10.0, rho: 0.5, mat: "Сосна", floats: true },
+    { id: "b5", n: 5, name: "Самородок", short: "самородок", sym: "?", skin: "nugget", shape: "nugget", V: 10, m: 50.0, rho: 5.0, mat: "Пирит" },
+  ];
+  const WEIGHTS = [100, 50, 20, 20, 10, 5, 2, 2, 1].map((g, i) => ({ id: `g${i}`, mass: g, label: `${g} г` }))
+    .concat([500, 200, 200, 100].map((mg, i) => ({ id: `mg${i}`, mass: mg / 1000, mg, label: `${mg} мг` })));
+  const V1 = 46, STRIP = 0.2, TARE = -0.4, MAXLOAD = 200, TMAX = (10 * Math.PI) / 180;
+  const byId = (id) => BODIES.find((b) => b.id === id) || WEIGHTS.find((w) => w.id === id);
+  const isBody = (id) => id.startsWith("b");
+
+  const st = {
+    screen: "scales", place: {}, wet: new Set(), strips: { L: 0, R: 0 },
+    tilt: 0, rate: 0, level: V1, selected: null, ruler: { body: "b1", view: "l" },
+    say: "", sayKind: "", listeners: [], log: [],
+  };
+  function resetAll() {
+    BODIES.forEach((b) => (st.place[b.id] = "tray"));
+    WEIGHTS.forEach((w) => (st.place[w.id] = "box"));
+    st.wet.clear(); st.strips = { L: 0, R: 0 }; st.selected = null; st.say = "";
+  }
+  resetAll();
+  const on = (fn) => st.listeners.push(fn);
+  const emit = (type, data = {}) => { st.log.push({ type, ...data, t: Date.now() }); st.listeners.forEach((fn) => fn(type, data)); };
+  const inPlace = (p) => Object.keys(st.place).filter((id) => st.place[id] === p);
+  const load = (p) => inPlace(p).reduce((s, id) => s + (isBody(id) ? byId(id).m : byId(id).mass), 0);
+  const cylBodies = () => inPlace("cyl");
+  const levelTarget = () => V1 + cylBodies().reduce((s, id) => s + byId(id).V, 0);
+  const say = (text, kind = "") => { st.say = text; st.sayKind = kind; const el = $("#say"); if (el) { el.textContent = text; el.dataset.kind = kind; } };
+
+  // ── Правила среды: только физически невозможное ──
+  function move(id, to) {
+    const from = st.place[id];
+    if (from === to) { say("Предмет уже здесь."); return false; }
+    const body = isBody(id) ? byId(id) : null;
+    if ((to === "L" || to === "R")) {
+      if (body && st.wet.has(id)) { say("Мокрое тело на весы не кладут: вытри его тряпочкой.", "env"); emit("rule", { rule: "wet", id }); return false; }
+      const add = body ? body.m : byId(id).mass;
+      if (load(to) + add > MAXLOAD) { say(`Перегруз: на чашу этих весов можно положить не больше ${MAXLOAD} г.`, "env"); emit("rule", { rule: "overload", id }); return false; }
+    }
+    if (to === "cyl") {
+      if (!body) return false;
+      if (body.floats) { say("Сосна легче воды и всплывает — так объём не измерить. Измерь брусок линейкой.", "env"); emit("rule", { rule: "floats", id }); return false; }
+      if (cylBodies().length) { say("В мензурке уже есть тело. Вынь его, потом опусти следующее.", "env"); return false; }
+    }
+    if (to === "box" && body) return false;
+    if (to === "tray" && !body) return false;
+    st.place[id] = to;
+    if (from === "cyl") { st.wet.add(id); say(`${body.name}: тело мокрое. Прежде чем взвешивать, вытри его.`); }
+    else say("");
+    st.selected = null;
+    emit("move", { id, from, to });
+    render();
+    kick();
+    return true;
+  }
+  function dry() { if (!st.wet.size) { say("Сухие тела вытирать не нужно."); return; } st.wet.clear(); say("Тела вытерты и снова сухие."); emit("dry"); render(); }
+  function clearWeights() { let n = 0; WEIGHTS.forEach((w) => { if (st.place[w.id] !== "box") { st.place[w.id] = "box"; n++; } }); say(n ? "Гири убраны в футляр." : "На весах нет гирь."); emit("clearWeights"); render(); kick(); }
+  function reset() { resetAll(); emit("reset"); render(); kick(); say("Всё вернулось на места: гири в футляре, тела в лотке, полоски сняты."); }
+  function strip(side, d) {
+    st.strips[side] = Math.max(0, Math.min(8, st.strips[side] + d));
+    emit("strip", { side, d });
+    render(); kick();
+  }
+
+  // ── Отрисовка экранов ──
+  const W = 1000, H = 620;
+  const svg = () => $("#scene-svg");
+  const r1 = ART.r1;
+  function itemG(id, x, y, html, extra = "") {
+    const o = byId(id);
+    const label = isBody(id) ? `${o.n}. ${o.name}${st.wet.has(id) ? ", мокрое" : ""}` : `Гиря ${o.label}`;
+    return `<g class="item${st.selected === id ? " sel" : ""}" data-id="${id}" data-x="${r1(x)}" data-y="${r1(y)}" transform="translate(${r1(x)} ${r1(y)})" tabindex="0" role="button" aria-label="${label}"${extra}><title>${label}</title>${html}</g>`;
+  }
+  // Раскладка предметов на поверхности: ряды шириной не больше maxW.
+  function rows(ids, maxW, size, gap = 5) {
+    const out = []; let row = [], w = 0, y = 0, rowH = 0;
+    const flush = () => { let x = -w / 2; row.forEach(([id, iw, ih]) => { out.push([id, x + iw / 2, y]); x += iw + gap; }); y -= rowH + 2; row = []; w = 0; rowH = 0; };
+    ids.forEach((id) => { const [iw, ih] = size(id); if (row.length && w + iw > maxW) flush(); row.push([id, iw, ih]); w += (row.length > 1 ? gap : 0) + iw; rowH = Math.max(rowH, ih); });
+    if (row.length) flush();
+    return out;
+  }
+  const S_SCALE = 12; // px на см на экране весов
+  const sizeOf = (id) => (isBody(id) ? [ART.bw(byId(id), S_SCALE, "front"), ART.bh(byId(id), S_SCALE)] : ART.weightSize(byId(id)));
+  const itemArt = (id, s = S_SCALE) => (isBody(id) ? ART.body({ ...byId(id), wet: st.wet.has(id) }, s) : ART.weight(byId(id)));
+
+  // Гнёзда в футляре
+  const CASE = { x: 640, y: 466, w: 340, h: 90 };
+  const HOLES = (() => {
+    const out = []; let x = CASE.x + 22;
+    WEIGHTS.filter((w) => !w.mg).forEach((w) => { const [iw] = ART.weightSize(w); out.push({ id: w.id, x: x + iw / 2, y: CASE.y + 62, w: iw, label: w.mass }); x += iw + 9; });
+    WEIGHTS.filter((w) => w.mg).forEach((w, i) => out.push({ id: w.id, x: CASE.x + 278 + (i % 2) * 34, y: CASE.y + 30 + Math.floor(i / 2) * 26, w: 22, label: "" }));
+    return out;
+  })();
+  const TRAY = { x: 20, y: 500, w: 352, h: 56 };
+  function trayItems(s) {
+    const ids = inPlace("tray");
+    const slotX = (b) => TRAY.x + 44 + (b.n - 1) * 66;
+    return ids.map((id) => itemG(id, slotX(byId(id)), TRAY.y + 50, ART.body({ ...byId(id), wet: st.wet.has(id) }, s))).join("");
+  }
+
+  function renderScales() {
+    const B = ART.B;
+    const pansAt = panPoints();
+    const panG = (side) => {
+      const p = pansAt[side];
+      const items = rows(inPlace(side), 150, sizeOf).map(([id, x, y]) => itemG(id, x, ART.panSurface() + y, itemArt(id))).join("");
+      return `<g id="pan-${side}" transform="translate(${r1(p.x)} ${r1(p.y)})">${ART.pan(st.strips[side])}${items}<rect class="zone" data-zone="${side}" x="-92" y="${B.hang - 140}" width="184" height="150" rx="14"/></g>`;
+    };
+    const boxItems = inPlace("box").map((id) => { const h = HOLES.find((x) => x.id === id); return itemG(id, h.x, h.y, ART.weight(byId(id))); }).join("");
+    svg().innerHTML = `${ART.defs}${ART.room(W, H, 556)}
+      ${ART.tray(TRAY.x, TRAY.y, TRAY.w, TRAY.h)}<rect class="zone" data-zone="tray" x="${TRAY.x - 6}" y="${TRAY.y - 70}" width="${TRAY.w + 12}" height="${TRAY.h + 76}" rx="12"/>
+      ${ART.weightCase(CASE.x, CASE.y, CASE.w, CASE.h, HOLES)}<rect class="zone" data-zone="box" x="${CASE.x - 6}" y="${CASE.y - 24}" width="${CASE.w + 12}" height="${CASE.h + 30}" rx="12"/>
+      ${ART.balanceStatic()}
+      <g id="beam" transform="rotate(${r1((-st.tilt * 180) / Math.PI * 100) / 100} ${B.px} ${B.py})">${ART.beam()}</g>
+      ${panG("L")}${panG("R")}
+      <g id="tray-items">${trayItems(S_SCALE)}</g><g id="box-items">${boxItems}</g><g id="drag"></g>`;
+    wireItems();
+  }
+  function panPoints() {
+    const B = ART.B, c = Math.cos(st.tilt), s = Math.sin(st.tilt);
+    return { L: { x: B.px - B.arm * c, y: B.py + B.arm * s }, R: { x: B.px + B.arm * c, y: B.py - B.arm * s } };
+  }
+
+  const C_SCALE = 40; // px на см в мензурке
+  function renderCylinder() {
+    const C = ART.C;
+    const inside = cylBodies().map((id) => {
+      const b = byId(id);
+      const up = b.shape === "brick" ? { ...b, l: b.a, h: b.l, wet: false } : { ...b, wet: false };
+      const bh = ART.bh(up, C_SCALE);
+      return `<line x1="${C.cx}" y1="${C.top - 20}" x2="${C.cx}" y2="${C.bottom - 8 - bh}" stroke="#4A4A4A" stroke-width="1.3"/>` + itemG(id, C.cx, C.bottom - 8, ART.body(up, C_SCALE));
+    }).join("");
+    svg().innerHTML = `${ART.defs}${ART.room(W, H, 556)}
+      ${ART.tray(TRAY.x, TRAY.y, TRAY.w, TRAY.h)}<rect class="zone" data-zone="tray" x="${TRAY.x - 6}" y="${TRAY.y - 70}" width="${TRAY.w + 12}" height="${TRAY.h + 76}" rx="12"/>
+      <g id="cyl">${ART.cylinder(st.level, inside)}</g><rect class="zone" data-zone="cyl" x="${C.cx - 90}" y="${C.top - 10}" width="180" height="${C.bottom - C.top + 20}" rx="14"/>
+      <g id="tray-items">${trayItems(S_SCALE)}</g><g id="drag"></g>`;
+    wireItems();
+  }
+
+  const R_SCALE = 60;
+  function renderRuler() {
+    const b = byId(st.ruler.body);
+    const v = st.ruler.view;
+    let art = "";
+    if (b.shape !== "brick") {
+      art = `<text x="500" y="250" font-size="22" font-weight="700" text-anchor="middle" fill="#14324A" font-family="var(--font)">${b.name}: неправильная форма.</text><text x="500" y="284" font-size="18" text-anchor="middle" fill="#3F5F78" font-family="var(--font)">Линейкой его объём не найти — измерь погружением в мензурке.</text>`;
+    } else {
+      const view = v === "a" ? "side" : "front";
+      const bw = (v === "a" ? b.a : b.l) * R_SCALE, bh = b.h * R_SCALE;
+      const x0 = 500 - bw / 2, base = 360;
+      const brick = `<g transform="translate(500 ${base})">${ART.body({ ...b, wet: false }, R_SCALE, { view })}</g>`;
+      const rl = v === "h" ? ART.ruler(x0 + bw + 10, base, 6, R_SCALE, true) : ART.ruler(x0, base + 6, v === "a" ? 5 : 8, R_SCALE);
+      const what = v === "l" ? "длина l" : v === "a" ? "ширина a" : "высота h";
+      art = `${rl}${brick}<text x="500" y="120" font-size="20" font-weight="800" text-anchor="middle" fill="#14324A" font-family="var(--font)">${b.n}. ${b.name}: ${what}</text>
+        <text x="500" y="146" font-size="15" text-anchor="middle" fill="#3F5F78" font-family="var(--font)">${v === "a" ? "Вид сбоку" : "Вид спереди"}. Ноль линейки — у края бруска.</text>`;
+    }
+    svg().innerHTML = `${ART.defs}${ART.room(W, H, 556)}${art}${ART.tray(TRAY.x, TRAY.y, TRAY.w, TRAY.h, "Лоток: нажми на брусок, чтобы измерить")}<g id="tray-items">${trayItems(S_SCALE)}</g>`;
+    svg().querySelectorAll(".item").forEach((g) => {
+      const pick = () => { st.ruler.body = g.dataset.id; emit("ruler", { id: g.dataset.id }); render(); };
+      g.addEventListener("click", pick);
+      g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+    });
+  }
+
+  // ── Лупы ──
+  function lupaScales() {
+    const el = $("#lupa"); if (!el) return;
+    const R = 292 * 3.1, cx = 150, cy = 150 - R - 8;
+    const t = st.tilt;
+    const tipX = cx + (R + 6) * Math.sin(t), tipY = cy + (R + 6) * Math.cos(t);
+    const baseX = cx + (R - 150) * Math.sin(t), baseY = cy + (R - 150) * Math.cos(t);
+    el.innerHTML = `<svg viewBox="0 0 300 300" aria-hidden="true"><defs><clipPath id="lc"><circle cx="150" cy="150" r="140"/></clipPath></defs>
+      <circle cx="150" cy="150" r="146" fill="#14324A"/><g clip-path="url(#lc)"><rect width="300" height="300" fill="#F7FBFE"/>
+      ${ART.arcScale(cx, cy, R, 12, { big: true })}
+      <line x1="${r1(baseX)}" y1="${r1(baseY)}" x2="${r1(tipX)}" y2="${r1(tipY)}" stroke="#FF5B00" stroke-width="5" stroke-linecap="round"/></g>
+      <circle cx="150" cy="150" r="141" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/></svg><div class="lupa-cap">Лупа: стрелка весов</div>`;
+  }
+  // Лупа мензурки: шкала крупно, взгляд прямо напротив уровня воды.
+  function lupaCylinder() {
+    const el = $("#lupa"); if (!el) return;
+    const px = 13, lv = st.level;
+    const y = (v) => 150 - (v - lv) * px;
+    let ticks = "";
+    for (let v = Math.ceil((lv - 12) / 2) * 2; v <= lv + 12; v += 2) {
+      if (v < 0 || v > 100) continue;
+      const big = v % 10 === 0;
+      ticks += `<line x1="40" y1="${r1(y(v))}" x2="${big ? 120 : 84}" y2="${r1(y(v))}" stroke="#14324A" stroke-width="${big ? 3 : 2}"/>`;
+      if (big) ticks += `<text x="128" y="${r1(y(v) + 8)}" font-size="24" font-weight="700" fill="#14324A" font-family="var(--mono)">${v}</text>`;
+    }
+    el.innerHTML = `<svg viewBox="0 0 300 300" aria-hidden="true"><defs><clipPath id="lc"><circle cx="150" cy="150" r="140"/></clipPath></defs>
+      <circle cx="150" cy="150" r="146" fill="#14324A"/><g clip-path="url(#lc)"><rect width="300" height="300" fill="#F3FAFD"/>
+      <rect x="0" y="150" width="300" height="150" fill="#5CC4EE" opacity=".5"/><line x1="0" y1="150" x2="300" y2="150" stroke="#1E8FC6" stroke-width="3"/>
+      ${ticks}</g>
+      <circle cx="150" cy="150" r="141" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2"/></svg><div class="lupa-cap">Лупа: уровень воды</div>`;
+  }
+
+  function render() {
+    const lupa = $("#lupa");
+    lupa.hidden = !(st.screen === "scales" || st.screen === "cyl");
+    lupa.className = "lupa";
+    lupa.style.cssText = st.screen === "cyl" ? "right:4%;top:8%;width:clamp(190px,28%,300px)" : "left:2%;top:4%";
+    $("#scene-svg").toggleAttribute("hidden", st.screen === "notebook");
+    $("#notebook").hidden = st.screen !== "notebook";
+    if (st.screen === "scales") { renderScales(); lupaScales(); }
+    else if (st.screen === "cyl") { renderCylinder(); lupaCylinder(); }
+    else if (st.screen === "ruler") renderRuler();
+    renderToolbar();
+    st.listeners.forEach((fn) => fn("render"));
+  }
+
+  // ── Панель действий под сценой: всё на одном экране ──
+  function renderToolbar() {
+    const tb = $("#tools");
+    const sel = st.selected ? byId(st.selected) : null;
+    const b = [];
+    if (st.screen === "scales") {
+      if (sel) {
+        b.push(`<button class="btn sm" data-go="L">На левую чашу</button><button class="btn sm" data-go="R">На правую чашу</button>`);
+        b.push(isBody(st.selected) ? `<button class="btn sm ghost" data-go="tray">В лоток</button>` : `<button class="btn sm ghost" data-go="box">В футляр</button>`);
+      }
+      b.push(`<span class="seg" role="group" aria-label="Полоски бумаги для уравновешивания"><button data-strip="L+">+ полоска слева</button><button data-strip="R+">+ полоска справа</button><button data-strip="L-" aria-label="Снять полоску слева">− слева</button><button data-strip="R-" aria-label="Снять полоску справа">− справа</button></span>`);
+      b.push(`<button class="btn sm ghost" data-act="clear">Снять все гири</button>`);
+    } else if (st.screen === "cyl") {
+      if (sel && isBody(st.selected)) b.push(st.place[st.selected] === "cyl" ? `<button class="btn sm" data-go="tray">Вынуть из мензурки</button>` : `<button class="btn sm" data-go="cyl">Опустить в мензурку на нити</button>`);
+      b.push(`<button class="btn sm ghost" data-act="dry">Вытереть тела тряпочкой</button>`);
+    } else if (st.screen === "ruler") {
+      b.push(`<span class="seg" role="group" aria-label="Что измерить">${[["l", "Длина l"], ["a", "Ширина a"], ["h", "Высота h"]].map(([v, t]) => `<button data-rv="${v}" aria-pressed="${st.ruler.view === v}">${t}</button>`).join("")}</span>`);
+      b.push(`<span class="seg" role="group" aria-label="Какой брусок">${BODIES.filter((x) => x.shape === "brick").map((x) => `<button data-rb="${x.id}" aria-pressed="${st.ruler.body === x.id}">${x.n}</button>`).join("")}</span>`);
+    }
+    tb.innerHTML = `<span class="say" id="say" data-kind="${st.sayKind}" aria-live="polite">${st.say || hintLine()}</span>${b.join("")}`;
+    tb.querySelectorAll("[data-go]").forEach((x) => x.addEventListener("click", () => move(st.selected, x.dataset.go)));
+    tb.querySelectorAll("[data-strip]").forEach((x) => x.addEventListener("click", () => strip(x.dataset.strip[0], x.dataset.strip[1] === "+" ? 1 : -1)));
+    tb.querySelectorAll("[data-act]").forEach((x) => x.addEventListener("click", () => (x.dataset.act === "clear" ? clearWeights() : dry())));
+    tb.querySelectorAll("[data-rv]").forEach((x) => x.addEventListener("click", () => { st.ruler.view = x.dataset.rv; emit("ruler", { view: x.dataset.rv }); render(); }));
+    tb.querySelectorAll("[data-rb]").forEach((x) => x.addEventListener("click", () => { st.ruler.body = x.dataset.rb; render(); }));
+  }
+  const hintLine = () => (st.screen === "scales" ? "Перетащи предмет или нажми на него, а потом — на место." : st.screen === "cyl" ? "Перетащи тело в мензурку или нажми на него, а потом на мензурку." : st.screen === "ruler" ? "Выбери брусок и ребро." : "");
+
+  // ── Перетаскивание и выбор ──
+  function point(ev) { const s = svg(); const p = s.createSVGPoint(); p.x = ev.clientX; p.y = ev.clientY; const m = s.getScreenCTM(); return m ? p.matrixTransform(m.inverse()) : { x: 0, y: 0 }; }
+  function zoneAt(x, y) {
+    for (const z of svg().querySelectorAll(".zone")) { const r = z.getBBox(); const m = z.getCTM(), sm = svg().getCTM(); const inv = sm.inverse().multiply(m); const p0 = new DOMPoint(r.x, r.y).matrixTransform(inv), p1 = new DOMPoint(r.x + r.width, r.y + r.height).matrixTransform(inv); if (x >= Math.min(p0.x, p1.x) && x <= Math.max(p0.x, p1.x) && y >= Math.min(p0.y, p1.y) && y <= Math.max(p0.y, p1.y)) return z.dataset.zone; }
+    return null;
+  }
+  function wireItems() {
+    const s = svg();
+    s.classList.toggle("has-sel", !!st.selected);
+    s.querySelectorAll(".zone").forEach((z) => z.addEventListener("click", () => { if (st.selected) move(st.selected, z.dataset.zone); }));
+    s.querySelectorAll(".item").forEach((g) => {
+      const id = g.dataset.id;
+      let start = null;
+      g.addEventListener("pointerdown", (ev) => {
+        if (ev.button > 0) return;
+        ev.preventDefault(); ev.stopPropagation();
+        try { g.setPointerCapture(ev.pointerId); } catch (_) {}
+        const p = point(ev); start = { x: p.x, y: p.y, moved: false };
+      });
+      g.addEventListener("pointermove", (ev) => {
+        if (!start) return;
+        const p = point(ev);
+        if (!start.moved && Math.hypot(p.x - start.x, p.y - start.y) < 6) return;
+        if (!start.moved) { start.moved = true; const m = g.getCTM(), sm = s.getCTM(); const pos = new DOMPoint(0, 0).matrixTransform(sm.inverse().multiply(m)); start.ox = pos.x; start.oy = pos.y; $("#drag").appendChild(g); g.classList.add("dragging"); s.classList.add("has-sel"); }
+        g.setAttribute("transform", `translate(${r1(start.ox + p.x - start.x)} ${r1(start.oy + p.y - start.y)})`);
+        s.querySelectorAll(".zone").forEach((z) => z.classList.toggle("over", z.dataset.zone === zoneAt(p.x, p.y)));
+      });
+      const end = (ev) => {
+        if (!start) return;
+        const st0 = start; start = null;
+        if (!st0.moved) { st.selected = st.selected === id ? null : id; if (st.selected) say(`Выбрано: ${isBody(id) ? byId(id).name : "гиря " + byId(id).label}. Нажми на место или кнопку внизу.`); else say(""); render(); return; }
+        const p = point(ev);
+        const z = zoneAt(p.x, p.y);
+        if (!z || !move(id, z)) render();
+      };
+      g.addEventListener("pointerup", end);
+      g.addEventListener("pointercancel", () => { start = null; render(); });
+      g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); st.selected = st.selected === id ? null : id; render(); $(`[data-id="${id}"]`)?.focus(); } });
+    });
+  }
+
+  // ── Физика: коромысло и вода. Кадры через rAF, при скрытой вкладке — таймер. ──
+  let frame = 0, timer = 0, last = 0;
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  function kick() { if (!frame) { last = 0; schedule(); } }
+  function schedule() { frame = requestAnimationFrame(loop); clearTimeout(timer); timer = setTimeout(() => { if (frame) { cancelAnimationFrame(frame); loop(performance.now()); } }, 90); }
+  function loop(now) {
+    clearTimeout(timer);
+    const dt = last ? Math.min((now - last) / 1000, 0.08) : 1 / 60; last = now;
+    const diff = load("L") - load("R") + TARE + STRIP * (st.strips.L - st.strips.R);
+    const target = TMAX * Math.tanh(diff / 1.5);
+    let busy = false;
+    if (reduced.matches) { st.tilt = target; st.rate = 0; }
+    else { const w = 4.6, z = 0.18, h = dt / 4; for (let i = 0; i < 4; i++) { st.rate += (-w * w * (st.tilt - target) - 2 * z * w * st.rate) * h; st.tilt += st.rate * h; } }
+    if (Math.abs(st.tilt - target) < 2e-5 && Math.abs(st.rate) < 2e-5) { st.tilt = target; st.rate = 0; } else busy = true;
+    const lt = levelTarget();
+    st.level = reduced.matches ? lt : st.level + (lt - st.level) * (1 - Math.exp(-dt / 0.35));
+    if (Math.abs(lt - st.level) < 0.01) st.level = lt; else busy = true;
+    if (st.screen === "scales") {
+      const B = ART.B, beam = $("#beam"), p = panPoints();
+      if (beam) beam.setAttribute("transform", `rotate(${r1((-st.tilt * 180) / Math.PI * 100) / 100} ${B.px} ${B.py})`);
+      for (const side of ["L", "R"]) { const g = $(`#pan-${side}`); if (g && !g.querySelector(".dragging")) g.setAttribute("transform", `translate(${r1(p[side].x)} ${r1(p[side].y)})`); }
+      lupaScales();
+    } else if (st.screen === "cyl" && busy) { renderCylinder(); lupaCylinder(); }
+    if (busy) schedule(); else frame = 0;
+  }
+
+  function setScreen(s) { st.screen = s; st.selected = null; say(""); render(); kick(); }
+  const truth = () => ({ V1, bodies: BODIES.map((b) => ({ ...b })) });
+  const balanced = () => Math.abs(load("L") - load("R") + TARE + STRIP * (st.strips.L - st.strips.R)) < 0.05;
+  const tareOk = () => Math.abs(TARE + STRIP * (st.strips.L - st.strips.R)) < 0.05;
+
+  return { st, BODIES, WEIGHTS, V1, render, setScreen, move, reset, clearWeights, dry, strip, on, emit, inPlace, load, balanced, tareOk, truth, kick, byId };
+})();
+
+// Журнал: шаги работы, два режима (ведёт учитель / ученик сам), подсказки без готовых ответов, отчёт учителю по PIN.
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const { st, BODIES } = LAB;
+  const PIN = "2711";
+  const S = { step: 0, mode: "teacher", seen: new Set([0]), data: {}, pred: {}, help: {}, unlocked: false };
+  const T = () => S.mode === "teacher";
+  const w = (one, many) => (T() ? many : one);
+  const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  // Поле протокола: у ученика — ввод без проверки, у учителя — пустая клетка для тетради.
+  const cell = (key, ph = "") => (T() ? "<td></td>" : `<td><input data-k="${key}" inputmode="decimal" autocomplete="off" value="${esc(S.data[key])}" placeholder="${ph}" aria-label="${key}"></td>`);
+  const tbl = (head, rows) => `<table class="tbl${T() ? " tpl" : ""}"><thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table>`;
+  const writeBox = (text) => `<div class="box write"><b>${w("Запиши в тетрадь", "Запишите в тетрадь")}</b>${text}</div>`;
+  const ladder = (key, items) => {
+    const shown = S.help[key] || 0;
+    return `<div class="help" data-help="${key}"><ol>${items.slice(0, shown).map(([a, b]) => `<li><b>${a}</b>${b}</li>`).join("")}</ol>
+      <button class="btn sm ghost" type="button" data-more="${key}" data-max="${items.length}"${shown >= items.length ? " disabled" : ""}>${shown >= items.length ? "Подсказок больше нет" : shown ? "Ещё подсказка" : "Нужна подсказка"}</button></div>`;
+  };
+  const choice = (key, opts) => `<div class="choices" role="group">${opts.map(([v, l]) => `<button type="button" data-pred="${key}" data-v="${v}" aria-pressed="${S.pred[key] === v}">${l}</button>`).join("")}</div>`;
+  const DENS = [["Сосна (сухая)", "0,5"], ["Алюминий", "2,7"], ["Пирит", "5,0"], ["Цинк", "7,1"], ["Сталь", "7,8"], ["Медь", "8,9"], ["Свинец", "11,3"], ["Золото", "19,3"]];
+  const densTable = () => `<div class="box"><b>Плотность веществ, г/см³</b><div class="dens" style="margin-top:6px">${DENS.map(([n, v]) => `<span>${n}</span><span>${v}</span>`).join("")}</div></div>`;
+
+  const HELP = {
+    tare: [["Вопрос", "Стрелка висит на коромысле и смотрит вниз. Куда она уходит, когда одна чаша тяжелее?"], ["Подсказка", "Стрелка отклоняется в сторону более лёгкой, поднятой чаши. Полоски кладут именно на неё."], ["Пример", "Стрелка ушла влево на 2 деления — значит, левая чаша легче. Кладём полоску на левую чашу и смотрим снова."]],
+    mass: [["Вопрос", "Какое положение стрелки значит, что массы на чашах равны?"], ["Подсказка", "Клади гири от большей к меньшей. Если гиря перетянула, замени её следующей, поменьше. Миллиграммы — в конце."], ["Пример", "На чаше 20 г, 5 г, 2 г и 200 мг. 200 мг = 0,2 г, значит, масса тела 20 + 5 + 2 + 0,2 = 27,2 г."]],
+    cyl: [["Вопрос", "Найди два соседних подписанных числа на мензурке. Сколько делений между ними?"], ["Подсказка", "Цена деления = (большее число − меньшее) : число делений. Глаз держи напротив уровня воды, отсчёт — по нижнему краю."], ["Пример", "Числа 30 и 40, между ними 5 делений: цена 2 мл. Было 36 мл, с телом стало 52 мл. Объём тела 52 − 36 = 16 мл = 16 см³."]],
+    ruler: [["Вопрос", "Сколько миллиметров в одном маленьком делении линейки?"], ["Подсказка", "Измерь три ребра бруска: длину, ширину и высоту. Объём V = l · a · h."], ["Пример", "Брусок 4 см × 3 см × 1,5 см: V = 4 · 3 · 1,5 = 18 см³."]],
+    rho: [["Вопрос", "Что показывает плотность: массу какого объёма вещества?"], ["Подсказка", "ρ = m : V. Граммы делим на кубические сантиметры — получаем г/см³."], ["Пример", "m = 39 г, V = 5 см³: ρ = 39 : 5 = 7,8 г/см³."]],
+    unit: [["Вопрос", "Сколько граммов в килограмме? Сколько кубических сантиметров в кубическом метре?"], ["Подсказка", "В 1 м³ помещается 100 · 100 · 100 = 1 000 000 кубиков по 1 см³. Если каждый весит 1 г, вместе они весят 1 000 000 г, то есть 1000 кг."], ["Пример", "Плотность 2,5 г/см³: каждый кубик весит 2,5 г, миллион кубиков — 2 500 000 г = 2500 кг. Значит, 2,5 г/см³ = 2500 кг/м³."]],
+  };
+
+  const bodyRows = (ids, cols) => ids.map((id) => { const b = BODIES.find((x) => x.id === id); return `<tr><td class="name">${b.n}. ${b.short}</td>${cols.map(([k, ph]) => cell(`${k}${b.n}`, ph)).join("")}</tr>`; });
+
+  const STEPS = [
+    { title: "Правила", screen: null, html: () => `
+      <div class="rules-grid">
+        <div class="rules-col">
+          <div class="box note"><b>Цель.</b> Научиться пользоваться рычажными весами, мензуркой и линейкой и с их помощью определить плотность тел и вещество.<br><b>Приборы:</b> рычажные весы с разновесом (от 100 г до 100 мг), пинцет, мензурка с водой, нить, линейка, пять тел.</div>
+          <div class="parts"><b style="color:var(--ink)">Как устроены весы</b>${ART.schemeParts()}<p>На оси качается коромысло, к его концам подвешены чаши. Вниз от оси смотрит стрелка: когда коромысло наклоняется, её конец ходит по шкале-дуге. Стрелка на средней черте — массы на чашах равны. Предельная нагрузка — 200 г.</p></div>
+        </div>
+        <div class="rules-col">
+          <div><b style="color:var(--ink);font-size:1.15em">Правила взвешивания</b><ol class="rules" style="margin-top:8px">
+            <li>Перед взвешиванием <b>уравновесь пустые весы</b> полосками бумаги.</li>
+            <li>Тело кладут на <b>левую</b> чашу, гири — на <b>правую</b>.</li>
+            <li>Тело и гири опускают на чаши <b>осторожно</b>, не бросая.</li>
+            <li>Не взвешивают тела <b>тяжелее предельной нагрузки</b> (200 г).</li>
+            <li>На чаши не кладут <b>мокрое, грязное, горячее</b>.</li>
+            <li>Мелкие гири берут только <b>пинцетом</b>.</li>
+            <li>Гири подбирают <b>от большей к меньшей</b>: перетянула — замени меньшей.</li>
+            <li>Масса найдена, когда стрелка <b>остановилась на средней черте</b>.</li>
+            <li>Массу считают <b>по гирям</b>, потом убирают гири в футляр.</li></ol></div>
+          ${writeBox("тему «Определение плотности твёрдого тела», цель и приборы.")}
+        </div>
+      </div>` },
+    { title: "Загадка", screen: "scales", html: () => `
+      <div class="box note">Ученик нашёл на даче блестящий жёлтый камень. «Золото!» — говорит он. Сестра уверена, что это пирит, «золото дураков». Царапать и пилить камень нельзя. Как узнать, кто прав?</div>
+      <div class="qcard"><h3>1. Бруски 1 и 2 из алюминия. Сравни их плотности.</h3>${ART.card([{ w: 100, h: 40, sym: "Al", name: "Брусок 1", v: "V = 20 см³" }, { w: 120, h: 50, sym: "Al", name: "Брусок 2", v: "V = 30 см³" }])}
+        ${choice("p1", [["gt", "ρ₁ > ρ₂"], ["lt", "ρ₁ < ρ₂"], ["eq", "ρ₁ = ρ₂"]])}</div>
+      <div class="qcard"><h3>2. Бруски 1 и 3 одинакового объёма: алюминий и сталь. Сравни их массы.</h3>${ART.card([{ w: 100, h: 40, sym: "Al", name: "Брусок 1", v: "V = 20 см³" }, { w: 100, h: 40, sym: "сталь", name: "Брусок 3", v: "V = 20 см³" }])}
+        ${choice("p2", [["gt", "m₁ > m₃"], ["lt", "m₁ < m₃"], ["eq", "m₁ = m₃"]])}</div>
+      <div class="qcard"><h3>3. Самородок — золото или пирит?</h3>${choice("p3", [["gold", "Золото"], ["pyrite", "Пирит"], ["?", "Пока не знаю"]])}</div>
+      ${T() ? `<p>Голосуем поднятыми руками. Нажмите вариант, который выбрало большинство.</p>` : ""}
+      ${writeBox("прогноз по трём вопросам и чем можно проверить самородок. После опыта сверим.")}` },
+    { title: "Масса", screen: "scales", html: () => `
+      <div class="box"><b>${w("Сначала уравновесь", "Сначала уравновесьте")} пустые весы.</b> Весы стоят неровно — ${w("посмотри", "посмотрите")} на стрелку в лупе. Полоски бумаги кладут кнопками под весами, пока стрелка не встанет на середину.</div>
+      ${ladder("tare", HELP.tare)}
+      <div class="box"><b>${w("Теперь сравни", "Теперь сравните")}.</b> ${w("Положи", "Положите")} брусок 1 (алюминий) на одну чашу, брусок 3 (сталь) — на другую. Объёмы одинаковые — 20 см³. Что видно на весах?</div>
+      ${writeBox("наблюдение: равны ли массы тел одинакового объёма из разных веществ.")}
+      <div><b style="color:var(--ink)">Теперь взвесь каждое тело.</b> Тело — на левую чашу, гири — на правую. Порядок тел любой. Мокрое тело сначала вытри.</div>
+      ${tbl(["Тело", "m, г"], bodyRows(["b1", "b2", "b3", "b4", "b5"], [["m", "г"]]))}
+      ${ladder("mass", HELP.mass)}
+      ${writeBox("рисунок: весы, тело на левой чаше, гири на правой. Под ним — массы всех тел.")}` },
+    { title: "Объём", screen: "cyl", html: () => `
+      <div class="box"><b>Погружением.</b> Найди цену деления мензурки. Запиши уровень воды без тела V₁. Опусти тело на нити, запиши V₂. Объём тела V = V₂ − V₁.</div>
+      ${tbl(["", "мл"], [`<tr><td class="name">Цена деления</td>${cell("div", "мл")}</tr>`, `<tr><td class="name">V₁ без тела</td>${cell("v1", "мл")}</tr>`])}
+      ${tbl(["Тело", "V₂, мл", "V, см³"], bodyRows(["b1", "b2", "b3", "b5"], [["v2_", "мл"], ["vi", "см³"]]))}
+      ${ladder("cyl", HELP.cyl)}
+      <div class="box"><b>Линейкой.</b> У бруска правильной формы объём можно найти без воды: V = l · a · h. Брусок 4 из сосны всплывает — для него это единственный способ. <button class="btn sm" type="button" data-screen="ruler">Открыть линейку</button></div>
+      ${tbl(["Брусок", "l, см", "a, см", "h, см", "V, см³"], bodyRows(["b1", "b2", "b3", "b4"], [["l", ""], ["a", ""], ["h", ""], ["vr", ""]]))}
+      ${ladder("ruler", HELP.ruler)}
+      ${writeBox("рисунок мензурки: уровень V₁ без тела и V₂ с телом на нити. Сравни объём бруска 1 двумя способами.")}` },
+    { title: "Плотность", screen: null, html: () => `
+      <div class="box"><b>ρ = m : V.</b> Посчитай плотность каждого тела в г/см³, переведи в кг/м³ и найди вещество по таблице.</div>
+      ${tbl(["Тело", "ρ, г/см³", "ρ, кг/м³", "Вещество"], bodyRows(["b1", "b2", "b3", "b4", "b5"], [["rho", ""], ["rhoSI", ""], ["mat", ""]]))}
+      ${densTable()}
+      <p class="box">Весы и мензурка меряют с погрешностью. Если плотность вышла чуть больше или меньше табличной, ищи ближайшее вещество и подумай, откуда взялась разница.</p>
+      ${ladder("rho", HELP.rho)}
+      <div><b style="color:var(--ink)">Перевод в кг/м³</b></div>
+      ${ladder("unit", HELP.unit)}
+      ${writeBox("расчёт плотности каждого тела с единицами и вещество по таблице.")}` },
+    { title: "Вывод", screen: "notebook", html: () => `
+      ${writeBox(`вывод. ${w("Ответь", "Ответьте")} в нём:<ul style="margin-top:6px"><li>какие плотности получились и каким веществам они соответствуют;</li><li>зависит ли плотность от размера тела (бруски 1 и 2);</li><li>почему у тел одинакового объёма разная масса (бруски 1 и 3);</li><li>золото или пирит — и почему ${w("ты так считаешь", "вы так считаете")};</li><li>если что-то не сошлось с таблицей — почему.</li></ul>`)}
+      <div class="box"><b>Вернись к прогнозу.</b> ${predSummary()} ${w("Совпал ли он с опытом? Допиши это в вывод.", "Совпал ли прогноз класса с опытом? Обсудите.")}</div>
+      <div class="box note">Слева — как такое задание оформляют на экзамене: рисунок установки, формула, результаты измерений, ответ.</div>
+      ${teacherBlock()}` },
+  ];
+
+  const PRED_TXT = { p1: { gt: "ρ₁ > ρ₂", lt: "ρ₁ < ρ₂", eq: "ρ₁ = ρ₂" }, p2: { gt: "m₁ > m₃", lt: "m₁ < m₃", eq: "m₁ = m₃" }, p3: { gold: "золото", pyrite: "пирит", "?": "пока не знаю" } };
+  const predSummary = () => (Object.keys(S.pred).length ? `${w("Твой", "Прогноз класса")}${T() ? ":" : " прогноз:"} ${["p1", "p2", "p3"].filter((k) => S.pred[k]).map((k, i) => `${i + 1}) ${PRED_TXT[k][S.pred[k]]}`).join("; ")}.` : "Прогноз на шаге «Загадка» не записан.");
+
+  // ── Отчёт учителю: эталон и сырые числа ученика. Открывается PIN-кодом. ──
+  function teacherBlock() {
+    if (!S.unlocked) return `<details class="teacher"><summary>Для учителя: эталон и отчёт</summary><p style="margin:8px 0">Введите PIN учителя.</p><div style="display:flex;gap:8px"><input id="pin" inputmode="numeric" autocomplete="off" style="width:7em;font:600 15px var(--mono);padding:6px 8px;border-radius:9px;border:1px solid var(--line)" aria-label="PIN учителя"><button class="btn sm" type="button" id="pin-go">Открыть</button></div></details>`;
+    const tr = LAB.truth();
+    const fmt = (v) => String(Math.round(v * 100) / 100).replace(".", ",");
+    const num = (k) => { const v = Number(String(S.data[k] ?? "").replace(/\s/g, "").replace(",", ".")); return Number.isFinite(v) && String(S.data[k] ?? "").trim() !== "" ? v : null; };
+    const pair = (k, truthV) => { const v = num(k); if (v === null) return `<td>—</td>`; const d = v - truthV; return `<td>${fmt(v)}${Math.abs(d) > 1e-9 ? ` <span class="dev">(${d > 0 ? "+" : ""}${fmt(d)})</span>` : ""}</td>`; };
+    const rows = tr.bodies.map((b) => `<tr><td>${b.n}</td><td>${fmt(b.m)}</td>${T() ? "" : pair(`m${b.n}`, b.m)}<td>${b.floats ? "—" : fmt(tr.V1 + b.V)}</td><td>${fmt(b.V)}</td>${T() ? "" : pair(b.floats ? `vr${b.n}` : `vi${b.n}`, b.V)}<td>${fmt(b.rho)}</td>${T() ? "" : pair(`rho${b.n}`, b.rho)}<td>${b.mat}</td></tr>`).join("");
+    const head = T() ? ["Тело", "m, г", "V₂, мл", "V, см³", "ρ, г/см³", "Вещество"] : ["Тело", "m, г", "ученик", "V₂, мл", "V, см³", "ученик", "ρ", "ученик", "Вещество"];
+    const ev = st.log;
+    const cnt = (t, r) => ev.filter((e) => e.type === t && (!r || e.rule === r)).length;
+    const helps = Object.entries(S.help).map(([k, v]) => `${({ tare: "уравновешивание", mass: "масса", cyl: "мензурка", ruler: "линейка", rho: "плотность", unit: "перевод" })[k]}: ${v} из 3`).join(", ") || "не открывали";
+    return `<details class="teacher" open><summary>Для учителя: эталон и отчёт</summary>
+      <p style="margin:8px 0">V₁ = ${tr.V1} мл, цена деления мензурки 2 мл. Пустые весы ${LAB.tareOk() ? "уравновешены" : "не уравновешены: показания сдвинуты на 0,4 г"}.</p>
+      <div style="overflow-x:auto"><table class="tbl"><thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>
+      <p style="margin-top:8px">Подсказки: ${helps}. Нарушения правил: мокрое на весах — ${cnt("rule", "wet")}, перегруз — ${cnt("rule", "overload")}, сосна в мензурке — ${cnt("rule", "floats")}. ${Object.keys(S.pred).length ? "Прогноз: " + ["p1", "p2", "p3"].filter((k) => S.pred[k]).map((k) => PRED_TXT[k][S.pred[k]]).join("; ") + "." : ""}</p>
+      <p class="dev" style="margin-top:6px">Закройте этот блок, прежде чем показывать экран классу.</p></details>`;
+  }
+
+  // ── Отрисовка журнала ──
+  function render() {
+    const s = STEPS[S.step];
+    $("#p-kicker").textContent = `Шаг ${S.step + 1} из ${STEPS.length}`;
+    $("#p-title").textContent = { 0: "Как работать с весами", 1: "Загадка и прогноз", 2: "Масса", 3: "Объём", 4: "Плотность и вещество", 5: "Вывод — в тетрадь" }[S.step];
+    $("#p-body").innerHTML = s.html();
+    $("#prev").disabled = S.step === 0;
+    $("#next").textContent = S.step === STEPS.length - 1 ? "В начало" : "Дальше";
+    $$("#steps button").forEach((b, i) => { b.toggleAttribute("data-seen", S.seen.has(i)); if (i === S.step) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
+    $$("[data-k]").forEach((inp) => inp.addEventListener("input", () => { S.data[inp.dataset.k] = inp.value; }));
+    $$("[data-pred]").forEach((b) => b.addEventListener("click", () => { S.pred[b.dataset.pred] = b.dataset.v; LAB.emit("pred", { q: b.dataset.pred, v: b.dataset.v }); render(); }));
+    $$("[data-more]").forEach((b) => b.addEventListener("click", () => { const k = b.dataset.more; S.help[k] = Math.min(Number(b.dataset.max), (S.help[k] || 0) + 1); LAB.emit("help", { k, level: S.help[k] }); render(); }));
+    $$("#p-body [data-screen]").forEach((b) => b.addEventListener("click", () => setScreen(b.dataset.screen)));
+    $("#pin-go")?.addEventListener("click", () => { if ($("#pin").value.trim() === PIN) { S.unlocked = true; render(); } else { $("#pin").value = ""; $("#pin").placeholder = "Не тот PIN"; } });
+    $("#pin")?.addEventListener("keydown", (e) => { if (e.key === "Enter") $("#pin-go").click(); });
+  }
+  function go(i) {
+    S.step = Math.max(0, Math.min(STEPS.length - 1, i));
+    S.seen.add(S.step);
+    document.body.classList.toggle("rules-mode", S.step === 0);
+    const sc = STEPS[S.step].screen;
+    if (sc) setScreen(sc);
+    render();
+    $("#p-body").scrollTop = 0;
+  }
+  function setScreen(sc) {
+    LAB.setScreen(sc);
+    $$("#screens button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.sc === sc)));
+  }
+
+  // ── Шапка ──
+  $("#steps").innerHTML = STEPS.map((s, i) => `<button type="button" data-step="${i}"><span class="n">${i + 1}</span>${s.title}</button>`).join("");
+  $$("#steps button").forEach((b) => b.addEventListener("click", () => go(Number(b.dataset.step))));
+  $$("#screens button").forEach((b) => b.addEventListener("click", () => setScreen(b.dataset.sc)));
+  $$("#mode button").forEach((b) => b.addEventListener("click", () => {
+    S.mode = b.dataset.mode;
+    $$("#mode button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    document.body.classList.toggle("big-text", T());
+    render();
+  }));
+  $("#reset").addEventListener("click", () => LAB.reset());
+  $("#prev").addEventListener("click", () => go(S.step - 1));
+  $("#next").addEventListener("click", () => go(S.step === STEPS.length - 1 ? 0 : S.step + 1));
+  document.body.classList.add("big-text");
+  // Высота шапки меняется при переносе строк — рабочая область подстраивается, чтобы всё влезло без прокрутки.
+  const fitHead = () => document.documentElement.style.setProperty("--head", $(".top").offsetHeight + "px");
+  addEventListener("resize", fitHead); fitHead();
+
+  // Тетрадь: экзаменационное оформление задания и схемы для рисунка.
+  $("#notebook").innerHTML = `<h3>Как оформить работу в тетради</h3>
+    <div class="exam"><p>Используя рычажные весы с разновесом, мензурку с водой, нить и тело, соберите установку для определения плотности материала тела. В тетради:</p>
+    <ol><li>сделайте рисунок экспериментальной установки для определения объёма тела;</li><li>запишите формулу для расчёта плотности;</li><li>укажите результаты измерений массы тела и его объёма;</li><li>запишите численное значение плотности материала тела.</li></ol></div>
+    <div class="schemes"><figure>${ART.schemeBalance()}<figcaption>Рисунок 1. Взвешивание: тело слева, гири справа.</figcaption></figure><figure>${ART.schemeCylinder()}<figcaption>Рисунок 2. Объём погружением: V = V₂ − V₁.</figcaption></figure></div>
+    <table><caption style="text-align:left;font-weight:700;padding-bottom:4px">Таблица 1. Результаты измерений</caption><thead><tr><th>№</th><th>Тело</th><th>m, г</th><th>V₁, мл</th><th>V₂, мл</th><th>V, см³</th><th>ρ, г/см³</th><th>ρ, кг/м³</th></tr></thead><tbody>${[1, 2, 3, 4, 5].map((n) => `<tr><td>${n}</td>${"<td>&nbsp;</td>".repeat(7)}</tr>`).join("")}</tbody></table>
+    <p style="margin-top:12px;max-width:760px">Дальше — <b>вывод</b> своими словами. Тему, цель и приборы записывают в начале работы.</p>`;
+
+  LAB.on((type) => { if (type === "rule" && S.unlocked) render(); });
+  go(0);
+})();
+</script>
+
+</body>
+</html>
