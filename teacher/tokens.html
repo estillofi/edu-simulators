@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ссылки ученикам</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Выдача ссылок: класс, тренажёр, число учеников → таблица токенов, имена вписывает учитель у себя. */
+:root{--bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;--teal:#00A3B9;--font:"Raleway",ui-sans-serif,system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;--teal:#2BC3D6;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 var(--font)}
+.page{max-width:980px;margin:0 auto;padding:16px clamp(10px,2vw,20px) 40px;display:grid;gap:14px}
+h1{margin:0;color:var(--ink);font-size:30px}
+.card{background:var(--card);border-radius:24px;box-shadow:0 0 0 1px var(--line);padding:18px 20px;display:grid;gap:12px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+label{display:grid;gap:4px;font-weight:600;color:var(--ink);font-size:14px}
+input,select{font:500 15px var(--font);color:var(--ink);background:var(--bg);border:1px solid transparent;border-radius:12px;padding:8px 10px}
+.btn{border:0;border-radius:32px;background:var(--teal);color:#fff;font:700 14px var(--font);padding:10px 18px;cursor:pointer}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+td code{font:500 13px var(--mono);color:var(--ink);word-break:break-all}
+td input{width:100%}
+.note{font-size:13px;color:var(--muted);margin:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <a href="./" class="note">← Табло</a>
+  <h1>Ссылки ученикам</h1>
+  <section class="card">
+    <div class="row">
+      <label>Код класса<input id="c" value="7A-alg"></label>
+      <label>Тренажёр<select id="tr"><option value="math-7/expressions/">Скобки и подобные слагаемые</option></select></label>
+      <label>Учеников<input id="n" type="number" min="1" max="40" value="25" style="width:6em"></label>
+      <button class="btn" id="go" type="button">Сделать ссылки</button>
+    </div>
+    <p class="note">Каждому ученику — своя ссылка с токеном. В ссылке нет имени. Впишите имена в таблицу и сохраните: список останется только в этом браузере и подставится на табло. Ученики должны быть в той же сети, что и этот компьютер.</p>
+  </section>
+  <section class="card" id="out" hidden>
+    <div class="row"><button class="btn" id="save" type="button">Сохранить имена для табло</button><button class="btn ghost" id="copy" type="button">Скопировать все ссылки</button><button class="btn ghost" id="csv" type="button">Скачать CSV</button></div>
+    <table id="t"></table>
+  </section>
+</div>
+<script>
+(() => {
+const $ = (s) => document.querySelector(s);
+const tok = () => Array.from(crypto.getRandomValues(new Uint8Array(4)), (b) => "abcdefghjkmnpqrstuvwxyz23456789"[b % 31]).join("") + Array.from(crypto.getRandomValues(new Uint8Array(2)), (b) => "23456789"[b % 8]).join("");
+let roster = {}; try { roster = JSON.parse(localStorage.getItem("kori-roster") || "{}"); } catch (_) {}
+let rows = [];
+$("#go").addEventListener("click", () => {
+  const c = $("#c").value.trim() || "class";
+  const base = `${location.origin}/${$("#tr").value}`;
+  rows = Array.from({ length: Math.min(40, Math.max(1, Number($("#n").value) || 1)) }, () => { const s = tok(); return { s, link: `${base}?c=${encodeURIComponent(c)}&s=${s}` }; });
+  $("#t").innerHTML = `<tr><th>№</th><th>Имя (только у вас)</th><th>Ссылка</th></tr>` + rows.map((r, i) => `<tr><td>${i + 1}</td><td><input data-s="${r.s}" placeholder="Имя ученика" aria-label="Имя ученика ${i + 1}" value="${roster[r.s] || ""}"></td><td><code>${r.link}</code></td></tr>`).join("");
+  $("#out").hidden = false;
+});
+$("#save").addEventListener("click", () => {
+  document.querySelectorAll("input[data-s]").forEach((i) => { if (i.value.trim()) roster[i.dataset.s] = i.value.trim(); });
+  try { localStorage.setItem("kori-roster", JSON.stringify(roster)); $("#save").textContent = "Сохранено"; } catch (_) { $("#save").textContent = "Не удалось сохранить"; }
+});
+$("#copy").addEventListener("click", async () => {
+  const text = rows.map((r, i) => `${i + 1}. ${roster[r.s] || ""} ${r.link}`).join("\n");
+  try { await navigator.clipboard.writeText(text); $("#copy").textContent = "Скопировано"; } catch (_) { $("#copy").textContent = "Выделите таблицу вручную"; }
+});
+$("#csv").addEventListener("click", () => {
+  const text = "﻿токен;имя;ссылка\n" + rows.map((r) => `${r.s};${roster[r.s] || ""};${r.link}`).join("\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type: "text/csv" })); a.download = `ссылки-${$("#c").value}.csv`; a.click();
+});
+})();
+</script>
+</body>
+</html>

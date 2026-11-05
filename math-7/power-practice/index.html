@@ -543,7 +543,7 @@ function render() {
     }
     $("#check").hidden = true; $("#hint").hidden = true; $("#next").hidden = false;
     $("#next").textContent = st.idx + 1 >= ROUND ? "Итоги раунда" : "Дальше";
-    $("#next").focus({ preventScroll: true });
+    // Фокус остаётся в поле: второй Enter — «Дальше». Перенос фокуса на кнопку съедал Enter и пролистывал «Верно».
     renderScore();
   }
 }

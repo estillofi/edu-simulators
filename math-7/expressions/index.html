@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тождественные преобразования</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=STIX+Two+Text:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Тренажёр-повторение: выбор навыка и уровня А/Б/В сверху, одно задание крупно, счёт раунда сбоку, Кори в углу. */
+:root{
+  --bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;
+  --teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#E3F5F8;--orange:#FF5B00;--orange-soft:#FFF0E6;
+  --ok:#1E8E5A;--ok-soft:#E5F5EC;--warn:#C2410C;--warn-soft:#FFF1E8;
+  --font:"Raleway",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --math:"STIX Two Text","Cambria Math",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font);font-variant-numeric:lining-nums}
+.page{padding-inline:clamp(10px,1.6vw,20px);padding-block:14px 150px;display:grid;gap:14px;max-width:1180px;margin:0 auto}
+.brand{margin:0 0 6px;color:var(--ink);font-weight:800;font-size:15px}
+.eyebrow{margin:0;color:var(--teal-ink);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+h1{margin:2px 0 0;color:var(--ink);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.1}
+.lead{margin:6px 0 0;max-width:760px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:0;border-radius:32px;background:var(--card);color:var(--ink);font:700 14px var(--font);padding:8px 14px;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:none}
+.seg{display:inline-flex;gap:4px;background:var(--card);border-radius:32px;padding:4px;box-shadow:0 0 0 1px var(--line)}
+.seg button{border:0;background:transparent;color:var(--ink);font:600 14px var(--font);padding:6px 12px;border-radius:32px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--teal-soft);box-shadow:0 0 0 2px var(--teal)}
+.lbl{font-size:13px;color:var(--muted);font-weight:600}
+.status{font-size:13px;color:var(--muted)}
+.status b{color:var(--ink)}
+.work{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) 280px;align-items:start}
+@media (max-width:900px){.work{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:22px 24px;display:grid;gap:16px;min-width:0}
+@media (max-width:520px){.card{padding:16px}}
+.meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;color:var(--muted);font-size:13px;font-weight:600}
+.pill{border-radius:32px;padding:3px 10px;background:var(--bg);color:var(--ink)}
+.pill.lv{background:var(--teal-soft);color:var(--teal-ink)}
+.ask{margin:0;color:var(--ink);font-weight:700;font-size:17px}
+.task{font-family:var(--math);font-size:clamp(28px,4.6vw,44px);color:var(--ink);line-height:1.35;overflow-wrap:anywhere}
+.task sup{font-size:.6em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.62em;line-height:1.05;margin:0 .08em}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .12em}
+.answer{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.answer label{font:600 26px var(--math);color:var(--ink)}
+.in{flex:1 1 220px;min-width:0;font:600 24px var(--mono);color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:14px;padding:8px 12px}
+.in.num{flex:0 1 180px}
+.in:focus{outline:none;border-color:var(--teal);background:var(--card)}
+.in[data-state="ok"]{border-color:var(--ok);background:var(--ok-soft)}
+.in[data-state="miss"]{border-color:var(--warn);background:var(--warn-soft)}
+.echo{min-height:1.4em;font:500 20px var(--math);color:var(--muted)}
+.echo b{color:var(--ink);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:0;border-radius:32px;background:var(--teal);color:#fff;font:700 15px var(--font);padding:11px 20px;cursor:pointer}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+.btn.next{background:var(--orange)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.fb{border-radius:16px;padding:12px 14px;background:var(--bg);color:var(--ink);font-size:15px}
+.fb:empty{display:none}
+.fb[data-kind="ok"]{background:var(--ok-soft)}
+.fb[data-kind="miss"]{background:var(--warn-soft)}
+.fb[data-kind="info"]{background:var(--teal-soft)}
+.fb .m{font-family:var(--math);font-size:1.12em}
+.typing{font-size:13px;color:var(--muted);margin:0}
+.side{display:grid;gap:14px}
+.score{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.score span{height:12px;border-radius:6px;background:var(--bg)}
+.score span[data-s="ok"]{background:var(--ok)}
+.score span[data-s="help"]{background:var(--teal)}
+.score span[data-s="miss"]{background:var(--warn)}
+.score span[data-s="now"]{box-shadow:inset 0 0 0 2px var(--teal)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.big{font:700 34px var(--mono);color:var(--ink);margin:0}
+.summary ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.note{font-size:13px;color:var(--muted);margin:0}
+details.teacher{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:4px 20px}
+details.teacher summary{cursor:pointer;color:var(--ink);font-weight:800;padding:12px 0}
+.log{display:grid;gap:6px;padding:0 0 16px;margin:0;list-style:none;font-size:14px}
+.log code{font:500 12px var(--mono);color:var(--muted)}
+.tag{font-size:12px;font-weight:700;border-radius:32px;padding:2px 8px}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}.tag.miss{background:var(--warn-soft);color:var(--warn)}.tag.info{background:var(--teal-soft);color:var(--teal-ink)}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="brand">Онлайн-школа Корифей</p>
+    <p class="eyebrow">Алгебра · 7 класс · МЭО 5.1 · тождественные преобразования</p>
+    <h1>Скобки и подобные слагаемые</h1>
+    <p class="lead">Раунд — 10 заданий в новом порядке. Уровни как в самостоятельных: А — база, Б — посложнее, В — повышенный. В режиме «Авто» уровень растёт после двух верных ответов подряд и снижается после двух промахов.</p>
+  </header>
+  <div class="bar"><div class="chips" id="skills" role="group" aria-label="Навык"></div></div>
+  <div class="bar"><span class="lbl">Уровень</span><div class="seg" id="levels" role="group" aria-label="Уровень"></div><span class="status" id="status"></span></div>
+  <div class="work">
+    <section class="card" id="main" aria-live="polite"></section>
+    <aside class="side">
+      <section class="card">
+        <div><p class="lbl" style="margin:0 0 6px">Раунд</p><div class="score" id="score"></div></div>
+        <div class="legend"><span><i style="background:var(--ok)"></i>с первого раза</span><span><i style="background:var(--teal)"></i>со второй попытки или с подсказкой</span><span><i style="background:var(--warn)"></i>не вышло</span></div>
+        <div><p class="lbl" style="margin:0">Серия</p><p class="big" id="streak">0</p></div>
+      </section>
+    </aside>
+  </div>
+  <details class="teacher">
+    <summary>Для учителя: журнал этого ученика</summary>
+    <p class="note" style="margin:0 0 10px">Ошибки распознаются по ответу и записываются с ID заблуждения. ID из таблицы методиста алгебры 7: <code>minus_only_first</code> (узел «Преобразование не меняет значения выражения»); остальные помечены local. События уходят на табло учителя, если страница открыта по ссылке учителя на сервере класса.</p>
+    <ul class="log" id="log"><li>Пока пусто.</li></ul>
+  </details>
+</div>
+
+<script src="../../shared/kori-algebra.js"></script>
+<script src="../../shared/kori-trace.js"></script>
+<script src="../../shared/kori-companion.js"></script>
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const { parse, show, Poly } = KoriAlgebra;
+const ROUND = 10;
+const TRAINER = "math7-expressions";
+const NODE = "math_transform_keeps_value"; // «Преобразование не меняет значения выражения»
+
+// ── Случайность ──
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+const nz = (a, b) => { let v = 0; while (!v) v = ri(a, b); return v; };
+const sg = () => (Math.random() < 0.5 ? -1 : 1);
+const VARS = [["x", "y"], ["a", "b"], ["m", "n"], ["c", "d"]];
+
+// ── Запись: в шаблоне «[2/3]» — дробь, «*» — точка умножения, остальное как в тетради ──
+const engine = (s) => s.replace(/\[(\d+)\/(\d+)\]/g, "($1/$2)");
+function disp(s) {
+  let out = "";
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === "[") { const j = s.indexOf("]", i); const [p, q] = s.slice(i + 1, j).split("/"); out += `<span class="frac"><span>${p}</span><span>${q}</span></span>`; i = j; continue; }
+    if (ch === "*") { out += " · "; continue; }
+    if (ch === "-") { const prev = s.slice(0, i).trimEnd().slice(-1); out += /[0-9a-z)\]]/i.test(prev) ? " − " : "−"; continue; }
+    if (ch === "+") { out += " + "; continue; }
+    if (ch === ".") { out += ","; continue; }
+    out += ch;
+  }
+  return out.replace(/\s+/g, " ").trim();
+}
+const num = (v) => String(v).replace(".", ",").replace("-", "−");
+const signed = (v) => (v < 0 ? `-${Math.abs(v)}` : `+${v}`);
+const lead = (v) => (v < 0 ? `-${Math.abs(v)}` : `${v}`);
+const coef = (k, v) => (k === 1 ? v : k === -1 ? `-${v}` : `${k}${v}`);
+const coefS = (k, v) => (k === 1 ? `+${v}` : k === -1 ? `-${v}` : k < 0 ? `-${Math.abs(k)}${v}` : `+${k}${v}`);
+
+// ── Заблуждения ──
+const CODES = {
+  minus_only_first: "Минус перед скобкой меняет знак только у первого слагаемого",
+  distribute_first_only: "Умножает на число только первое слагаемое скобки (local)",
+  sign_product: "Ошибается в знаке произведения (local)",
+  coef_add_instead: "Складывает коэффициенты вместо умножения (local)",
+  unlike_combined: "Складывает неподобные слагаемые: 2a − 10 → −8a (local)",
+  coef_one_lost: "Не видит коэффициент 1 у x: x − 4x → −4x (local)",
+  substitute_sign: "Подставляет значение без знака минус (local)",
+};
+const MSG = {
+  minus_only_first: "Минус перед скобкой меняет знак у <b>каждого</b> слагаемого внутри, а не только у первого.",
+  distribute_first_only: "Число перед скобкой умножается на каждое слагаемое внутри, а не только на первое.",
+  sign_product: "Числа верные, знак — нет. Сосчитай минусы среди множителей: чётно — плюс, нечётно — минус.",
+  coef_add_instead: "Коэффициенты здесь перемножают, а не складывают.",
+  unlike_combined: "Сложены неподобные слагаемые. Складывать можно только слагаемые с одинаковой буквенной частью; число без буквы — отдельно.",
+  coef_one_lost: "x — это 1 · x. Коэффициент 1 не пишут, но он есть: x − 4x = −3x.",
+  substitute_sign: "Похоже, значение подставлено без минуса. Подставляй в скобках: a = (−1,5).",
+};
+
+// ── Ошибочные «правила»: выражение переписывается так, как это сделал бы ученик с заблуждением ──
+// Работают на исходной записи: минус/число перед скобкой применяются неправильно.
+function buggy(expr, mode) {
+  const s = engine(expr);
+  // разбор на вершины: число/знак перед скобкой и слагаемые скобки
+  function parseB(str) {
+    let i = 0;
+    const peek = () => str[i];
+    function sum() {
+      const terms = [];
+      let sign = 1;
+      if (peek() === "+" || peek() === "-") sign = str[i++] === "-" ? -1 : 1;
+      terms.push({ sign, f: prod() });
+      while (peek() === "+" || peek() === "-") { const sgn = str[i++] === "-" ? -1 : 1; terms.push({ sign: sgn, f: prod() }); }
+      return terms;
+    }
+    function prod() {
+      const fs = [];
+      while (i < str.length && !"+-)".includes(peek())) {
+        if (peek() === "*") { i++; continue; }
+        if (peek() === "(") { i++; const inner = sum(); i++; fs.push({ br: inner }); continue; }
+        if (peek() === "-") break;
+        let j = i;
+        if (/[0-9.]/.test(peek())) { while (j < str.length && /[0-9.]/.test(str[j])) j++; }
+        else if (peek() === "/") { j = i + 1; while (j < str.length && /[0-9.]/.test(str[j])) j++; }
+        else j = i + 1;
+        fs.push({ atom: str.slice(i, j) }); i = j;
+      }
+      return fs;
+    }
+    return sum();
+  }
+  const toStr = (terms) => terms.map(({ sign, f }, k) => (sign < 0 ? "-" : k ? "+" : "") + prodStr(f)).join("");
+  const prodStr = (fs) => fs.map((x) => (x.br ? `(${toStr(x.br)})` : x.atom)).join("*").replace(/\*\//g, "/");
+  function rewrite(terms) {
+    const out = [];
+    for (const t of terms) {
+      const f = t.f.map((x) => (x.br ? { br: rewrite(x.br) } : x));
+      const bIdx = f.findIndex((x) => x.br);
+      const others = f.filter((x) => !x.br);
+      const onlyBracket = bIdx >= 0 && f.length === 1;
+      const k = others.length && others.every((x) => /^[0-9./]+$/.test(x.atom)) ? others.map((x) => x.atom).join("*") : null;
+      if (mode === "minus_only_first" && bIdx >= 0 && t.sign < 0 && (onlyBracket || k)) {
+        // −(p + q) → −p + q ; −k(p + q) → −kp + kq
+        const br = f[bIdx].br;
+        br.forEach((u, idx) => out.push({ sign: idx === 0 ? -u.sign : u.sign, f: k ? [{ atom: k }, ...u.f] : u.f }));
+        continue;
+      }
+      if (mode === "distribute_first_only" && bIdx >= 0 && k && f.length === 2) {
+        const br = f[bIdx].br;
+        br.forEach((u, idx) => out.push({ sign: t.sign * (idx === 0 ? u.sign : 1) * (idx === 0 ? 1 : u.sign), f: idx === 0 ? [{ atom: k }, ...u.f] : u.f }));
+        continue;
+      }
+      out.push({ sign: t.sign, f });
+    }
+    return out;
+  }
+  try { return parse(toStr(rewrite(parseB(s)))).poly; } catch (_) { return null; }
+}
+
+// ── Банк шаблонов ──
+// Шаблон → { ask, expr, kind: "expr"|"num", at, hint3, extra: [{code, poly}] }
+const SK = {
+  mult: { title: "Законы умножения", ask: "Преобразуйте выражение, используя законы умножения" },
+  brackets: { title: "Раскрытие скобок", ask: "Раскройте скобки" },
+  like: { title: "Подобные слагаемые", ask: "Раскройте скобки и приведите подобные слагаемые" },
+  value: { title: "Значение выражения", ask: "" },
+};
+const T = { mult: { 1: [], 2: [], 3: [] }, brackets: { 1: [], 2: [], 3: [] }, like: { 1: [], 2: [], 3: [] }, value: { 1: [], 2: [], 3: [] } };
+const def = (skill, level, id, gen) => T[skill][level].push({ id, gen });
+const D1 = [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.5, 2.5];
+
+// 1. Законы умножения (как №1 самостоятельной С-1)
+def("mult", 1, "mono2", () => { const [u, v] = pick(VARS); const a = nz(-9, 9), b = nz(-9, 9); const e = `${lead(a)}${u}*(${lead(b)}${v})`;
+  return { expr: e, extra: [{ code: "coef_add_instead", poly: parse(`${a + b}${u}${v}`).poly }], hint3: `${num(a)} · ${num(b)} = ? Буквы просто запиши рядом: ${u}${v}.` }; });
+def("mult", 1, "k_br", () => { const [u] = pick(VARS); const k = nz(-9, 9), c = ri(1, 9), s = sg(); const e = `${lead(k)}(${u}${signed(s * c)})`;
+  return { expr: e, hint3: `${num(k)} · ${u} ${s > 0 ? "+" : "+"} ${num(k)} · (${num(s * c)}) = …` }; });
+def("mult", 1, "br_k", () => { const [u] = pick(VARS); const a = ri(2, 9), c = ri(1, 9), k = nz(-5, 5), s = sg(); const e = `(${a}${u}${signed(s * c)})*${k < 0 ? `(${k})` : k}`;
+  return { expr: e, hint3: `Каждое слагаемое скобки умножь на ${num(k)}: ${a}${u} · ${num(k)} и ${num(s * c)} · ${num(k)}.` }; });
+def("mult", 2, "mono_dec", () => { const [u, v] = pick(VARS); const a = pick(D1) * sg(), b = nz(-9, 9); const e = `${lead(a)}${u}*(${lead(b)}${v})`;
+  return { expr: e, extra: [{ code: "coef_add_instead", poly: parse(`${+(a + b).toFixed(2)}${u}${v}`).poly }], hint3: `${num(a)} · ${num(b)} = ?` }; });
+def("mult", 2, "br_dec", () => { const [u] = pick(VARS); const a = ri(2, 9), c = ri(1, 5), k = pick([0.2, 0.1, 0.5, 0.3]) * sg(), s = sg(); const e = `(${a}${u}${signed(s * c)})*(${lead(k)})`;
+  return { expr: e, hint3: `${a}${u} · (${num(k)}) и ${num(s * c)} · (${num(k)}).` }; });
+def("mult", 2, "k_negbr", () => { const [u] = pick(VARS); const k = nz(-6, 6), c = ri(1, 9), s = sg(); const e = `${lead(k)}(-${u}${signed(s * c)})`;
+  return { expr: e, hint3: `Внутри скобки первое слагаемое −${u}. ${num(k)} · (−${u}) = ?` }; });
+def("mult", 3, "mono3", () => { const [u, v] = pick(VARS); const a = pick([2.5, 1.5, 0.5, 4]) * sg(), b = nz(-8, 8), c = pick([0.1, 0.2, 0.5]) * sg(); const e = `${lead(a)}${u}*(${lead(b)}${v})*(${lead(c)})`;
+  return { expr: e, hint3: `Сначала знак: сколько минусов среди трёх множителей? Потом ${num(Math.abs(a))} · ${Math.abs(b)} · ${num(Math.abs(c))}.` }; });
+def("mult", 3, "br3_k", () => { const [u, v] = pick(VARS); const a = ri(1, 4), c = pick([1.2, 1.6, 2.4, 0.8]), k = nz(-5, 5), s = sg(); const e = `(${v}-${a}${u}${signed(s * c)})*${k < 0 ? `(${k})` : k}`;
+  return { expr: e, hint3: `В скобке три слагаемых — умножь на ${num(k)} каждое.` }; });
+def("mult", 3, "dec_br3", () => { const [u, v] = pick(VARS); const k = pick([1.2, -2.1, 0.5, -1.5]), a = ri(2, 4), c = ri(1, 3); const e = `${lead(k)}(${a}${u}-${v}+${c})`;
+  return { expr: e, hint3: `${num(k)} · ${a}${u}, ${num(k)} · (−${v}), ${num(k)} · ${c}.` }; });
+
+// 2. Раскрытие скобок (знак перед скобкой, вложенные скобки — №5)
+def("brackets", 1, "minus_sum", () => { const [a, b] = pick(VARS); const c = pick(["c", "d", "t", "z"]); const e = `${a}-(${b}+${c})`; return { expr: e, hint3: `Минус перед скобкой: ${b} → −${b}, +${c} → −${c}.` }; });
+def("brackets", 1, "minus_diff", () => { const [a, b] = pick(VARS); const c = pick(["c", "d", "t", "z"]); const e = `${a}-(${b}-${c})`; return { expr: e, hint3: `Минус перед скобкой меняет оба знака: ${b} → −${b}, −${c} → +${c}.` }; });
+def("brackets", 1, "plus_br", () => { const [a, b] = pick(VARS); const c = pick(["c", "d", "t", "z"]); const e = `${a}+(${b}-${c})`; return { expr: e, hint3: "Плюс перед скобкой: знаки внутри не меняются." }; });
+def("brackets", 1, "lead_minus", () => { const [a, b] = pick(VARS); const c = pick(["c", "d", "t", "z"]); const e = `-(${a}-${b})+${c}`; return { expr: e, hint3: `−(${a} − ${b}) = −${a} … ${b}?` }; });
+def("brackets", 2, "coef_minus", () => { const [a, b] = pick(VARS); const c = pick(["c", "d", "t"]); const p = ri(2, 9), q = ri(2, 9); const e = `${p}${a}-(${q}${b}-${c})`; return { expr: e, hint3: `Знаки внутри скобки: ${q}${b} → −${q}${b}, −${c} → +${c}.` }; });
+def("brackets", 2, "num_minus", () => { const [a, b] = pick(VARS); const p = ri(2, 9), q = ri(1, 9); const e = `${p}-(${a}-${b}+${q})`; return { expr: e, hint3: "Минус перед скобкой: поменяй знак у всех трёх слагаемых, потом сложи числа." }; });
+def("brackets", 2, "two_br", () => { const [a, b] = pick(VARS); const c = pick(["c", "d", "t"]); const e = `(${a}-${b})-(${c}-${b})`; return { expr: e, hint3: "Первая скобка — плюс перед ней, вторая — минус." }; });
+def("brackets", 3, "nest1", () => { const [a, b] = pick(VARS); const d = pick(["c", "d", "t"]); const e = `${a}-(${b}-(${a}+${d}))`; return { expr: e, hint3: `Начни с внутренней: ${b} − (${a} + ${d}) = ${b} − ${a} − ${d}. Потом внешняя скобка.` }; });
+def("brackets", 3, "nest2", () => { const [a, b] = pick(VARS); const d = pick(["c", "d", "t"]); const e = `${a}-(${b}+(${a}-${d}))`; return { expr: e, hint3: `Внутренняя: ${b} + (${a} − ${d}) = ${b} + ${a} − ${d}.` }; });
+def("brackets", 3, "nest3", () => { const [a, b] = pick(VARS); const p = ri(2, 6); const e = `${p}${a}-(${p - 1}${a}-(${p - 2 || 1}${a}-${b}))`; return { expr: e, hint3: "Раскрывай изнутри наружу и следи за знаком перед каждой скобкой." }; });
+
+// 3. Подобные слагаемые (как №2)
+def("like", 1, "sum_br", () => { const [u] = pick(VARS); const a = ri(2, 9), b = ri(1, 9), c = ri(2, 9), d = ri(1, 9); const e = `${a}${u}-${b}+(${c}${u}-${d})`; return { expr: e, hint3: `Плюс перед скобкой — пиши как есть: ${a}${u} − ${b} + ${c}${u} − ${d}. Теперь подобные.` }; });
+def("like", 1, "diff_br", () => { const [u] = pick(VARS); const a = ri(2, 9), b = ri(1, 9), c = ri(2, 9), d = ri(1, 9); const e = `(${a}-${u})-(${c}-${b}${u})`; return { expr: e, hint3: `−(${c} − ${b}${u}) = −${c} + ${b}${u}.` }; });
+def("like", 1, "k_br_sum", () => { const [u] = pick(VARS); const p = ri(2, 9), k = ri(2, 4), a = pick([1.5, 2.5, 0.5, 3]), c = ri(1, 5); const e = `${p}+${k}(${a}${u}-${c})`; return { expr: e, hint3: `Сначала ${k} · ${num(a)}${u} и ${k} · (−${c}), потом сложи числа.` }; });
+def("like", 2, "two_vars", () => { const [u, v] = pick(VARS); const a = ri(2, 9), b = ri(1, 5), c = ri(2, 9), d = ri(1, 5); const e = `(${a}${u}-${coef(b, v)})-${c}${u}+${d}${v}`; return { expr: e, hint3: `Подобные: все с ${u} — вместе, все с ${v} — вместе.` }; });
+def("like", 2, "dec_minus", () => { const [u] = pick(VARS); const a = ri(2, 9), b = pick([0.4, 0.5, 0.2]), c = pick([0.4, 0.5, 0.2]), d = ri(1, 5); const e = `-(${a}${u}-${b})+(${c}${u}-${d})`; return { expr: e, hint3: `−(${a}${u} − ${num(b)}) = −${a}${u} + ${num(b)}.` }; });
+def("like", 2, "k_minus_x", () => { const [u] = pick(VARS); const p = ri(5, 12), k = ri(2, 4), c = ri(1, 5); const e = `${p}-${k}(${u}+${c})+${u}`; return { expr: e, hint3: `−${k}(${u} + ${c}) = −${k}${u} − ${k * c}. И не забудь: ${u} — это 1${u}.` }; });
+def("like", 3, "dec2", () => { const [u, v] = pick(VARS); const a = pick([2.1, 4.6, 1.3]), b = pick([3.4, 2.5, 1.8]), c = pick([2.6, 3.8, 0.7]); const e = `${a}${v}-${b}${u}-(${v}-${c}${u})`; return { expr: e, hint3: `−(${v} − ${num(c)}${u}) = −${v} + ${num(c)}${u}.` }; });
+def("like", 3, "three_br", () => { const [u] = pick(VARS); const a = ri(2, 6), b = ri(5, 15), c = ri(2, 12), d = ri(2, 4); const e = `${u}-(${a}${u}-${b})+(${c}-${d}${u})`; return { expr: e, hint3: `${u} − ${a}${u} + ${b} + ${c} − ${d}${u}. Сложи все с ${u} и все числа.` }; });
+def("like", 3, "frac_br", () => { const [u] = pick(VARS); const p = ri(6, 12), k = pick([9, 6, 3]), a = ri(2, 6), q = ri(10, 20); const e = `${p}-${k}(${u}-[2/3])+${a}${u}-${q}`; return { expr: e, hint3: `−${k} · (−2/3) = +${k * 2 / 3}.` }; });
+
+// 4. Значение выражения (как №3 и №4)
+const valGen = (level, id, build) => def("value", level, id, build);
+valGen(1, "val1", () => { const [u] = pick(VARS); const p = ri(2, 5), q = ri(1, 5), r = ri(2, 6); const at = pick([-1.5, -2, 2.5, -0.5, 3]); const e = `${p}(${u}-${q})-(${u}+${r})`;
+  return { expr: e, kind: "num", at: { [u]: at }, ask: `Упростите выражение и найдите его значение при ${u} = ${num(at)}`, hint3: `Сначала упрости: ${show(parse(engine(e)).poly).replace(/<[^>]+>/g, "")}. Потом подставь ${u} = ${num(at)} в скобках.` }; });
+valGen(1, "val2", () => { const [u] = pick(VARS); const p = ri(2, 4), q = ri(2, 6), r = ri(1, 3); const at = pick([-1.5, -2.5, 1.5, -3]); const e = `${p}(${u}-${q})-(${r}-${p}${u})`;
+  return { expr: e, kind: "num", at: { [u]: at }, ask: `Упростите выражение и найдите его значение при ${u} = ${num(at)}`, hint3: `Упрощённое выражение: ${show(parse(engine(e)).poly).replace(/<[^>]+>/g, "")}.` }; });
+valGen(2, "val_ab", () => { const [u, v] = pick(VARS); const p = ri(2, 5), q = ri(2, 5); const at = { [u]: pick([-1.5, 2, -2]), [v]: pick([-1, 1, 3]) }; const e = `${p}(${u}-${q}${v})-${q + 2}(${u}-2${v})`;
+  return { expr: e, kind: "num", at, ask: `Упростите выражение и найдите его значение при ${u} = ${num(at[u])} и ${v} = ${num(at[v])}`, hint3: `Упрощённое: ${show(parse(engine(e)).poly).replace(/<[^>]+>/g, "")}.` }; });
+valGen(2, "const_y", () => { const [, v] = pick(VARS); const a = ri(2, 8), b = ri(2, 5), c = ri(1, 4); const k = a * b; const e = `${a}(${b}${v}-${c})-${b}(${a}${v}-${c + 1})+${a}`;
+  return { expr: e, kind: "num", at: { [v]: 7 }, ask: `Докажите, что значение выражения не зависит от ${v}: упростите и запишите, чему оно равно`, hint3: `После раскрытия скобок слагаемые с ${v} должны сократиться.` }; });
+valGen(3, "frac_val", () => { const [u] = pick(VARS); const at = pick([-1 / 3, 1 / 3, -2 / 3]); const e = `2(0.3${u}-1)-[2/5](3${u}-5)`;
+  return { expr: e, kind: "num", at: { [u]: at }, ask: `Упростите выражение и вычислите его значение при ${u} = ${at < 0 ? "−" : ""}${Math.round(Math.abs(at) * 3)}/3`, hint3: `Упрощённое: ${show(parse(engine(e)).poly).replace(/<[^>]+>/g, "")}. Ответ можно записать дробью: −1/3.` }; });
+valGen(3, "nest_const", () => { const [, v] = pick(VARS); const p = ri(8, 14), q = ri(2, 4), r = ri(2, 5); const e = `-(${p}${v}-${q}(${v}-${r}))+${p - q}${v}`;
+  return { expr: e, kind: "num", at: { [v]: 5 }, ask: `Докажите, что значение выражения не зависит от ${v}: упростите и запишите, чему оно равно`, hint3: "Раскрой внутреннюю скобку, потом внешнюю — у неё минус." }; });
+
+// ── Задание из шаблона ──
+function makeTask(skill, level) {
+  const tpl = pick(T[skill][level]);
+  const g = tpl.gen();
+  const correct = parse(engine(g.expr)).poly;
+  const kind = g.kind || "expr";
+  const traps = [];
+  for (const mode of ["minus_only_first", "distribute_first_only"]) {
+    const p = buggy(g.expr, mode);
+    if (p && !p.eq(correct) && !traps.some((t) => t.poly.eq(p))) traps.push({ code: mode, poly: p });
+  }
+  (g.extra || []).forEach((x) => { if (!x.poly.eq(correct)) traps.push(x); });
+  const value = kind === "num" ? correct.evalAt(g.at) : null;
+  return { skill, level, template: `${skill}.${tpl.id}`, item_id: `${skill}.${tpl.id}:${g.expr}`, expr: g.expr, ask: g.ask || SK[skill].ask, kind, at: g.at, correct, value, traps, hint3: g.hint3 };
+}
+
+// ── Проверка ответа ──
+const close = (a, b) => Math.abs(a - b) < 1e-6 * Math.max(1, Math.abs(b));
+function parseNumber(s) {
+  const c = String(s).trim().replace(/[\s ]/g, "").replace(/[−–—]/g, "-").replace(",", ".");
+  const fr = c.match(/^(-?\d+(?:\.\d+)?)\/(\d+)$/);
+  if (fr) return Number(fr[1]) / Number(fr[2]);
+  return /^-?\d*\.?\d+$/.test(c) ? Number(c) : NaN;
+}
+function check(task, raw) {
+  if (task.kind === "num") {
+    const x = parseNumber(raw);
+    if (!Number.isFinite(x)) return { state: "format", msg: "Запиши число. Дробь можно так: −1/3, десятичную — через запятую." };
+    if (close(x, task.value)) return { state: "ok" };
+    for (const t of task.traps) if (close(x, t.poly.evalAt(task.at))) return { state: "miss", code: t.code, msg: MSG[t.code] };
+    const flipped = Object.fromEntries(Object.entries(task.at).map(([k, v]) => [k, -v]));
+    if (close(x, task.correct.evalAt(flipped))) return { state: "miss", code: "substitute_sign", msg: MSG.substitute_sign };
+    if (close(x, -task.value)) return { state: "miss", code: null, msg: "Знак получился противоположный. Проверь, как подставлен минус." };
+    return { state: "miss", code: null, msg: "Не сходится. Сначала упрости выражение, а потом подставляй — так меньше вычислений." };
+  }
+  let r;
+  try { r = parse(raw); } catch (e) { return { state: "format", msg: `Не получилось прочитать: ${e.message}. Пиши как в тетради: 5x − 5, −6xy, 2,5a + b.` }; }
+  const p = r.poly;
+  if (p.eq(task.correct)) {
+    if (r.info.parens) return { state: "format", msg: "Значение верное, но скобки ещё не раскрыты. Раскрой их до конца." };
+    if (r.info.likeLeft) return { state: "format", msg: "Верно, но подобные слагаемые ещё не приведены. Сложи их." };
+    return { state: "ok" };
+  }
+  for (const t of task.traps) if (p.eq(t.poly)) return { state: "miss", code: t.code, msg: MSG[t.code] };
+  if (p.eq(task.correct.neg())) return { state: "miss", code: "sign_product", msg: MSG.sign_product };
+  // Сложены неподобные: одно слагаемое, коэффициент = сумме коэффициентов верного ответа
+  const cs = [...task.correct.m.values()].reduce((s, q) => s + q.val(), 0);
+  if (p.terms() === 1 && task.correct.terms() >= 2 && close([...p.m.values()][0].val(), cs)) return { state: "miss", code: "unlike_combined", msg: MSG.unlike_combined };
+  // x без коэффициента принят за 0
+  const lostOne = (() => { for (const [k, q] of task.correct.m) { if (!k) continue; for (const d of [1, -1]) { const alt = new Poly(new Map(task.correct.m)); const v = q.val() - d; if (Math.abs(v) < 1e-9) alt.m.delete(k); else alt.m.set(k, KoriAlgebra.Q.of(+v.toFixed(6))); if (alt.eq(p)) return true; } } return false; })();
+  if (lostOne && /(^|[^0-9.,a-z])[a-z]/i.test(task.expr)) return { state: "miss", code: "coef_one_lost", msg: MSG.coef_one_lost };
+  // Проверка числами — приём из таблицы методиста
+  const env = {}; for (const v of "abcdmnxytz") env[v] = 2;
+  const want = task.correct.evalAt(env), got = p.evalAt(env);
+  const vs = [...new Set([...engine(task.expr)].filter((ch) => /[a-z]/.test(ch)))];
+  return { state: "miss", code: null, msg: `Проверь числами: при ${vs.map((v) => `${v} = 2`).join(", ")} исходное выражение равно ${num(+want.toFixed(4))}, а твоё — ${num(+got.toFixed(4))}.` };
+}
+
+// ── Подсказки (говорит Кори) ──
+const HINTS = {
+  mult: ["Сначала знак: сколько минусов среди множителей?", "Числа перемножай с числами, буквы пиши рядом. Скобку умножай на каждое слагаемое внутри."],
+  brackets: ["Какой знак стоит перед скобкой?", "Плюс перед скобкой — знаки внутри не меняются. Минус — меняется знак у каждого слагаемого. Вложенные скобки раскрывай изнутри."],
+  like: ["Сначала раскрой скобки, потом найди слагаемые с одинаковой буквенной частью.", "x — это 1x. Числа без букв подобны между собой. Складывай коэффициенты, буквенную часть оставляй."],
+  value: ["Сначала упрости, потом подставляй — так меньше вычислений.", "Отрицательное значение подставляй в скобках: a = (−1,5)."],
+};
+
+// ── Состояние ──
+const st = { skill: "like", levelMode: "auto", level: 1, round: [], idx: 0, results: [], streak: 0, upRun: 0, downRun: 0, errors: {}, done: false };
+const log = [];
+let cur = null; // { task, trace, tries, hints }
+
+function renderControls() {
+  $("#skills").innerHTML = [...Object.entries(SK), ["mix", { title: "Всё вперемешку" }]].map(([k, v]) => `<button type="button" data-skill="${k}" aria-pressed="${k === st.skill}">${v.title}</button>`).join("");
+  $$("[data-skill]").forEach((b) => b.addEventListener("click", () => { st.skill = b.dataset.skill; st.levelSet = false; renderControls(); newRound(); }));
+  $("#levels").innerHTML = [["auto", "Авто"], ["1", "А"], ["2", "Б"], ["3", "В"]].map(([v, l]) => `<button type="button" data-lv="${v}" aria-pressed="${st.levelMode === v}">${l}</button>`).join("");
+  $$("[data-lv]").forEach((b) => b.addEventListener("click", () => { st.levelMode = b.dataset.lv; st.levelSet = false; renderControls(); newRound(); }));
+}
+const LV = { 1: "А", 2: "Б", 3: "В" };
+function newRound() {
+  Object.assign(st, { round: [], results: [], idx: 0, errors: {}, done: false, upRun: 0, downRun: 0 });
+  if (st.levelMode !== "auto") st.level = Number(st.levelMode); else if (!st.levelSet) { st.level = 1; st.levelSet = true; }
+  KoriTrace.emit("round_start", { skill: st.skill, level_mode: st.levelMode });
+  next(true);
+}
+function next(first) {
+  if (!first) st.idx++;
+  if (st.idx >= ROUND) { st.done = true; KoriTrace.emit("round_end", { skill: st.skill, results: st.results, level: st.level }); render(); return; }
+  const skill = st.skill === "mix" ? pick(Object.keys(SK)) : st.skill;
+  let task, guard = 0;
+  do { task = makeTask(skill, st.level); } while (st.round.some((t) => t.item_id === task.item_id) && guard++ < 20);
+  st.round[st.idx] = task;
+  cur = { task, trace: KoriTrace.item({ item_id: task.item_id, skill: task.skill, node: NODE, level: task.level, template: task.template }), tries: 0, hints: 0 };
+  render();
+}
+function renderScore() {
+  $("#score").innerHTML = Array.from({ length: ROUND }, (_, i) => `<span data-s="${st.results[i] || (i === st.idx && !st.done ? "now" : "")}"></span>`).join("");
+  $("#streak").textContent = st.streak;
+}
+function render() {
+  renderScore();
+  const main = $("#main");
+  if (st.done) {
+    const ok = st.results.filter((r) => r === "ok").length, help = st.results.filter((r) => r === "help").length;
+    const errs = Object.entries(st.errors).sort((a, b) => b[1] - a[1]);
+    main.innerHTML = `<div class="summary"><p class="lbl" style="margin:0">Раунд окончен</p>
+      <h2 style="margin:4px 0 8px;color:var(--ink);font-size:24px">${ok} из ${ROUND} с первого раза${help ? `, ещё ${help} со второй попытки` : ""}</h2>
+      <p style="margin:0 0 10px">Уровень в конце раунда: ${LV[st.level]}.</p>
+      ${errs.length ? `<p style="margin:0 0 6px;color:var(--ink);font-weight:700">Над чем поработать</p><ul>${errs.map(([c, n]) => `<li>${CODES[c].replace(/ \(local\)/, "")} — ${n}×</li>`).join("")}</ul>` : `<p style="margin:0;color:var(--ink);font-weight:700">Типичных ошибок не было.</p>`}</div>
+      <div class="row"><button class="btn next" type="button" id="again">Ещё раунд</button></div>`;
+    $("#again").addEventListener("click", newRound);
+    if (ok >= 8) KoriCompanion.correct({ levelUp: true });
+    return;
+  }
+  const t = cur.task;
+  const isNum = t.kind === "num";
+  main.innerHTML = `<div class="meta"><span class="pill">Задание ${st.idx + 1} из ${ROUND}</span><span class="pill lv">Уровень ${LV[t.level]}${st.levelMode === "auto" ? " · авто" : ""}</span><span>${SK[t.skill].title}</span></div>
+    <p class="ask">${t.ask}</p>
+    <div class="task">${disp(t.expr)}</div>
+    <div class="answer"><label for="ans">${isNum ? "Ответ:" : "="}</label><input class="in${isNum ? " num" : ""}" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="${isNum ? "decimal" : "text"}" aria-label="Ответ"></div>
+    ${isNum ? "" : `<div class="echo" id="echo"></div><p class="typing">Пиши как в тетради: 5x − 5, −6xy, 2,5a + b. Буквы можно латинские или русские а, х, у.</p>`}
+    <div class="row"><button class="btn" type="button" id="check">Проверить</button><button class="btn ghost" type="button" id="hint">Подсказка</button><button class="btn next" type="button" id="next" hidden>Дальше</button></div>
+    <p class="fb" id="fb"></p>`;
+  const inp = $("#ans");
+  inp.focus({ preventScroll: true });
+  inp.addEventListener("input", () => { const e = $("#echo"); if (e) e.innerHTML = inp.value.trim() ? `Как я прочитал: <b>${disp(inp.value.toLowerCase().replace(/[−–—]/g, "-").replace(/,/g, ".").replace(/\s+/g, ""))}</b>` : ""; });
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") ($("#next").hidden ? onCheck() : next()); });
+  $("#check").addEventListener("click", onCheck);
+  $("#next").addEventListener("click", () => next());
+  $("#hint").addEventListener("click", onHint);
+}
+function say(kind, html) { const fb = $("#fb"); fb.dataset.kind = kind; fb.innerHTML = html; }
+function onHint() {
+  const t = cur.task;
+  const steps = [...HINTS[t.skill], t.hint3];
+  if (cur.hints >= steps.length) return;
+  const text = steps[cur.hints++];
+  cur.trace.hint(cur.hints);
+  record("info", t, `подсказка ${cur.hints}`);
+  if (KoriCompanion.quiet) say("info", `<b>Подсказка ${cur.hints}.</b> ${text}`);
+  else KoriCompanion.hint(text, `Подсказка ${cur.hints} из ${steps.length}`);
+  if (cur.hints >= steps.length) $("#hint").disabled = true;
+}
+function onCheck() {
+  const t = cur.task, inp = $("#ans");
+  if (!inp.value.trim()) { say("miss", "Запиши ответ."); return; }
+  const res = check(t, inp.value);
+  if (res.state === "format") { say("info", res.msg); return; } // не попытка: недописано или не прочитано
+  cur.tries++;
+  cur.trace.attempt({ correct: res.state === "ok", answer: inp.value, misconception: res.code || null });
+  const solution = t.kind === "num" ? `${disp(t.expr)} = ${show(t.correct)}; значение: ${num(+t.value.toFixed(6))}` : `${disp(t.expr)} = ${show(t.correct)}`;
+  if (res.state === "ok") {
+    const r = cur.tries === 1 && cur.hints === 0 ? "ok" : "help";
+    finish(r);
+    inp.dataset.state = "ok";
+    say("ok", `Верно! <span class="m">${solution}</span>`);
+    record("ok", t, inp.value);
+    return;
+  }
+  if (res.code) st.errors[res.code] = (st.errors[res.code] || 0) + 1;
+  record("miss", t, inp.value, res.code);
+  inp.dataset.state = "miss";
+  KoriCompanion.wrong();
+  if (cur.tries >= 2) { finish("miss"); say("miss", `${res.msg}<br><b>Решение:</b> <span class="m">${solution}</span>`); }
+  else say("miss", `${res.msg} Попробуй ещё раз.`);
+}
+function finish(r) {
+  st.results[st.idx] = r;
+  const before = st.level;
+  if (r === "ok") { st.streak++; st.upRun++; st.downRun = 0; } else { st.streak = 0; st.upRun = 0; if (r === "miss") st.downRun++; }
+  if (st.levelMode === "auto") {
+    if (st.upRun >= 2 && st.level < 3) { st.level++; st.upRun = 0; }
+    if (st.downRun >= 2 && st.level > 1) { st.level--; st.downRun = 0; }
+  }
+  cur.trace.end({ result: r, level_after: st.level });
+  if (r !== "miss") KoriCompanion.correct({ streak: st.streak, hard: cur.task.level === 3 && r === "ok", levelUp: st.level > before });
+  $("#check").hidden = true; $("#hint").hidden = true; $("#next").hidden = false;
+  $("#next").textContent = st.idx + 1 >= ROUND ? "Итоги раунда" : "Дальше";
+  // Фокус остаётся в поле: второй Enter — «Дальше». Перенос фокуса на кнопку съедал Enter и пролистывал «Верно».
+  renderScore();
+}
+function record(kind, t, text, code = null) {
+  log.push({ kind, t, text, code });
+  $("#log").innerHTML = log.slice(-60).reverse().map((e) => `<li><span class="tag ${e.kind}">${e.kind === "ok" ? "верно" : e.kind === "miss" ? "ошибка" : "подсказка"}</span> ${SK[e.t.skill].title}, ${LV[e.t.level]}: <span class="m">${disp(e.t.expr)}</span> → ${String(e.text).replace(/</g, "&lt;")}${e.code ? ` <code>${e.code}</code>` : ""}</li>`).join("");
+}
+
+// ── Старт ──
+renderControls();
+KoriCompanion.mount({ base: "../../shared/kori/" });
+KoriTrace.init({ trainer: TRAINER, version: "1" }).then(() => {
+  $("#status").innerHTML = KoriTrace.online ? `Ответы видит учитель · <b>${KoriTrace.klass || "без класса"}</b>` : "Режим без учителя: ответы видны только здесь";
+});
+KoriCompanion.welcome("Привет! Я Кори. Если застрянешь — нажми «Подсказка», я помогу.");
+newRound();
+// Для самопроверки банка из консоли и тестов
+window.__expr = { makeTask, check, T, buggy, disp };
+})();
+</script>
+</body>
+</html>
