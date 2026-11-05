@@ -41,7 +41,8 @@
 
   async function findServer() {
     const explicit = pick("srv");
-    const base = explicit ? explicit.replace(/\/$/, "") : location.protocol.startsWith("http") ? location.origin : null;
+    // На GitHub Pages сервера класса нет — не стучимся зря.
+    const base = explicit ? explicit.replace(/\/$/, "") : location.protocol.startsWith("http") && !location.hostname.endsWith("github.io") ? location.origin : null;
     if (!base) return null;
     try {
       const r = await fetch(`${base}/api/ping`, { cache: "no-store" });
