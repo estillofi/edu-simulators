@@ -556,7 +556,7 @@ svg.has-sel .zone.over{fill:rgba(0,163,185,.18)}
 .item{cursor:grab}
 .item.sel>g,.item:focus-visible>g{filter:drop-shadow(0 0 4px #FF5B00) drop-shadow(0 0 2px #FF5B00)}
 .item:focus{outline:none}
-.item.dragging{cursor:grabbing;filter:drop-shadow(0 8px 6px rgba(11,34,51,.35))}
+.item.dragging{cursor:grabbing;opacity:.92}
 #notebook{position:absolute;inset:0;overflow:auto;padding:18px 22px;color:var(--ink);background:var(--card)}
 #notebook h3{margin:0 0 6px;font-size:18px}
 #notebook .exam{background:#fff;border:1.5px solid #111;border-radius:6px;padding:14px 16px;color:#111;max-width:760px}
@@ -618,6 +618,14 @@ table.big.mini td{height:18px}
 .breath .dot{position:absolute;width:26px;height:26px;margin:-16px 0 0 -16px;border-radius:50%;background:#FF5B00;box-shadow:0 0 0 6px rgba(255,91,0,.2);animation:breath-run 16s linear infinite}
 @keyframes breath-run{0%{left:0;top:100%}25%{left:0;top:0}50%{left:100%;top:0}75%{left:100%;top:100%}100%{left:0;top:100%}}
 @media (prefers-reduced-motion:reduce){.breath .dot{animation:none;left:0;top:100%}}
+
+/* Таблица на всю работу целиком в панели, без прокрутки вбок */
+.tbl-wrap:has(table.big.fit){overflow:visible}
+table.big.fit{width:100%;table-layout:fixed;font-size:12px}
+table.big.fit th,table.big.fit td{white-space:normal;padding:4px 3px;line-height:1.2}
+table.big.fit td{height:22px}
+table.big.fit th:first-child,table.big.fit td:first-child{width:6%}
+table.big.fit th:nth-child(2),table.big.fit td:nth-child(2){width:19%;overflow-wrap:anywhere}
 </style>
 <header class="top">
   <div class="title"><small>Онлайн-школа Корифей · Физика · 7 класс</small><b>Определение плотности твёрдого тела</b><span class="act" id="act"></span></div>
@@ -625,7 +633,7 @@ table.big.mini td{height:18px}
   <div class="seg" id="mode" role="group" aria-label="Режим">
     <button type="button" data-mode="teacher" aria-pressed="true">Ведёт учитель</button><button type="button" data-mode="student" aria-pressed="false">Ученик сам</button>
   </div>
-  <button class="btn warn sm" type="button" id="reset" title="Сбросить только этот прибор">Сброс</button>
+  <button class="btn warn sm" type="button" id="reset" title="На весах убирает только гири; тела и полоски остаются">Сброс</button>
 </header>
 <main class="work">
   <section class="stage" aria-label="Лабораторный стол">
@@ -1209,9 +1217,9 @@ const LAB = (() => {
   }
   function dry() { if (!st.wet.size) { say("Все тела сухие."); return; } st.wet.clear(); say("Тела вытерты."); emit("dry"); render(); }
   function clearWeights() { WEIGHTS.forEach((w) => (st.place[w.id] = "box")); say("Гири убраны в футляр."); emit("clearWeights"); render(); kick(); }
-  // Сброс работает только на текущем приборе: полоски на весах остаются.
+  // Сброс работает только на текущем приборе. На весах — только гири: тела и полоски бумаги остаются.
   function resetScreen() {
-    if (st.screen === "scales") { WEIGHTS.forEach((w) => (st.place[w.id] = "box")); BODIES.forEach((b) => { if (st.place[b.id] === "L" || st.place[b.id] === "R") st.place[b.id] = "tray"; }); say("Чаши пусты: гири в футляре, тела в лотке. Полоски бумаги остались."); }
+    if (st.screen === "scales") { WEIGHTS.forEach((w) => (st.place[w.id] = "box")); say("Гири убраны в футляр. Тела и полоски бумаги на месте."); }
     else if (st.screen === "cyl") { BODIES.forEach((b) => { if (st.place[b.id] === "cyl") st.place[b.id] = "tray"; }); st.wet.clear(); say("Мензурка пустая, тела сухие."); }
     else if (st.screen === "ruler") { st.square = { ...SQUARE0 }; say("Уголок на месте."); }
     st.selected = null;
@@ -1353,6 +1361,7 @@ const LAB = (() => {
   }
 
   function render() {
+    if (drag) return;
     const lupa = $("#lupa");
     lupa.hidden = !(st.screen === "scales" || st.screen === "cyl");
     lupa.style.cssText = st.screen === "cyl" ? "left:4%;top:7%;width:clamp(170px,25%,280px)" : "left:4%;top:5%";
@@ -1424,43 +1433,48 @@ const LAB = (() => {
     for (const b of boxes) { const dx = Math.max(b.x0 - x, 0, x - b.x1), dy = Math.max(b.y0 - y, 0, y - b.y1), d = Math.hypot(dx, dy); if (d < bd) { bd = d; best = b.zone; } }
     return best;
   }
+  // Предмет в руке: пока его тащат, сцена не перерисовывается и не выбивает его из-под курсора.
+  let drag = null;
   function wireItems() {
     const s = svg();
     s.classList.toggle("has-sel", !!st.selected);
     s.querySelectorAll(".zone").forEach((z) => z.addEventListener("click", () => { if (st.selected) move(st.selected, z.dataset.zone); }));
     s.querySelectorAll(".item").forEach((g) => {
       const id = g.dataset.id;
-      let start = null;
       g.addEventListener("pointerdown", (ev) => {
-        if (ev.button > 0) return;
+        if (ev.button > 0 || drag) return;
         ev.preventDefault(); ev.stopPropagation();
-        try { g.setPointerCapture(ev.pointerId); } catch (_) {}
-        const p = point(ev); start = { x: p.x, y: p.y, moved: false };
+        const p0 = point(ev);
+        const d = (drag = { id, x: p0.x, y: p0.y, moved: false, pid: ev.pointerId });
+        try { s.setPointerCapture(ev.pointerId); } catch (_) {}
+        const onMove = (e) => {
+          if (e.pointerId !== d.pid) return;
+          const p = point(e);
+          if (!d.moved) {
+            if (Math.hypot(p.x - d.x, p.y - d.y) < 6) return;
+            d.moved = true;
+            const pos = new DOMPoint(0, 0).matrixTransform(s.getCTM().inverse().multiply(g.getCTM()));
+            d.ox = pos.x; d.oy = pos.y;
+            $("#drag").appendChild(g); g.classList.add("dragging"); s.classList.add("has-sel");
+          }
+          g.setAttribute("transform", `translate(${r1(d.ox + p.x - d.x)} ${r1(d.oy + p.y - d.y)})`);
+          const z = zoneAt(p.x, p.y, id);
+          s.querySelectorAll(".zone").forEach((el) => el.classList.toggle("over", el.dataset.zone === z));
+        };
+        const finish = (e, cancel) => {
+          if (e.pointerId !== d.pid) return;
+          removeEventListener("pointermove", onMove); removeEventListener("pointerup", onUp); removeEventListener("pointercancel", onCancel);
+          try { s.releasePointerCapture(d.pid); } catch (_) {}
+          drag = null;
+          if (cancel) { render(); return; }
+          if (!d.moved) { st.selected = st.selected === id ? null : id; render(); return; }
+          const p = point(e);
+          const z = zoneAt(p.x, p.y, id);
+          if (!z || !move(id, z)) render();
+        };
+        const onUp = (e) => finish(e, false), onCancel = (e) => finish(e, true);
+        addEventListener("pointermove", onMove); addEventListener("pointerup", onUp); addEventListener("pointercancel", onCancel);
       });
-      g.addEventListener("pointermove", (ev) => {
-        if (!start) return;
-        const p = point(ev);
-        if (!start.moved && Math.hypot(p.x - start.x, p.y - start.y) < 6) return;
-        if (!start.moved) {
-          start.moved = true;
-          const pos = new DOMPoint(0, 0).matrixTransform(s.getCTM().inverse().multiply(g.getCTM()));
-          start.ox = pos.x; start.oy = pos.y;
-          $("#drag").appendChild(g); g.classList.add("dragging"); s.classList.add("has-sel");
-        }
-        g.setAttribute("transform", `translate(${r1(start.ox + p.x - start.x)} ${r1(start.oy + p.y - start.y)})`);
-        const z = zoneAt(p.x, p.y, id);
-        s.querySelectorAll(".zone").forEach((el) => el.classList.toggle("over", el.dataset.zone === z));
-      });
-      const end = (ev) => {
-        if (!start) return;
-        const s0 = start; start = null;
-        if (!s0.moved) { st.selected = st.selected === id ? null : id; render(); return; }
-        const p = point(ev);
-        const z = zoneAt(p.x, p.y, id);
-        if (!z || !move(id, z)) render();
-      };
-      g.addEventListener("pointerup", end);
-      g.addEventListener("pointercancel", () => { start = null; render(); });
       g.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); st.selected = st.selected === id ? null : id; render(); $(`[data-id="${id}"]`)?.focus(); } });
     });
   }
@@ -1487,7 +1501,7 @@ const LAB = (() => {
       if (beam) beam.setAttribute("transform", `rotate(${r1((-st.tilt * 18000) / Math.PI) / 100} ${B.px} ${B.py})`);
       for (const side of ["L", "R"]) { const g = $(`#pan-${side}`); if (g) g.setAttribute("transform", `translate(${r1(p[side].x)} ${r1(p[side].y)})`); }
       lupaScales();
-    } else if (st.screen === "cyl" && busy) { renderCylinder(); lupaCylinder(); }
+    } else if (st.screen === "cyl" && busy && !drag) { renderCylinder(); lupaCylinder(); }
     if (!busy) settled();
     if (busy) schedule(); else frame = 0;
   }
@@ -1560,7 +1574,7 @@ const LAB = (() => {
 
   const HELP = {
     tare: [["Вопрос", "Стрелка висит на коромысле и смотрит вниз. Куда она уходит, когда одна чаша тяжелее?"], ["Подсказка", "Стрелка отклоняется в сторону более лёгкой, поднятой чаши. Полоски кладут именно на неё."], ["Пример", "Стрелка ушла влево на 2 деления — значит, левая чаша легче. Кладём полоску на левую чашу и смотрим снова."]],
-    mass: [["Вопрос", "Какое положение стрелки значит, что массы на чашах равны?"], ["Подсказка", "Клади гири от большей к меньшей. Если гиря перетянула, замени её следующей, поменьше. Миллиграммы — в конце."], ["Пример", "На чаше 20 г, 5 г, 2 г и 200 мг. 200 мг = 0,2 г, значит, масса тела 20 + 5 + 2 + 0,2 = 27,2 г."]],
+    mass: [["Вопрос", "Какое положение стрелки значит, что массы на чашах равны?"], ["Подсказка", "Клади гири от большей к меньшей. Если гиря перевесила, замени её следующей, поменьше. Миллиграммы — в конце."], ["Пример", "На чаше 20 г, 5 г, 2 г и 200 мг. 200 мг = 0,2 г, значит, масса тела 20 + 5 + 2 + 0,2 = 27,2 г."]],
     cyl: [["Вопрос", "Найди два соседних подписанных числа на мензурке. Сколько делений между ними?"], ["Подсказка", "Цена деления — это разность двух соседних подписанных чисел, делённая на число делений между ними. Смотри на шкалу прямо, напротив уровня воды."], ["Пример", "Числа 30 и 40, между ними 5 делений: цена деления 2 мл. Было 36 мл, с телом стало 52 мл. Объём тела 52 − 36 = 16 мл = 16 см³."]],
     ruler: [["Вопрос", "Сколько миллиметров в одном маленьком делении уголка?"], ["Подсказка", "Поставь угол уголка в угол бруска. По горизонтальной шкале читай длину, по вертикальной — высоту. Ширину — на виде сбоку. V = l · a · h."], ["Пример", "Брусок 4,3 см × 2,5 см × 1,2 см: V = 4,3 · 2,5 · 1,2 = 12,9 см³."]],
     way: [["Вопрос", "Какая форма у тела? Можно ли приложить линейку к каждой его стороне?"], ["Подсказка", "Объём тела правильной формы можно найти по размерам. Тело неправильной формы — только погружением. А если тело не тонет?"], ["Пример", "Камень неправильной формы меряют погружением. Кусок сахара растворится в воде — его меряют линейкой."]],
@@ -1594,14 +1608,15 @@ const LAB = (() => {
         <li>Не взвешивают тела <b>тяжелее предельной нагрузки</b> (200 г).</li>
         <li>На чаши не кладут <b>мокрое, грязное, горячее</b>.</li>
         <li>Мелкие гири берут только <b>пинцетом</b>.</li>
-        <li>Гири подбирают <b>от большей к меньшей</b>: перетянула — замени меньшей.</li>
+        <li>Гири подбирают <b>от большей к меньшей</b>: перевесила — замени меньшей.</li>
         <li>Масса найдена, когда стрелка <b>остановилась на средней черте</b>.</li>
         <li>Массу считают <b>по гирям</b>, потом убирают гири в футляр.</li></ol></div>
-      <div class="box"><b>${w("Попробуй: уравновесь", "Уравновесьте")} пустые весы.</b> Сначала ${w("убери", "уберите")} бруски с чаш (кнопка «Сброс»). Полоски бумаги кладут кнопками под весами, пока стрелка не встанет на середину.</div>
+      <div class="box"><b>${w("Попробуй: уравновесь", "Уравновесьте")} пустые весы.</b> Сначала ${w("перетащи", "перетащите")} бруски с чаш обратно в лоток. Полоски бумаги кладут кнопками под весами, пока стрелка не встанет на середину.</div>
       ${ladder("tare", HELP.tare)}
-      ${writeBox(`тему, цель и приборы. ${w("Начерти", "Начертите")} одну таблицу на всю работу — её будем заполнять до конца:`)}
-      ${bigTable("mini")}` },
+      ${writeBox("тему, цель и приборы.")}` },
     { title: "Масса", act: 2, min: 10, screen: "scales", kori: ["look", "По ролям!"], head: "Масса", html: () => `
+      ${writeBox(`${w("Начерти", "Начертите")} одну таблицу на всю работу — её будем заполнять до конца:`)}
+      ${bigTable("fit")}
       ${T() ? `<div class="box roles"><b>Роли в группе</b><ul><li><b>Экспериментатор</b> — говорит, какие гири положить.</li><li><b>Контролёр</b> — следит за стрелкой в лупе.</li><li><b>Протоколист</b> — считает сумму гирь и диктует массу.</li><li><b>Докладчик</b> — называет результат классу.</li></ul><p style="margin-top:6px">Роли меняются на каждом теле.</p></div>` : `<div class="box roles"><b>Работаешь в паре?</b> Один кладёт гири, второй следит за стрелкой и записывает. На следующем теле поменяйтесь.</div>`}
       ${writeBox("<b style='display:inline;color:inherit;font-size:inherit;letter-spacing:0;text-transform:none'>схематичный рисунок</b> без деталей: весы, тело на левой чаше, гири на правой. Один рисунок на всю работу.")}
       <div><b style="color:var(--ink)">Взвесь тела.</b> Тело — на левую чашу, гири — на правую. Порядок тел любой.</div>
