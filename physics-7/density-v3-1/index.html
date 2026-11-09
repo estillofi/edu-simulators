@@ -1533,6 +1533,16 @@ const LAB = (() => {
   const { st, BODIES } = LAB;
   const PIN = "2711";
   const S = { step: 0, mode: "teacher", seen: new Set([0]), data: {}, pred: {}, votes: {}, light: {}, help: {}, unlocked: false, finished: false, revealed: false, started: Date.now() };
+  // Личная ссылка ученика из сервиса: только режим «Ученик сам», ответы уходят учителю в сводку, после перезагрузки возвращаются.
+  const SES = window.KORI_SESSION || null;
+  if (SES) {
+    S.mode = "student";
+    const o = SES.state || {};
+    Object.assign(S.data, o.data); Object.assign(S.pred, o.pred); Object.assign(S.help, o.help);
+    for (const [k, v] of Object.entries(o.light || {})) S.light[k] = { mine: v };
+    S.finished = !!o.finished; S.revealed = !!o.revealed; S.step = o.step || 0;
+    (o.seen || []).forEach((i) => S.seen.add(i));
+  }
   const T = () => S.mode === "teacher";
   const w = (one, many) => (T() ? many : one);
   const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -1638,7 +1648,7 @@ const LAB = (() => {
       <div class="box"><b>Линейкой.</b> Нажми «Линейка» под прибором. Брусок показан в трёх видах: спереди, сбоку и сверху. Прикладывай уголок и измеряй длину l, ширину a и высоту h. Объём V = l · a · h.</div>
       ${ladder("ruler", HELP.ruler)}
       ${nb("Единицы и погрешность", "1 мл = 1 см³. Погрешность мензурки ΔV — половина её цены деления. Объём, найденный линейкой, запиши без ±: погрешность произведения считают в старших классах.")}
-      ${tbl(["", "мл"], [`<tr><td class="name">Цена деления</td>${cell("div", "мл")}</tr>`, `<tr><td class="name">V₁ без тела</td>${cell("v1", "мл")}</tr>`])}
+      ${tbl(["", "мл"], [`<tr><td class="name">Цена деления</td>${cell("div", "мл")}</tr>`, `<tr><td class="name">V₁ без тела</td>${cell("vw", "мл")}</tr>`])}
       ${tbl(["Тело", "Способ", "V₂ или l × a × h", "V, см³"], BODIES.map((b) => `<tr><td class="name">${b.n}. ${b.short}</td>${pick(`way${b.n}`, ["мензурка", "линейка"])}${cellT(`raw${b.n}`)}${cell(`v${b.n}`, "см³")}</tr>`))}
       ${light("volume")}` },
     { title: "Плотность", act: 2, min: 5, screen: null, kori: ["hint", "Считаем!"], head: "Плотность и вещество", html: () => `
@@ -1657,7 +1667,7 @@ const LAB = (() => {
       <div class="box ticket"><b>Билет на выход</b>${T() ? `<p>В чат: <b>одна мысль</b> — что сегодня узнал, <b>один вопрос</b> — что осталось непонятным, и эмодзи: как ты себя чувствуешь после урока.</p>` : `<label for="t-idea">Одна мысль: что ты сегодня узнал?</label><textarea id="t-idea" data-t="idea" rows="2"${S.finished ? " disabled" : ""}>${esc(S.data.idea)}</textarea>
         <label for="t-q">Один вопрос: что осталось непонятным?</label><textarea id="t-q" data-t="q" rows="2"${S.finished ? " disabled" : ""}>${esc(S.data.q)}</textarea>
         <span>Как ты себя чувствуешь после урока?</span>${emoji("checkout")}`}</div>
-      ${T() ? "" : S.finished ? `<div class="box note"><b>Работа завершена.</b> Числа и билет остались только на этом экране. Перенеси числа в тетрадь, сфотографируй работу и отправь учителю.</div>` : `<button class="btn" type="button" id="finish">Завершить работу</button>`}
+      ${T() ? "" : S.finished ? `<div class="box note"><b>Работа завершена.</b> ${SES ? "Ответы отправлены учителю." : "Числа и билет остались только на этом экране."} Перенеси числа в тетрадь, сфотографируй работу и отправь учителю.</div>` : `<button class="btn" type="button" id="finish">Завершить работу</button>`}
       ${teacherBlock()}` },
   ];
 
@@ -1677,6 +1687,7 @@ const LAB = (() => {
 
   // ── Отчёт учителю ──
   function teacherBlock() {
+    if (SES) return "";
     if (!S.unlocked) return `<details class="teacher"><summary>Для учителя: эталон и отчёт</summary><p style="margin:8px 0">Введите PIN учителя.</p><div style="display:flex;gap:8px"><input id="pin" inputmode="numeric" autocomplete="off" style="width:7em;font:600 15px var(--mono);padding:6px 8px;border-radius:9px;border:1px solid var(--line)" aria-label="PIN учителя"><button class="btn sm" type="button" id="pin-go">Открыть</button></div></details>`;
     const tr = LAB.truth();
     const fmt = (v) => String(Math.round(v * 100) / 100).replace(".", ",");
@@ -1708,7 +1719,7 @@ const LAB = (() => {
   function tick() {
     const s = STEPS[S.step];
     const el = $("#act");
-    if (!T()) { el.hidden = true; return; }
+    if (!T()) { el.hidden = !SES; if (SES) el.textContent = who; return; }
     const sec = Math.floor((Date.now() - stepStart) / 1000);
     const mm = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
     el.hidden = false;
@@ -1729,6 +1740,30 @@ const LAB = (() => {
     breathTimer = setInterval(() => { i = (i + 1) % 4; $("#breath-phase").textContent = phases[i]; }, 4000);
   }
 
+  // ── Отправка ответов учителю (только по личной ссылке): снимок журнала раз в 4 с, при уходе со страницы и по «Завершить» ──
+  let dirty = false;
+  let who = "";
+  try { who = decodeURIComponent(location.hash.slice(1)).trim().slice(0, 60); } catch (_) {}
+  if (SES && !who) who = SES.label;
+  const snapshot = () => ({
+    step: S.step, seen: [...S.seen], data: S.data, pred: S.pred, help: S.help, finished: S.finished, revealed: S.revealed,
+    light: Object.fromEntries(Object.entries(S.light).filter(([, v]) => v.mine).map(([k, v]) => [k, v.mine])),
+    tare: LAB.tareOk(), soft: st.softCount, rules: st.log.filter((e) => e.type === "rule").length,
+  });
+  function push(beacon) {
+    if (!SES || !dirty) return;
+    dirty = false;
+    const body = JSON.stringify(snapshot());
+    if (beacon && navigator.sendBeacon) { navigator.sendBeacon(SES.api, new Blob([body], { type: "application/json" })); return; }
+    fetch(SES.api, { method: "POST", headers: { "content-type": "application/json" }, body, keepalive: true }).catch(() => { dirty = true; });
+  }
+  if (SES) {
+    setInterval(push, 4000);
+    addEventListener("pagehide", () => push(true));
+    document.addEventListener("visibilitychange", () => { if (document.hidden) push(true); });
+    LAB.on((type) => { if (type !== "kori") dirty = true; });
+  }
+
   // ── Отрисовка журнала ──
   function render() {
     const s = STEPS[S.step];
@@ -1738,8 +1773,9 @@ const LAB = (() => {
     $("#prev").disabled = S.step === 0;
     $("#next").textContent = S.step === STEPS.length - 1 ? "В начало" : "Дальше";
     $$("#steps button").forEach((b, i) => { b.toggleAttribute("data-seen", S.seen.has(i)); if (i === S.step) b.setAttribute("aria-current", "step"); else b.removeAttribute("aria-current"); });
-    $$("[data-k]").forEach((inp) => inp.addEventListener("input", () => { S.data[inp.dataset.k] = inp.value; }));
-    $$("[data-t]").forEach((inp) => inp.addEventListener("input", () => { S.data[inp.dataset.t] = inp.value; }));
+    $$("[data-k]").forEach((inp) => inp.addEventListener("input", () => { S.data[inp.dataset.k] = inp.value; dirty = true; }));
+    $$("[data-t]").forEach((inp) => inp.addEventListener("input", () => { S.data[inp.dataset.t] = inp.value; dirty = true; }));
+    dirty = true;
     $$("[data-pred]").forEach((b) => b.addEventListener("click", () => { S.pred[b.dataset.pred] = b.dataset.v; LAB.emit("pred", { q: b.dataset.pred, v: b.dataset.v }); render(); }));
     $$("[data-vote]").forEach((b) => b.addEventListener("click", () => { const k = b.dataset.vote, v = b.dataset.v; S.votes[k] = S.votes[k] || {}; S.votes[k][v] = Math.max(0, (S.votes[k][v] || 0) + Number(b.dataset.d)); LAB.emit("vote", { k, v, n: S.votes[k][v] }); render(); }));
     $$("[data-light]").forEach((b) => b.addEventListener("click", () => {
@@ -1756,7 +1792,7 @@ const LAB = (() => {
       setTimeout(() => play("surprise", "Вот это да!"), 1200);
     });
     $("#reveal")?.addEventListener("click", () => { S.revealed = true; LAB.emit("reveal"); play("streak5", "Это пирит!"); render(); });
-    $("#finish")?.addEventListener("click", () => { S.finished = true; LAB.emit("finish", { data: { ...S.data } }); play("module_done", "Работа готова!"); render(); });
+    $("#finish")?.addEventListener("click", () => { S.finished = true; LAB.emit("finish", { data: { ...S.data } }); play("module_done", "Работа готова!"); render(); push(); });
     $("#pin-go")?.addEventListener("click", () => { if ($("#pin").value.trim() === PIN) { S.unlocked = true; render(); } else { $("#pin").value = ""; $("#pin").placeholder = "Не тот PIN"; } });
     $("#pin")?.addEventListener("keydown", (e) => { if (e.key === "Enter") $("#pin-go").click(); });
     tick();
@@ -1785,7 +1821,7 @@ const LAB = (() => {
   $("#reset").addEventListener("click", () => LAB.resetScreen());
   $("#prev").addEventListener("click", () => go(S.step - 1));
   $("#next").addEventListener("click", () => go(S.step === STEPS.length - 1 ? 0 : S.step + 1));
-  document.body.classList.add("big-text");
+  if (SES) { $("#mode").hidden = true; document.title = `Плотность — ${who}`; } else document.body.classList.add("big-text");
   const fitHead = () => document.documentElement.style.setProperty("--head", $(".top").offsetHeight + "px");
   addEventListener("resize", fitHead); fitHead();
 
@@ -1797,7 +1833,7 @@ const LAB = (() => {
     ${bigTable("exam-t")}
     <p style="margin-top:12px;max-width:760px">Дальше — <b>вывод</b> своими словами. Тему, цель и приборы записывают в начале работы.</p>`;
 
-  go(0);
+  go(SES ? S.step : 0);
 })();
 </script>
 
