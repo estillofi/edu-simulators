@@ -615,7 +615,7 @@ table.big.mini td{height:18px}
 .pause #breath-phase{margin:0;font-size:34px;font-weight:800}
 .pause .pause-note{margin:0;max-width:420px;font-size:15px;color:#3F5F78}
 .breath{position:relative;width:180px;height:180px;border:6px solid #00A3B9;border-radius:18px}
-.breath .dot{position:absolute;width:26px;height:26px;margin:-16px 0 0 -16px;border-radius:50%;background:#FF5B00;box-shadow:0 0 0 6px rgba(255,91,0,.2);animation:breath-run 16s linear infinite}
+.breath .dot{position:absolute;width:26px;height:26px;margin:-16px 0 0 -16px;border-radius:50%;background:#FF5B00;box-shadow:0 0 0 6px rgba(255,91,0,.2);animation:breath-run 12s linear infinite}
 @keyframes breath-run{0%{left:0;top:100%}25%{left:0;top:0}50%{left:100%;top:0}75%{left:100%;top:100%}100%{left:0;top:100%}}
 @media (prefers-reduced-motion:reduce){.breath .dot{animation:none;left:0;top:100%}}
 
@@ -641,7 +641,7 @@ table.big.fit th:nth-child(2),table.big.fit td:nth-child(2){width:19%;overflow-w
       <svg id="scene-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Лабораторный стол с прибором"></svg>
       <div id="notebook" hidden></div>
       <div id="lupa" class="lupa"></div>
-      <div id="pause" class="pause" hidden><div class="breath"><span class="dot"></span></div><p id="breath-phase">Вдох</p><p class="pause-note">Дыхание-квадрат: вдох — 4 счёта, задержка — 4, выдох — 4, задержка — 4.</p></div>
+      <div id="pause" class="pause" hidden><div class="breath"><span class="dot"></span></div><p id="breath-phase">Вдох</p><p class="pause-note">Дыхание-квадрат: вдох — 3 счёта, задержка — 3, выдох — 3, задержка — 3.</p></div>
       <div id="pick" class="pick" hidden></div>
       <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
       <div id="kori" class="kori-spot" aria-hidden="false"></div>
@@ -1636,7 +1636,7 @@ const LAB = (() => {
       ${ladder("mass", HELP.mass)}
       ${light("mass")}` },
     { title: "Пауза", act: 2, min: 1, screen: "pause", kori: ["idle", "Дышим вместе"], head: "Микро-пауза", html: () => `
-      <div class="box note">Полминуты отдыха для глаз и спины. ${w("Отведи", "Отведите")} взгляд от экрана, ${w("выпрями", "выпрямите")} спину и подыши по квадрату вместе с Кори: вдох — 4 счёта, задержка — 4, выдох — 4, задержка — 4.</div>
+      <div class="box note">Полминуты отдыха для глаз и спины. ${w("Отведи", "Отведите")} взгляд от экрана, ${w("выпрями", "выпрямите")} спину и подыши по квадрату вместе с Кори: вдох — 3 счёта, задержка — 3, выдох — 3, задержка — 3.</div>
       ${teach("Микро-пауза между сериями — правило онлайн-урока: снимает напряжение перед новой активностью.")}` },
     { title: "Объём", act: 2, min: 10, screen: "cyl", kori: ["look", "Что будет с водой?"], head: "Объём", html: () => `
       <div class="box note"><b>Чем мерить — ${w("решай сам", "решите сами")}.</b> Объём можно найти мензуркой (погружением) или линейкой (по размерам). Для каждого тела ${w("выбери", "выберите")} способ и ${w("объясни", "объясните")}, почему он подходит. Подумай про самородок неправильной формы и деревянный брусок.</div>
@@ -1737,7 +1737,7 @@ const LAB = (() => {
     const phases = ["Вдох", "Задержка", "Выдох", "Задержка"];
     let i = 0;
     $("#breath-phase").textContent = phases[0];
-    breathTimer = setInterval(() => { i = (i + 1) % 4; $("#breath-phase").textContent = phases[i]; }, 4000);
+    breathTimer = setInterval(() => { i = (i + 1) % 4; $("#breath-phase").textContent = phases[i]; }, 3000);
   }
 
   // ── Отправка ответов учителю (только по личной ссылке): снимок журнала раз в 4 с, при уходе со страницы и по «Завершить» ──
