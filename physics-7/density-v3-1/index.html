@@ -1635,7 +1635,7 @@ const LAB = (() => {
       ${tbl(["Тело", "m, г"], bodyRows(["b1", "b2", "b3", "b4", "b5"], [["m", "г"]]))}
       ${ladder("mass", HELP.mass)}
       ${light("mass")}` },
-    { title: "Пауза", act: 2, min: 1, screen: "pause", kori: ["idle", "Дышим вместе"], head: "Микро-пауза", html: () => `
+    { title: "Пауза", act: 2, min: 1, screen: "pause", kori: ["rest", "Дышим вместе"], head: "Микро-пауза", html: () => `
       <div class="box note">Полминуты отдыха для глаз и спины. ${w("Отведи", "Отведите")} взгляд от экрана, ${w("выпрями", "выпрямите")} спину и подыши по квадрату вместе с Кори: вдох — 3 счёта, задержка — 3, выдох — 3, задержка — 3.</div>
       ${teach("Микро-пауза между сериями — правило онлайн-урока: снимает напряжение перед новой активностью.")}` },
     { title: "Объём", act: 2, min: 10, screen: "cyl", kori: ["look", "Что будет с водой?"], head: "Объём", html: () => `
@@ -1710,7 +1710,9 @@ const LAB = (() => {
 
   // ── Кори ──
   let kori = null;
-  try { kori = Kori.mount($("#kori"), { facing: "left", srcs: KORI_POSES, start: "idle" }); } catch (_) { kori = null; }
+  try { kori = Kori.mount($("#kori"), { facing: "left", srcs: KORI_POSES, start: "idle",
+    // Пауза: Кори с закрытыми глазами потягивается и спокойно дышит — не серьёзный с циркулем
+    behaviors: { rest: { group: "Ожидание", title: "Отдыхает", when: "микро-пауза", pose: "joy", motion: "breathe", fx: [], phrases: [], hold: 0 } } }); } catch (_) { kori = null; }
   const play = (b, text) => { if (kori) kori.play(b, text); };
   LAB.on((type, d) => { if (type === "kori") play(d.behavior, d.text); });
 
