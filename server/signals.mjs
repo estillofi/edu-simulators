@@ -133,10 +133,11 @@ export function analytics(ends) {
     s.sum += e.superscore ?? 0; s.n++; s.dsum += (e.superscore ?? 0) - (feas(e.template || e.item_id) ?? 0);
     st.set(e.student_ref, s);
   }
-  const segment = (perf, delta) => (perf >= 0.85 ? "сильный" : perf >= 0.6 ? (delta >= 0 ? "уверенный" : "держится") : delta >= -0.05 ? "растёт" : "нужна помощь");
+  // Категории по Аббакумову: fru < 0,45 ≤ sub < 0,70 ≤ opt < 0,90 ≤ bor; доверие — n ≥ 15 и se ≤ 0,075 (здесь — только по n).
+  const segment = (perf, delta, n) => `${perf < 0.45 ? "фрустрирующая" : perf < 0.7 ? "субоптимальная" : perf < 0.9 ? "оптимальная" : "скучная"}${n < 15 ? " · мало данных" : ""} · дельта ${delta < -0.1 ? "−" : delta > 0.1 ? "+" : "0"}`;
   return {
     note: "Супербалл: 1 — с первой попытки без подсказок; −0,25 за каждую лишнюю попытку и подсказку; 0 — не решено. Успеваемость ученика и посильность задания — средний супербалл. Дельта — насколько ученик выше или ниже посильности тех же заданий. Ориентир посильности ≈ 0,85 — гипотеза.",
-    students: [...st.values()].map((s) => { const perf = s.sum / s.n, delta = s.dsum / s.n; return { ref: s.ref, class_ref: s.class_ref, items: s.n, performance: perf, delta, segment: segment(perf, delta) }; }).sort((a, b) => b.performance - a.performance),
+    students: [...st.values()].map((s) => { const perf = s.sum / s.n, delta = s.dsum / s.n; return { ref: s.ref, class_ref: s.class_ref, items: s.n, performance: perf, delta, segment: segment(perf, delta, s.n) }; }).sort((a, b) => b.performance - a.performance),
     templates: [...tpl.values()].map((t) => {
       const f = t.sum / t.n;
       return { template: t.template, trainer: t.trainer, skill: t.skill, level: t.level, items: t.n, students: t.students.size, feasibility: f, flag: t.students.size < 3 ? "мало данных" : f < 0.3 ? "слишком трудно" : f > 0.95 ? "слишком легко" : null };
