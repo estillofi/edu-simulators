@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Устный счёт: рациональные числа</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=STIX+Two+Text:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Устный счёт: навык и уровень А/Б/В сверху, одно задание крупно, ответ в поле или знак сравнения кнопкой, счёт раунда сбоку, Кори в углу. */
+:root{
+  --bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;
+  --teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#E3F5F8;--orange:#FF5B00;--orange-soft:#FFF0E6;
+  --ok:#1E8E5A;--ok-soft:#E5F5EC;--warn:#C2410C;--warn-soft:#FFF1E8;
+  --font:"Raleway",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --math:"STIX Two Text","Cambria Math",Georgia,serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;
+  --teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A2E;--orange-soft:#3A2618;
+  --ok:#4CC38A;--ok-soft:#173528;--warn:#FF9157;--warn-soft:#3A2416;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font);font-variant-numeric:lining-nums}
+.page{padding-inline:clamp(10px,1.6vw,20px);padding-block:14px 150px;display:grid;gap:14px;max-width:1180px;margin:0 auto}
+.brand{margin:0 0 6px;color:var(--ink);font-weight:800;font-size:15px}
+.eyebrow{margin:0;color:var(--teal-ink);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+h1{margin:2px 0 0;color:var(--ink);font-weight:800;font-size:clamp(26px,4vw,38px);line-height:1.1}
+.lead{margin:6px 0 0;max-width:760px}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:0;border-radius:32px;background:var(--card);color:var(--ink);font:700 14px var(--font);padding:8px 14px;box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--teal);color:#fff;box-shadow:none}
+.seg{display:inline-flex;gap:4px;background:var(--card);border-radius:32px;padding:4px;box-shadow:0 0 0 1px var(--line)}
+.seg button{border:0;background:transparent;color:var(--ink);font:600 14px var(--font);padding:6px 12px;border-radius:32px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--teal-soft);box-shadow:0 0 0 2px var(--teal)}
+.lbl{font-size:13px;color:var(--muted);font-weight:600}
+.status{font-size:13px;color:var(--muted)}
+.status b{color:var(--ink)}
+.work{display:grid;gap:14px;grid-template-columns:minmax(0,1fr) 280px;align-items:start}
+@media (max-width:900px){.work{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:22px 24px;display:grid;gap:16px;min-width:0}
+@media (max-width:520px){.card{padding:16px}}
+.meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;color:var(--muted);font-size:13px;font-weight:600}
+.pill{border-radius:32px;padding:3px 10px;background:var(--bg);color:var(--ink)}
+.pill.lv{background:var(--teal-soft);color:var(--teal-ink)}
+.ask{margin:0;color:var(--ink);font-weight:700;font-size:17px}
+.task{font-family:var(--math);font-size:clamp(28px,4.6vw,44px);color:var(--ink);line-height:1.35;overflow-wrap:anywhere}
+.task sup{font-size:.6em}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.62em;line-height:1.05;margin:0 .08em}
+.frac>span:first-child{border-bottom:2px solid currentColor;padding:0 .12em}
+.answer{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.answer label{font:600 26px var(--math);color:var(--ink)}
+.in{flex:1 1 220px;min-width:0;font:600 24px var(--mono);color:var(--ink);background:var(--bg);border:2px solid transparent;border-radius:14px;padding:8px 12px}
+.in.num{flex:0 1 180px}
+.in:focus{outline:none;border-color:var(--teal);background:var(--card)}
+.in[data-state="ok"]{border-color:var(--ok);background:var(--ok-soft)}
+.in[data-state="miss"]{border-color:var(--warn);background:var(--warn-soft)}
+.echo{min-height:1.4em;font:500 20px var(--math);color:var(--muted)}
+.echo b{color:var(--ink);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{border:0;border-radius:32px;background:var(--teal);color:#fff;font:700 15px var(--font);padding:11px 20px;cursor:pointer}
+.btn.ghost{background:var(--bg);color:var(--ink)}
+.btn.next{background:var(--orange)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.fb{border-radius:16px;padding:12px 14px;background:var(--bg);color:var(--ink);font-size:15px}
+.fb:empty{display:none}
+.fb[data-kind="ok"]{background:var(--ok-soft)}
+.fb[data-kind="miss"]{background:var(--warn-soft)}
+.fb[data-kind="info"]{background:var(--teal-soft)}
+.fb .m{font-family:var(--math);font-size:1.12em}
+.typing{font-size:13px;color:var(--muted);margin:0}
+.side{display:grid;gap:14px}
+.score{display:grid;grid-template-columns:repeat(10,1fr);gap:5px}
+.score span{height:12px;border-radius:6px;background:var(--bg)}
+.score span[data-s="ok"]{background:var(--ok)}
+.score span[data-s="help"]{background:var(--teal)}
+.score span[data-s="miss"]{background:var(--warn)}
+.score span[data-s="now"]{box-shadow:inset 0 0 0 2px var(--teal)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.big{font:700 34px var(--mono);color:var(--ink);margin:0}
+.summary ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.note{font-size:13px;color:var(--muted);margin:0}
+details.teacher{background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:4px 20px}
+details.teacher summary{cursor:pointer;color:var(--ink);font-weight:800;padding:12px 0}
+.log{display:grid;gap:6px;padding:0 0 16px;margin:0;list-style:none;font-size:14px}
+.log code{font:500 12px var(--mono);color:var(--muted)}
+.tag{font-size:12px;font-weight:700;border-radius:32px;padding:2px 8px}
+.tag.ok{background:var(--ok-soft);color:var(--ok)}.tag.miss{background:var(--warn-soft);color:var(--warn)}.tag.info{background:var(--teal-soft);color:var(--teal-ink)}
+.cmpbox{display:inline-grid;place-items:center;width:1.25em;height:1.25em;margin:0 .25em;border-radius:12px;background:var(--bg);box-shadow:inset 0 0 0 2px var(--line);color:var(--muted);font-size:.8em;vertical-align:middle}
+.cmpbox[data-v]{color:var(--ink);box-shadow:inset 0 0 0 2px var(--teal)}
+.box{display:inline-block;width:1.1em;height:1.1em;border-radius:8px;box-shadow:inset 0 0 0 2px var(--teal);vertical-align:-.12em;margin:0 .1em}
+.signs{display:flex;gap:10px}
+.signs button{border:0;border-radius:20px;width:72px;height:60px;background:var(--bg);color:var(--ink);font:700 30px var(--math);cursor:pointer;box-shadow:0 0 0 1px var(--line)}
+.signs button[data-state="ok"]{background:var(--ok-soft);box-shadow:0 0 0 2px var(--ok)}
+.signs button[data-state="miss"]{background:var(--warn-soft);box-shadow:0 0 0 2px var(--warn)}
+.signs button:disabled{cursor:default}
+.task .frac{font-size:.8em}
+.clock{font:500 13px var(--mono);color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="brand">Онлайн-школа Корифей</p>
+    <p class="eyebrow">Математика · 7 класс · повторение · устный счёт</p>
+    <h1>Дроби и отрицательные числа</h1>
+    <p class="lead">Считай в уме, записывай только ответ. Раунд — 10 заданий; числа каждый раз новые, так что запомнить ответы не выйдет — только научиться считать. Уровни: А — база, Б — посложнее, В — повышенный. В режиме «Авто» уровень растёт после двух верных подряд и снижается после двух промахов.</p>
+  </header>
+  <div class="bar"><div class="chips" id="skills" role="group" aria-label="Навык"></div></div>
+  <div class="bar"><span class="lbl">Уровень</span><div class="seg" id="levels" role="group" aria-label="Уровень"></div><span class="status" id="status"></span></div>
+  <div class="work">
+    <section class="card" id="main" aria-live="polite"></section>
+    <aside class="side">
+      <section class="card">
+        <div><p class="lbl" style="margin:0 0 6px">Раунд</p><div class="score" id="score"></div></div>
+        <div class="legend"><span><i style="background:var(--ok)"></i>с первого раза</span><span><i style="background:var(--teal)"></i>со второй попытки или с подсказкой</span><span><i style="background:var(--warn)"></i>не вышло</span></div>
+        <div><p class="lbl" style="margin:0">Серия</p><p class="big" id="streak">0</p></div>
+      </section>
+    </aside>
+  </div>
+  <details class="teacher">
+    <summary>Для учителя: журнал этого ученика</summary>
+    <p class="note" style="margin:0 0 10px">Ошибки распознаются по ответу: он сравнивается с ответами «по ошибочному правилу», и попадание записывается с ID заблуждения. ID из таблицы методиста алгебры 7 (ред. 4, лист «Типичные ошибки»): узел «Сложение и вычитание рациональных чисел — сдвиги по прямой» — <code>sign_rule_over_addition</code>, <code>minus_is_operation_only</code>, <code>subtraction_always_decreases</code>; узел «Сравнение чисел — про место на прямой» — <code>longer_record_is_bigger</code>, <code>bigger_denominator</code>, <code>negative_fractions_as_positive</code>. Действия с дробями в таблице пока без заблуждений — эти коды помечены local. Несокращённая дробь и «верно, но не той записью» — не попытка. События уходят на табло учителя, если страница открыта по ссылке учителя на сервере класса.</p>
+    <ul class="log" id="log"><li>Пока пусто.</li></ul>
+  </details>
+</div>
+
+<script src="bank.js"></script>
+<script src="../../shared/kori-trace.js"></script>
+<script src="../../shared/kori-companion.js"></script>
+<script>
+(() => {
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const { SK, T, CODES, HINTS, makeTask, check, ansStr, decStr } = MentalBank;
+const ROUND = 10;
+const TRAINER = "math7-mental-rational";
+const LV = { 1: "А", 2: "Б", 3: "В" };
+const pick = (a) => a[Math.floor(Math.random() * a.length)];
+
+// ── Показ записи: [n/d] — дробь, * — ·, : — деление, □ — окошко, ? — знак сравнения, точка — запятая ──
+function disp(s, signVal) {
+  let out = "";
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === "[") { const j = s.indexOf("]", i); const [p, q] = s.slice(i + 1, j).split("/"); out += `<span class="frac"><span>${p}</span><span>${q}</span></span>`; i = j; continue; }
+    if (ch === "*") { out += " · "; continue; }
+    if (ch === ":") { out += " : "; continue; }
+    if (ch === "=") { out += " = "; continue; }
+    if (ch === "□") { out += `<span class="box" aria-label="окошко"></span>`; continue; }
+    if (ch === "?") { out += `<span class="cmpbox"${signVal ? ` data-v` : ""}>${signVal ? signVal.replace("<", "&lt;") : "?"}</span>`; continue; }
+    if (ch === "-") { const prev = s.slice(0, i).trimEnd().slice(-1); out += /[0-9)\]□]/.test(prev) ? " − " : "−"; continue; }
+    if (ch === "+") { out += " + "; continue; }
+    if (ch === ".") { out += ","; continue; }
+    out += ch;
+  }
+  return out.replace(/\s+/g, " ").trim();
+}
+// Ответ для показа: дробью (и смешанным, если неправильная), десятичной — если задание про десятичные
+function showVal(t, v) {
+  if (t.kind === "cmp") return v;
+  const s = ansStr(t, v);
+  if (v.d === 1 || /,/.test(s)) return disp(s.replace(",", "."));
+  const neg = v.n < 0, n = Math.abs(v.n);
+  let h = disp(`${neg ? "-" : ""}[${n}/${v.d}]`);
+  if (n > v.d) h += ` = ${disp(`${neg ? "-" : ""}${Math.floor(n / v.d)}[${n % v.d}/${v.d}]`)}`;
+  const d = decStr(v); if (d && d.length <= 7 && !t.form) h += ` = ${disp(d)}`;
+  return h;
+}
+
+// ── Состояние ──
+const st = { skill: "mix", levelMode: "auto", level: 1, round: [], idx: 0, results: [], times: [], streak: 0, upRun: 0, downRun: 0, errors: {}, done: false };
+const log = [];
+let cur = null, tick = 0;
+
+function renderControls() {
+  $("#skills").innerHTML = [...Object.entries(SK), ["mix", { title: "Всё вперемешку" }]].map(([k, v]) => `<button type="button" data-skill="${k}" aria-pressed="${k === st.skill}">${v.title}</button>`).join("");
+  $$("[data-skill]").forEach((b) => b.addEventListener("click", () => { st.skill = b.dataset.skill; st.levelSet = false; renderControls(); newRound(); }));
+  $("#levels").innerHTML = [["auto", "Авто"], ["1", "А"], ["2", "Б"], ["3", "В"]].map(([v, l]) => `<button type="button" data-lv="${v}" aria-pressed="${st.levelMode === v}">${l}</button>`).join("");
+  $$("[data-lv]").forEach((b) => b.addEventListener("click", () => { st.levelMode = b.dataset.lv; st.levelSet = false; renderControls(); newRound(); }));
+}
+function newRound() {
+  Object.assign(st, { round: [], results: [], times: [], idx: 0, errors: {}, done: false, upRun: 0, downRun: 0 });
+  if (st.levelMode !== "auto") st.level = Number(st.levelMode); else if (!st.levelSet) { st.level = 1; st.levelSet = true; }
+  KoriTrace.emit("round_start", { skill: st.skill, level_mode: st.levelMode });
+  next(true);
+}
+function next(first) {
+  if (!first) st.idx++;
+  if (st.idx >= ROUND) { st.done = true; KoriTrace.emit("round_end", { skill: st.skill, results: st.results, level: st.level }); render(); return; }
+  // Вперемешку: навыки по кругу без повтора подряд; шаблон не повторяется внутри раунда, пока есть другие
+  let skill = st.skill;
+  if (skill === "mix") { const prev = st.round[st.idx - 1]?.skill; skill = pick(Object.keys(SK).filter((k) => k !== prev)); }
+  let task, guard = 0;
+  do { task = makeTask(skill, st.level); } while ((st.round.some((t) => t.item_id === task.item_id) || (guard < 12 && st.round.slice(-3).some((t) => t.template === task.template))) && guard++ < 30);
+  st.round[st.idx] = task;
+  cur = { task, trace: KoriTrace.item({ item_id: task.item_id, skill: task.skill, node: task.node, level: task.level, template: task.template }), tries: 0, hints: 0, t0: Date.now() };
+  render();
+}
+function renderScore() {
+  $("#score").innerHTML = Array.from({ length: ROUND }, (_, i) => `<span data-s="${st.results[i] || (i === st.idx && !st.done ? "now" : "")}"></span>`).join("");
+  $("#streak").textContent = st.streak;
+}
+function render() {
+  renderScore();
+  clearInterval(tick);
+  const main = $("#main");
+  if (st.done) {
+    const ok = st.results.filter((r) => r === "ok").length, help = st.results.filter((r) => r === "help").length;
+    const errs = Object.entries(st.errors).sort((a, b) => b[1] - a[1]);
+    const ts = [...st.times].sort((a, b) => a - b), med = ts.length ? Math.round(ts[Math.floor(ts.length / 2)] / 1000) : 0;
+    main.innerHTML = `<div class="summary"><p class="lbl" style="margin:0">Раунд окончен</p>
+      <h2 style="margin:4px 0 8px;color:var(--ink);font-size:24px">${ok} из ${ROUND} с первого раза${help ? `, ещё ${help} со второй попытки` : ""}</h2>
+      <p style="margin:0 0 10px">Уровень в конце раунда: ${LV[st.level]}. Обычно на задание уходило ${med} с.</p>
+      ${errs.length ? `<p style="margin:0 0 6px;color:var(--ink);font-weight:700">Над чем поработать</p><ul>${errs.map(([c, n]) => `<li>${CODES[c].replace(/ \(local\)/, "")} — ${n}×</li>`).join("")}</ul>` : `<p style="margin:0;color:var(--ink);font-weight:700">Типичных ошибок не было.</p>`}</div>
+      <div class="row"><button class="btn next" type="button" id="again">Ещё раунд — новые числа</button></div>`;
+    $("#again").addEventListener("click", newRound);
+    $("#again").focus({ preventScroll: true });
+    if (ok >= 8) KoriCompanion.correct({ levelUp: true });
+    return;
+  }
+  const t = cur.task, isCmp = t.kind === "cmp";
+  main.innerHTML = `<div class="meta"><span class="pill">Задание ${st.idx + 1} из ${ROUND}</span><span class="pill lv">Уровень ${LV[t.level]}${st.levelMode === "auto" ? " · авто" : ""}</span><span>${SK[t.skill].title}</span><span class="clock" id="clock">0 с</span></div>
+    <p class="ask">${t.ask}</p>
+    <div class="task" id="task">${disp(t.expr)}</div>
+    ${isCmp
+      ? `<div class="signs" role="group" aria-label="Знак">${[">", "<", "="].map((s) => `<button type="button" data-sign="${s}" aria-label="${{ ">": "больше", "<": "меньше", "=": "равно" }[s]}">${s.replace("<", "&lt;")}</button>`).join("")}</div><p class="typing">Можно с клавиатуры: &gt;, &lt; или =.</p>`
+      : `<div class="answer"><label for="ans">${t.expr.includes("□") ? "□ =" : "="}</label><input class="in num" id="ans" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="text" aria-label="Ответ"></div>
+         <p class="typing">${t.form === "dec" ? "Десятичную — через запятую: 2,5." : t.form === "frac" ? "Обыкновенную — через косую черту: 3/4." : "Целое, десятичное через запятую (2,5), дробь через черту (3/4) или смешанное (2 1/3)."} Минус — обычный дефис.</p>`}
+    <div class="row">${isCmp ? "" : `<button class="btn" type="button" id="check">Проверить</button>`}<button class="btn ghost" type="button" id="hint">Подсказка</button><button class="btn next" type="button" id="next" hidden>Дальше</button></div>
+    <p class="fb" id="fb"></p>`;
+  tick = setInterval(() => { const c = $("#clock"); if (c && !st.results[st.idx]) c.textContent = `${Math.round((Date.now() - cur.t0) / 1000)} с`; }, 1000);
+  if (isCmp) {
+    $$("[data-sign]").forEach((b) => b.addEventListener("click", () => onCheck(b.dataset.sign)));
+    $("[data-sign]").focus({ preventScroll: true });
+  } else {
+    const inp = $("#ans");
+    inp.focus({ preventScroll: true });
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); $("#next").hidden ? onCheck() : next(); } });
+    $("#check").addEventListener("click", () => onCheck());
+  }
+  $("#next").addEventListener("click", () => next());
+  $("#hint").addEventListener("click", onHint);
+}
+// Клавиатура для сравнения и второй Enter вне поля
+document.addEventListener("keydown", (e) => {
+  if (!cur || st.done || e.target.id === "ans") return;
+  if (cur.task.kind === "cmp" && $("#next").hidden && [">", "<", "="].includes(e.key)) { e.preventDefault(); onCheck(e.key); return; }
+  if (e.key === "Enter" && !$("#next").hidden && e.target.tagName !== "BUTTON") { e.preventDefault(); next(); }
+});
+function say(kind, html) { const fb = $("#fb"); fb.dataset.kind = kind; fb.innerHTML = html; }
+function onHint() {
+  const t = cur.task;
+  const steps = [...HINTS[t.skill], t.hint3];
+  if (cur.hints >= steps.length) return;
+  const text = steps[cur.hints++];
+  cur.trace.hint(cur.hints);
+  record("info", t, `подсказка ${cur.hints}`);
+  if (KoriCompanion.quiet) say("info", `<b>Подсказка ${cur.hints}.</b> ${text}`);
+  else KoriCompanion.hint(text, `Подсказка ${cur.hints} из ${steps.length}`);
+  if (cur.hints >= steps.length) $("#hint").disabled = true;
+}
+function onCheck(sign) {
+  const t = cur.task, isCmp = t.kind === "cmp";
+  const raw = isCmp ? sign : $("#ans").value;
+  if (!String(raw || "").trim()) { say("miss", "Запиши ответ."); return; }
+  const res = check(t, raw);
+  if (res.state === "format") { say("info", res.msg); return; } // не попытка
+  cur.tries++;
+  cur.trace.attempt({ correct: res.state === "ok", answer: raw, misconception: res.code || null });
+  const solution = isCmp ? disp(t.expr, t.ans) : `${disp(t.expr.replace("□", `(${ansStr(t, t.ans).replace(",", ".")})`))}${t.expr.includes("=") ? "" : ` = ${showVal(t, t.ans)}`}`;
+  const mark = (state) => { if (isCmp) { const b = $(`[data-sign="${CSS.escape(raw)}"]`); b.dataset.state = state; } else $("#ans").dataset.state = state; };
+  if (res.state === "ok") {
+    finish(cur.tries === 1 && cur.hints === 0 ? "ok" : "help");
+    mark("ok");
+    if (isCmp) $("#task").innerHTML = disp(t.expr, t.ans);
+    say("ok", `Верно! <span class="m">${solution}</span>`);
+    record("ok", t, raw);
+    return;
+  }
+  if (res.code) st.errors[res.code] = (st.errors[res.code] || 0) + 1;
+  record("miss", t, raw, res.code);
+  mark("miss");
+  if (isCmp) $(`[data-sign="${CSS.escape(raw)}"]`).disabled = true;
+  KoriCompanion.wrong();
+  if (cur.tries >= 2) { finish("miss"); if (isCmp) $("#task").innerHTML = disp(t.expr, t.ans); say("miss", `${res.msg}<br><b>Ответ:</b> <span class="m">${solution}</span>`); }
+  else say("miss", `${res.msg} Попробуй ещё раз.`);
+}
+function finish(r) {
+  st.results[st.idx] = r;
+  st.times.push(Date.now() - cur.t0);
+  const before = st.level;
+  if (r === "ok") { st.streak++; st.upRun++; st.downRun = 0; } else { st.streak = 0; st.upRun = 0; if (r === "miss") st.downRun++; }
+  if (st.levelMode === "auto") {
+    if (st.upRun >= 2 && st.level < 3) { st.level++; st.upRun = 0; }
+    if (st.downRun >= 2 && st.level > 1) { st.level--; st.downRun = 0; }
+  }
+  cur.trace.end({ result: r, level_after: st.level });
+  if (r !== "miss") KoriCompanion.correct({ streak: st.streak, hard: cur.task.level === 3 && r === "ok", levelUp: st.level > before });
+  $$("[data-sign]").forEach((b) => (b.disabled = true));
+  const chk = $("#check"); if (chk) chk.hidden = true;
+  $("#hint").hidden = true; $("#next").hidden = false;
+  $("#next").textContent = st.idx + 1 >= ROUND ? "Итоги раунда" : "Дальше";
+  if (cur.task.kind === "cmp") $("#next").focus({ preventScroll: true }); // у сравнения нет поля — Enter нажмёт «Дальше»
+  renderScore();
+}
+function record(kind, t, text, code = null) {
+  log.push({ kind, t, text, code });
+  $("#log").innerHTML = log.slice(-60).reverse().map((e) => `<li><span class="tag ${e.kind}">${e.kind === "ok" ? "верно" : e.kind === "miss" ? "ошибка" : "подсказка"}</span> ${SK[e.t.skill].title}, ${LV[e.t.level]}: <span class="m">${disp(e.t.expr)}</span> → ${String(e.text).replace(/</g, "&lt;")}${e.code ? ` <code>${e.code}</code>` : ""}</li>`).join("");
+}
+
+// ── Старт ──
+renderControls();
+KoriCompanion.mount({ base: "../../shared/kori/" });
+KoriTrace.init({ trainer: TRAINER, version: "1" }).then(() => {
+  $("#status").innerHTML = KoriTrace.online ? `Ответы видит учитель · <b>${KoriTrace.klass || "без класса"}</b>` : "Режим без учителя: ответы видны только здесь";
+});
+KoriCompanion.welcome("Привет! Я Кори. Считаем в уме. Застрянешь — нажми «Подсказка».");
+newRound();
+window.__mental = { makeTask, check, disp, T, cur: () => cur };
+})();
+</script>
+</body>
+</html>
