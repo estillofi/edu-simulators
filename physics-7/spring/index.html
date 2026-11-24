@@ -618,8 +618,6 @@ table.big.mini td{height:18px}
 table.big.fit{width:100%;table-layout:fixed;font-size:12px}
 table.big.fit th,table.big.fit td{white-space:normal;padding:4px 3px;line-height:1.2}
 table.big.fit td{height:22px}
-table.big.fit th:first-child,table.big.fit td:first-child{width:6%}
-table.big.fit th:nth-child(2),table.big.fit td:nth-child(2){width:19%;overflow-wrap:anywhere}
 
 /* Spring lab: readable loupe, compact input tables and accessible toolbar. */
 #lupa{width:clamp(210px,27%,290px);border-radius:50%;overflow:hidden;border:2px solid #91aebb;box-shadow:0 8px 28px #14324a16}
@@ -630,6 +628,15 @@ table.big.fit th:nth-child(2),table.big.fit td:nth-child(2){width:19%;overflow-w
 .panel textarea{display:block;width:100%;min-height:58px;margin-top:5px;padding:9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;resize:vertical}
 .panel label{display:block;margin-top:8px;font-size:14px}
 @media(max-width:600px){.title b{font-size:16px}.work{padding:8px;gap:8px}.stage{height:440px}.steps{gap:3px}.steps button{font-size:11px;padding:4px 7px 4px 4px}.steps button .n{width:17px;height:17px}.top{gap:8px}#lupa{width:42%;min-width:0}.toolbar{padding:6px 8px;gap:5px}.toolbar .btn{font-size:11px;padding:7px 9px}.panel-body{padding:12px}.panel-head{padding:12px}.panel-body .tbl td input{font-size:12px}.big.fit th{font-size:10px}}
+
+/* Таблица пяти колонок: «Количество грузов» шире, остальные уже (правка учителя 24.11). */
+table.big.fit th:first-child,table.big.fit td:first-child,.tbl th:first-child,.tbl td.name{width:28%}
+table.big.fit th:first-child{overflow-wrap:normal;hyphens:none}
+.tbl td.name{text-align:center}
+h3.sub{margin:14px 0 4px;color:var(--ink);font-size:1.05em;font-weight:800}
+/* Кори откликается на клик */
+.kori-spot .kori__stage{pointer-events:auto;cursor:pointer;border-radius:24px}
+.kori-spot .kori__stage:focus-visible{outline:3px solid var(--teal);outline-offset:4px}
 </style>
 <header class="top">
   <div class="title"><small>Онлайн-школа Корифей · Физика · 7 класс</small><b>Изучение зависимости растяжения пружины от приложенной силы</b><span class="act" id="act"></span></div>
@@ -1014,8 +1021,8 @@ const LAB=(()=>{
  const STEPS=[
  {title:'Загадка',act:1,min:3,screen:'lab',kori:['greet','Начнём с прогноза'],head:'Что станет вдвое больше?',html:()=>`${teach('Соберите прогнозы до опыта. Не подтверждайте ответ: вернитесь к нему после измерений.')}${T()?'':`<div class="box"><b>Как ты сейчас?</b>${emoji('checkin')}</div>`}<div class="box note riddle">К пружине подвесили груз, затем добавили ещё один такой же. Пружину стали тянуть вдвое сильнее. Что произойдёт с пружиной?</div>${vote('p1',[['extension','Удлинение станет вдвое больше'],['length','Вся длина станет вдвое больше'],['other','Растяжение вырастет иначе'],['?','Пока не знаю']])}`},
  {title:'Первая победа',act:1,min:2,screen:'lab',kori:['look','Следи за указателем'],head:'Вернётся ли пружина?',html:()=>`<div class="box">Посмотри на указатель без груза. Что будет, если подвесить груз, а потом снять его?</div>${vote('p2',[['return','Вернётся к исходной отметке'],['stay','Останется ниже'],['?','Пока не знаю']])}<button class="btn" id="try-run">Проверить</button><p class="hint-s">Кнопка подвесит один груз и снимет его. Следи за шкалой до и после.</p>${teach('Попросите назвать наблюдение: совпали ли отметки? Числа пока не подсказывайте.')}`},
- {title:'Теория',act:1,min:5,screen:'lab',kori:['think','Что измеряем?'],head:'Цель и правила измерений',html:()=>`<div class="box note"><b>Цель.</b> Выяснить, как удлинение пружины зависит от приложенной силы.<br><b>Оборудование:</b> штатив, пружина с невесомым указателем, линейка, четыре груза по 100 г.</div><ol class="rules"><li>Сначала измерь l₀ без грузов.</li><li>При каждой нагрузке дождись затухания колебаний.</li><li>Читай шкалу через лупу. Цена деления — 1 мм.</li><li>Изменяй только число грузов на той же пружине.</li><li>Удлинение — разность отсчётов: Δl = l − l₀.</li></ol>${writeBox('тему, цель и оборудование. Схему можно открыть кнопкой «Тетрадь».')}`},
- {title:'Опыт 1',act:2,min:12,screen:'lab',kori:['look','Начни без грузов'],head:'Исходная отметка и один груз',html:()=>`${writeBox('таблицу на всю работу. Пустые клетки заполняются по своим измерениям:')}${bigTable('fit')}${measureTable([1])}${ladder('scale',HELP.scale)}${ladder('extension',HELP.extension)}${light('exp1')}`},
+ {title:'Теория',act:1,min:5,screen:'lab',kori:['think','Что измеряем?'],head:'Цель и правила измерений',html:()=>`<div class="box note"><b>Цель.</b> Выяснить, как удлинение пружины зависит от приложенной силы.<br><b>Оборудование:</b> штатив, пружина с невесомым указателем, линейка, четыре груза по 100 г.</div><h3 class="sub">Ход работы</h3><ol class="rules"><li>Сначала измерь l₀ без грузов.</li><li>При каждой нагрузке дождись затухания колебаний.</li><li>Читай шкалу через лупу. Цена деления — 1 мм.</li><li>Изменяй только число грузов на той же пружине.</li><li>Удлинение — разность отсчётов: Δl = l − l₀.</li></ol>${writeBox('тему, цель и оборудование. Схему можно открыть кнопкой «Тетрадь».')}`},
+ {title:'Опыт 1',act:2,min:12,screen:'lab',kori:['look','Начни без грузов'],head:'Исходная отметка и один груз',html:()=>`${writeBox('таблицу на всю работу. Пустые клетки заполняются по своим измерениям:')}${bigTable('fit')}${T()?'':measureTable([1])}${ladder('scale',HELP.scale)}${ladder('extension',HELP.extension)}${light('exp1')}`},
  {title:'Пауза',act:2,min:1,screen:'pause',kori:['rest','Дышим вместе'],head:'Микро-пауза',html:()=>`<div class="box note">Отведи взгляд от экрана, выпрями спину. Вдох — 3 счёта, задержка — 3, выдох — 3, задержка — 3.</div>`},
  {title:'Опыты 2–4',act:2,min:11,screen:'lab',kori:['look','Меняем только нагрузку'],head:'Два, три и четыре груза',html:()=>`<div class="box">Последовательно подвесь два, три и четыре груза. Каждый раз дождись остановки указателя, прочитай шкалу и зафиксируй опыт. Используй ту же начальную отметку l₀.</div>${measureTable([2,3,4])}${ladder('extension',HELP.extension)}${light('exp23')}`},
  {title:'Кульминация',act:3,min:6,screen:'lab',kori:['think','Вернись к прогнозу'],head:'Как изменялась длина пружины?',html:()=>culmination()},
@@ -1035,6 +1042,24 @@ const LAB=(()=>{
       behaviors: { rest: { group: "Ожидание", title: "Отдыхает", when: "микро-пауза", pose: "joy", motion: "breathe", fx: [], phrases: [], hold: 0 } } });
   } catch (_) { kori = null; }
   const play = (b, text) => { if (kori) kori.play(b, text); };
+  // Клик по Кори: короткая анимация и шутливая реплика. Без подсказок к ответам.
+  const POKE = ["Давай физичим!", "Щекотно! Я же не пружина", "Тянем-потянем… и измеряем!", "Лупа — моя суперсила", "Точность до миллиметра!", "Грузик, не раскачивайся!", "Физика — это когда интересно", "Ещё разок? Я не устал"];
+  const POKE_MOVES = ["ok", "streak3", "ok_hard", "eureka", "self_fix"];
+  let pokeLast = -1, pokeAt = 0;
+  function poke() {
+    if (!kori || Date.now() - pokeAt < 900) return;
+    pokeAt = Date.now();
+    let i; do { i = Math.floor(Math.random() * POKE.length); } while (i === pokeLast && POKE.length > 1);
+    pokeLast = i;
+    play(POKE_MOVES[Math.floor(Math.random() * POKE_MOVES.length)], POKE[i]);
+  }
+  const koriEl = $("#kori .kori__stage"); // корень #kori прозрачен для мыши, кликается только фигура
+  if (koriEl) {
+    Object.assign(koriEl, { tabIndex: 0, title: "Нажми на Кори" });
+    koriEl.setAttribute("role", "button"); koriEl.setAttribute("aria-label", "Кори: нажми, чтобы он ответил");
+    koriEl.addEventListener("click", poke);
+    koriEl.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); poke(); } });
+  }
   LAB.on((type, d) => { if (type === "kori" && d.behavior) play(d.behavior, d.text); });
 
   // ── Отправка ответов учителю (только по личной ссылке) ──
