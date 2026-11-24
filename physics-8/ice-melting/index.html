@@ -6,7 +6,7 @@
 
 <title>Плавление льда — Живой урок</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;500;600;700;800&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>/* Кори: 25 поведений. Смена позы + CSS-движение + эффекты кодом. Без библиотек.
  * --dir: 1 — Кори смотрит вправо (стоит слева от задачи), -1 — смотрит влево.
  * Все горизонтальные сдвиги и наклоны умножаются на --dir, поэтому одна анимация работает в обе стороны. */
@@ -610,13 +610,22 @@ table.big.mini td{height:18px}
 .vb{width:32px;height:32px;border:0;border-radius:50%;background:var(--card);color:var(--ink);font:700 18px var(--font);cursor:pointer;box-shadow:0 0 0 1px var(--line)}
 .light{display:grid;gap:6px;border-top:1px dashed var(--line);padding-top:10px}
 .light>b{color:var(--ink)}
-.pause{position:absolute;inset:0;z-index:4;display:grid;place-content:center;justify-items:center;gap:14px;background:linear-gradient(180deg,#EAF3F9,#D7ECF7);text-align:center;color:#14324A}
-.pause #breath-phase{margin:0;font-size:34px;font-weight:800}
-.pause .pause-note{margin:0;max-width:420px;font-size:15px;color:#3F5F78}
-.breath{position:relative;width:180px;height:180px;border:6px solid #00A3B9;border-radius:18px}
-.breath .dot{position:absolute;width:26px;height:26px;margin:-16px 0 0 -16px;border-radius:50%;background:#FF5B00;box-shadow:0 0 0 6px rgba(255,91,0,.2);animation:breath-run 12s linear infinite}
-@keyframes breath-run{0%{left:0;top:100%}25%{left:0;top:0}50%{left:100%;top:0}75%{left:100%;top:100%}100%{left:0;top:100%}}
-@media (prefers-reduced-motion:reduce){.breath .dot{animation:none;left:0;top:100%}}
+/* Пауза «Вдох, вдох, вдох… и отпусти» */
+.pause{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;padding:14px 16px 12px;gap:4px;overflow:hidden;text-align:center;color:#E9E4FF;background:radial-gradient(120% 70% at 50% 0%,#5A4A86 0%,#3A3068 38%,#231D45 72%,#1A1634 100%)}
+.pause>*{position:relative}
+.pause .br-stars{position:absolute;inset:0;width:100%;height:100%}
+.br-title{margin:0;font:italic 400 clamp(22px,3.1vw,38px)/1.15 "PT Serif",Georgia,serif;color:#E3DCF7;text-wrap:balance}
+.br-sub{margin:0;font-size:clamp(12px,1.25vw,15px);letter-spacing:.03em;color:#B9B0E6}
+.br-graph{width:100%;flex:0 0 auto;height:30%;min-height:90px}
+.br-lbl{font:italic 400 26px "PT Serif",Georgia,serif}
+.br-lungs{width:100%;flex:1 1 auto;min-height:120px}
+.br-cap{display:grid;justify-items:center;gap:2px;min-height:78px}
+.br-cap b{font:400 clamp(26px,3.3vw,40px)/1.1 "PT Serif",Georgia,serif;color:#EFEAFF;transition:color .4s}
+.br-cap b[data-kind="in"]{color:#F4C750}
+.br-cap span{font-size:clamp(13px,1.3vw,16px);color:#C9C1EE;letter-spacing:.02em}
+.br-cap small{font-size:13px;color:#8D84C4;min-height:1em}
+.br-cap .btn{margin-top:4px}
+@media(max-width:500px){.pause{padding:10px 10px 8px}.br-graph{height:26%}.br-lbl{font-size:30px}.br-cap{min-height:64px}}
 
 /* Таблица на всю работу целиком в панели, без прокрутки вбок */
 .tbl-wrap:has(table.big.fit){overflow:visible}
@@ -641,7 +650,7 @@ table.big.fit th:nth-child(2),table.big.fit td:nth-child(2){width:19%;overflow-w
 .kori-spot{top:auto;bottom:2%;right:1%;--kori-size:130px}
 #pin{width:7em;padding:8px;font:600 15px var(--mono);border:1px solid var(--line);border-radius:8px}
 @media(max-width:1060px){.stage{height:570px}.panel{min-height:600px}.work{min-height:0}.panel-body{max-height:750px}.title b{font-size:16px}}
-@media(max-width:500px){.top{position:relative;gap:8px;padding:10px}.top .title{width:100%}.title small{font-size:9px}.steps{gap:4px}.steps button{font-size:10px;padding:4px 7px 4px 4px}.steps button .n{width:16px;height:16px}.work{padding:10px;gap:10px}.stage{height:425px}.toolbar{padding:8px;gap:6px}.lupa{width:145px;top:1%;right:2%}.kori-spot{--kori-size:90px;bottom:1%}.panel-head{padding:12px}.panel-body{padding:12px;max-height:none;overflow:visible}.panel{overflow:visible}.full-table table.big{font-size:9px}.full-table input{font-size:9px}body.big-text .panel{font-size:15px}.balance-formula{font-size:11px}.pause .pause-note{max-width:290px}.scene>svg{preserve-aspect-ratio:xMidYMid meet}.toast{font-size:12px;max-width:90%}}
+@media(max-width:500px){.top{position:relative;gap:8px;padding:10px}.top .title{width:100%}.title small{font-size:9px}.steps{gap:4px}.steps button{font-size:10px;padding:4px 7px 4px 4px}.steps button .n{width:16px;height:16px}.work{padding:10px;gap:10px}.stage{height:425px}.toolbar{padding:8px;gap:6px}.lupa{width:145px;top:1%;right:2%}.kori-spot{--kori-size:90px;bottom:1%}.panel-head{padding:12px}.panel-body{padding:12px;max-height:none;overflow:visible}.panel{overflow:visible}.full-table table.big{font-size:9px}.full-table input{font-size:9px}body.big-text .panel{font-size:15px}.balance-formula{font-size:11px}.scene>svg{preserve-aspect-ratio:xMidYMid meet}.toast{font-size:12px;max-width:90%}}
 .top{min-height:0}
 .full-table input{letter-spacing:-.4px}
 @media(max-width:500px){.stage{height:500px}.kori-spot{right:auto;left:0;--kori-size:75px}.lupa-cap{background:#EAF3F9;border-radius:8px;padding:2px;bottom:-30px}.scene .kori__bubble{font-size:12px}}
@@ -682,7 +691,7 @@ table.big.fit th:nth-child(2),table.big.fit td:nth-child(2){width:19%;overflow-w
       <svg id="scene-svg" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Калориметр, цилиндр, весы и термометры"></svg>
       <div id="notebook" hidden></div>
       <div id="lupa" class="lupa"></div>
-      <div id="pause" class="pause" hidden><div class="breath"><span class="dot"></span></div><p id="breath-phase">Вдох</p><p class="pause-note">Дыхание-квадрат: вдох — 3 счёта, задержка — 3, выдох — 3, задержка — 3.</p></div>
+      <div id="pause" class="pause" hidden></div>
       <div id="pick" class="pick" hidden></div>
       <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
       <div id="kori" class="kori-spot" aria-hidden="false"></div>
@@ -948,8 +957,8 @@ const ART = (() => {
  function cylinder(ml){let ticks='';for(let v=0;v<=350;v+=2){const y=n(465-v*.66);ticks+=`<path d="M165 ${y}h${v%50===0?25:v%10===0?16:7}" stroke="#4D5B67"/>${v%50===0?text(198,y+5,v,13):''}`;}return `<path d="M130 210V470Q130 480 140 480H224Q234 480 234 470V210" fill="#EAF6FB" stroke="#8CABB9" stroke-width="3"/><path d="M133 ${n(465-ml*.66)}H231V470H133Z" fill="#3FB6E8" opacity=".6"/>${ticks}<path d="M126 210H240M120 490H246" stroke="#71818E" stroke-width="7"/>${text(175,185,'Цилиндр · мл',17,'text-anchor="middle"')}`;}
  function thermo(x,value,label){const y=t=>439-(t+30)*3;let ticks='';for(let t=-30;t<=60;t+=1){ticks+=`<path d="M${x+18} ${y(t)}h${t%10===0?22:t%5===0?12:6}" stroke="#4D5B67"/>${t%10===0?text(x+46,y(t)+4,t,12):''}`;}return `<rect x="${x-18}" y="147" width="104" height="337" rx="14" fill="#F7FBFE" stroke="#9FB5C2" stroke-width="2"/>${text(x+34,130,label,15,'text-anchor="middle"')}<path d="M${x} 169V455" stroke="#BCCBD3" stroke-width="14" stroke-linecap="round"/><path d="M${x} ${n(y(value))}V455" stroke="#FF5B00" stroke-width="8"/><circle cx="${x}" cy="455" r="12" fill="#FF5B00"/>${ticks}${text(x+32,169,'°C',15)}`;}
  function ice(x,y,f=1){return `<g transform="translate(${n(x)} ${n(y)}) scale(${n(Math.max(.01,Math.cbrt(f)))})"><rect x="-24" y="-25" width="48" height="47" rx="7" fill="#E6F9FF" stroke="#8FC4D6" stroke-width="2"/><path d="M-15 -16L10 10M-7 -19L17 5" stroke="#fff" stroke-width="4"/></g>`;}
- function calorimeter(f,mixed){return `<rect x="380" y="266" width="208" height="220" rx="16" fill="url(#metal)" stroke="#647887" stroke-width="3"/><rect x="402" y="286" width="164" height="173" rx="8" fill="#EAF6FB" stroke="#8BAAB9"/><path d="M405 332H563V454H405Z" fill="#3FB6E8" opacity=".7"/>${f>0?ice(484,344,f):''}<path d="M536 245L517 427" stroke="#657B88" stroke-width="7" stroke-linecap="round"/>${mixed?'<path d="M425 381q42 -14 111 0M433 399q42 15 99 0" fill="none" stroke="#D3F3FF" stroke-width="3"/>':''}${text(485,528,'Калориметр',19,'text-anchor="middle"')}`;}
- function balance(g,hasIce){let ticks='';for(let v=0;v<=80;v+=1){const a=(-120+v*3)*Math.PI/180,r=v%10===0?58:v%5===0?64:68;ticks+=`<path d="M${n(800+Math.sin(a)*r)} ${n(400-Math.cos(a)*r)}L${n(800+Math.sin(a)*72)} ${n(400-Math.cos(a)*72)}" stroke="#4D5B67"/>${v%20===0?text(n(800+Math.sin(a)*47),n(405-Math.cos(a)*47),v,13,'text-anchor="middle"'):''}`;}const a=(-120+g*3)*Math.PI/180;return `<path d="M746 488L756 335H844L854 488Z" fill="url(#metal)" stroke="#647887" stroke-width="2"/><path d="M800 332V304M742 303H858" stroke="#71818E" stroke-width="7"/><circle cx="800" cy="400" r="78" fill="#F7FBFE" stroke="#71818E" stroke-width="5"/>${ticks}<path d="M800 400L${n(800+Math.sin(a)*57)} ${n(400-Math.cos(a)*57)}" stroke="#FF5B00" stroke-width="3"/><circle cx="800" cy="400" r="5" fill="#14324A"/>${text(800,445,'г',17,'text-anchor="middle"')}${text(800,528,'Весы · тара вычтена',17,'text-anchor="middle"')}${hasIce?`<g id="ice-drag" class="item" tabindex="0" role="button" aria-label="Лёд: перетащи в калориметр или нажми Enter">${ice(800,275)}<rect x="766" y="239" width="68" height="65" fill="transparent"/></g>`:''}`;}
+ function calorimeter(f,mixed){return `<rect x="380" y="266" width="208" height="220" rx="16" fill="url(#metal)" stroke="#647887" stroke-width="3"/><rect x="402" y="286" width="164" height="173" rx="8" fill="#EAF6FB" stroke="#8BAAB9"/><path d="M405 332H563V454H405Z" fill="#3FB6E8" opacity=".7"/>${f>0?ice(484,344,f):''}<path d="M536 245L517 427" stroke="#657B88" stroke-width="7" stroke-linecap="round"/>${mixed?'<path d="M425 381q42 -14 111 0M433 399q42 15 99 0" fill="none" stroke="#D3F3FF" stroke-width="3"/>':''}${text(485,560,'Калориметр',19,'text-anchor="middle"')}`;}
+ function balance(g,hasIce){let ticks='';for(let v=0;v<=80;v+=1){const a=(-120+v*3)*Math.PI/180,r=v%10===0?58:v%5===0?64:68;ticks+=`<path d="M${n(800+Math.sin(a)*r)} ${n(400-Math.cos(a)*r)}L${n(800+Math.sin(a)*72)} ${n(400-Math.cos(a)*72)}" stroke="#4D5B67"/>${v%20===0?text(n(800+Math.sin(a)*47),n(405-Math.cos(a)*47),v,13,'text-anchor="middle"'):''}`;}const a=(-120+g*3)*Math.PI/180;return `<path d="M746 488L756 335H844L854 488Z" fill="url(#metal)" stroke="#647887" stroke-width="2"/><path d="M800 332V304M742 303H858" stroke="#71818E" stroke-width="7"/><circle cx="800" cy="400" r="78" fill="#F7FBFE" stroke="#71818E" stroke-width="5"/>${ticks}<path d="M800 400L${n(800+Math.sin(a)*57)} ${n(400-Math.cos(a)*57)}" stroke="#FF5B00" stroke-width="3"/><circle cx="800" cy="400" r="5" fill="#14324A"/>${text(800,445,'г',17,'text-anchor="middle"')}${text(800,560,'Весы · тара вычтена',17,'text-anchor="middle"')}${hasIce?`<g id="ice-drag" class="item" tabindex="0" role="button" aria-label="Лёд: перетащи в калориметр или нажми Enter">${ice(800,275)}<rect x="766" y="239" width="68" height="65" fill="transparent"/></g>`:''}`;}
  function linearZoom(value,kind){const temp=kind==='water'||kind==='ice',step=kind==='volume'?2:1,major=kind==='volume'?10:5,scale=kind==='volume'?6:11,vertical=kind!=='mass';let ticks='';for(let v=Math.floor((value-16)/step)*step;v<=value+16;v+=step){if(!temp&&v<0)continue;const p=150-(v-value)*scale,big=v%major===0;ticks+=vertical?`<path d="M147 ${n(p)}h${big?48:25}" stroke="#14324A" stroke-width="${big?2:1}"/>${big?text(205,n(p+6),v,20):''}`:`<path d="M${n(300-p)} 142v${big?45:23}" stroke="#14324A" stroke-width="${big?2:1}"/>${big?text(n(300-p),214,v,20,'text-anchor="middle"'):''}`;}const mark=vertical?`<path d="M65 150H148" stroke="#FF5B00" stroke-width="3" stroke-dasharray="6 4"/>${temp?'<path d="M90 35V250" stroke="#BCCBD3" stroke-width="14"/><path d="M90 250V150" stroke="#FF5B00" stroke-width="10"/>':'<rect x="35" y="150" width="100" height="150" fill="#3FB6E8" opacity=".4"/>'}`:'<path d="M150 65V148" stroke="#FF5B00" stroke-width="4"/>';return `<svg viewBox="0 0 300 300"><defs><clipPath id="zoom-clip"><circle cx="150" cy="150" r="138"/></clipPath></defs><circle cx="150" cy="150" r="147" fill="#14324A"/><g clip-path="url(#zoom-clip)"><rect width="300" height="300" fill="#F7FBFE"/>${ticks}${mark}</g><circle cx="150" cy="150" r="139" fill="none" stroke="#fff" stroke-width="3"/></svg>`;}
  const scheme=()=>`<svg viewBox="0 0 600 240" aria-label="Схема теплового баланса"><g fill="none" stroke="#111" stroke-width="2"><path d="M40 55V200H260V55M60 65V180H240V65M60 110H240M210 25V160M370 55H530V195H370Z"/><path d="M360 120H280m12 -8l-12 8 12 8"/></g><g fill="#111" font-family="sans-serif" font-size="17"><text x="77" y="140">вода mв, tв → t</text><text x="67" y="222">отдаёт тепло</text><text x="385" y="100">лёд mл, t₀ = 0 °C</text><text x="385" y="135">плавление</text><text x="385" y="165">вода t₀ → t</text><text x="385" y="222">получает тепло</text></g></svg>`;
  return {n,text,defs,room,cylinder,thermo,calorimeter,balance,ice,linearZoom,scheme};
@@ -979,7 +988,7 @@ const LAB = (() => {
  function schedule(){frame=requestAnimationFrame(loop);clearTimeout(backup);backup=setTimeout(()=>{cancelAnimationFrame(frame);loop(performance.now());},90);}
  function loop(now){clearTimeout(backup);const dt=last?Math.min((now-last)/1000,30):.016;last=now;if(st.phase==='running'){st.progress=Math.min(1,st.progress+dt/12);if(st.progress===1){st.phase='melted';say('Лёд растаял. Перемешай воду перед отсчётом.');}}else if(st.phase==='demo'){st.demoProgress=Math.min(.88,st.demoProgress+dt/6);if(st.demoProgress>=.88){st.phase='demo-done';emit('kori',{behavior:'surprise',text:'Тепло поступает. Что со шкалой?'});}}draw();zoom();if(st.phase==='running'||st.phase==='demo')schedule();else{stop();render();emit('phase');}}
  function values(){if(st.demo)return {waterT:0,iceT:0,fraction:1-st.demoProgress,stage:'Нагреватель подводит тепло к смеси льда и воды'};return PHYSICS.at(st.id,st.progress);}
- function draw(){if(st.dragging)return;const v=values(),r=p(),ready=st.phase==='ready',label=st.demo?'Смесь':st.progress>0&&v.fraction===0?'Талая вода':'Лёд';$('#scene-svg').innerHTML=`${ART.defs}${ART.room()}${ART.cylinder(r.V*1e6)}${ART.thermo(310,v.waterT,'Вода')}${ART.calorimeter(st.demo||!ready?v.fraction:0,st.mixed)}${ART.thermo(650,ready?r.ti:v.iceT,label)}${ART.balance(ready?r.mi*1000:0,ready&&!st.demo)}${st.demo?`<path d="M410 488h150" stroke="#FF5B00" stroke-width="7"/>${ART.text(485,558,'Подводим тепло →',18,'text-anchor="middle"')}`:''}${ART.text(485,75,st.demo?'Наблюдение: плавление':'Опыт',24,'font-weight="700" text-anchor="middle"')}${ART.text(485,104,ready&&!st.demo?'Прочитай шкалы, затем перенеси лёд в калориметр':st.phase==='done'?'Перемешано · можно снимать конечную температуру':st.phase==='melted'?'Лёд растаял · перемешай воду':v.stage,15,'text-anchor="middle"')}`;wire();}
+ function draw(){if(st.dragging)return;const v=values(),r=p(),ready=st.phase==='ready',label=st.demo?'Смесь':st.progress>0&&v.fraction===0?'Талая вода':'Лёд';$('#scene-svg').innerHTML=`${ART.defs}${ART.room()}${ART.cylinder(r.V*1e6)}${ART.thermo(310,v.waterT,'Вода')}${ART.calorimeter(st.demo||!ready?v.fraction:0,st.mixed)}${ART.thermo(650,ready?r.ti:v.iceT,label)}${ART.balance(ready?r.mi*1000:0,ready&&!st.demo)}${st.demo?`<path d="M410 488h150" stroke="#FF5B00" stroke-width="7"/>${ART.text(485,594,'Подводим тепло →',18,'text-anchor="middle"')}`:''}${ART.text(485,75,st.demo?'Наблюдение: плавление':'Опыт',24,'font-weight="700" text-anchor="middle"')}${ART.text(485,104,ready&&!st.demo?'Прочитай шкалы, затем перенеси лёд в калориметр':st.phase==='done'?'Перемешано · можно снимать конечную температуру':st.phase==='melted'?'Лёд растаял · перемешай воду':v.stage,15,'text-anchor="middle"')}`;wire();}
  function zoom(){const v=values(),r=p(),kinds={volume:[r.V*1e6,'Цилиндр · мл · деление 2 мл'],mass:[st.phase==='ready'&&!st.demo?r.mi*1000:0,'Весы · г · деление 1 г'],water:[v.waterT,'Температура воды · °C · деление 1 °C'],ice:[st.phase==='ready'&&!st.demo?r.ti:v.iceT,'Лёд / талая вода · °C · деление 1 °C']};const [value,label]=kinds[st.zoom];$('#lupa').innerHTML=ART.linearZoom(value,st.zoom)+`<div class="lupa-cap">${label}</div>`;}
  function toolbar(){$('#tools').innerHTML=`<button class="btn sm" id="add-ice"${st.phase!=='ready'||st.demo?' disabled':''}>Поместить лёд</button><button class="btn sm ghost" id="stir"${st.phase!=='melted'?' disabled':''}>Перемешать</button><span class="seg" role="group" aria-label="Лупа">${[['volume','Объём'],['mass','Масса'],['water','t воды'],['ice','t льда']].map(([key,name])=>`<button data-zoom="${key}" aria-pressed="${st.zoom===key}">${name}</button>`).join('')}</span>`;$('#add-ice').onclick=addIce;$('#stir').onclick=stir;$('#tools').querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{st.zoom=b.dataset.zoom;toolbar();zoom();});}
  function render(){$('#scene-svg').toggleAttribute('hidden',st.screen==='notebook');$('#notebook').hidden=st.screen!=='notebook';$('#lupa').hidden=st.screen!=='lab';draw();zoom();toolbar();}
@@ -989,6 +998,106 @@ const LAB = (() => {
  const truth=()=>st.runs.map(r=>({...r}));
  function restore(runs,scene){st.runs=(Array.isArray(runs)?runs:[]).filter(r=>Number(r.id)===1).slice(-30).map(r=>PHYSICS.model(Number(r.id)));if(scene&&Number(scene.id)===1){st.id=Number(scene.id);if(['done','melted'].includes(scene.phase)){st.phase=scene.phase;st.progress=1;st.mixed=scene.phase==='done';}if(['volume','mass','water','ice'].includes(scene.zoom))st.zoom=scene.zoom;}}
  return {st,render,setScreen,resetScreen,on,emit,say,truth,select,addIce,stir,demo,restore};
+})();
+
+// Пауза «Вдох, вдох, вдох… и отпусти» (просьба Дениса 24.11, по образцу ролика):
+// 5 циклов — три коротких вдоха носом (лёгкие наполняются ступенями), затем длинный медленный выдох ртом.
+// Сверху — линия дыхания с бегущей точкой (пройдено — золотом), снизу — лёгкие, уровень воздуха по той же линии.
+const BREATH = (() => {
+  const CYCLES = 5, INTRO = 4, BASE = 0.05;
+  const CAP = [
+    ['Вдох', 'маленький глоток воздуха носом', 'in'],
+    ['Ещё вдох', 'маленький глоток воздуха носом', 'in'],
+    ['И ещё вдох', 'маленький глоток воздуха носом', 'in'],
+    ['Медленный выдох', 'длинно и мягко, через рот', 'out'],
+  ];
+  // Цикл: [вид, секунды, уровень в конце, подпись]
+  const CYCLE = [['in', 1.1, 1 / 3, 0], ['hold', .5, 1 / 3, 0], ['in', 1.1, 2 / 3, 1], ['hold', .5, 2 / 3, 1], ['in', 1.1, 1, 2], ['hold', .7, 1, 2], ['out', 5.5, BASE, 3], ['rest', .6, BASE, 3]];
+  const SEG = [];
+  let t = INTRO, lvl = BASE;
+  for (let c = 0; c < CYCLES; c++) for (const [kind, dur, to, cap] of CYCLE) { SEG.push({ kind, t0: t, t1: t + dur, from: lvl, to, cap, cycle: c }); t += dur; lvl = to; }
+  const END = t;
+  const ease = (u) => .5 - .5 * Math.cos(Math.PI * u);
+  function level(x) {
+    if (x <= INTRO || x >= END) return BASE;
+    const s = SEG.find((q) => x < q.t1) || SEG[SEG.length - 1];
+    return s.from + (s.to - s.from) * ease(Math.min(1, (x - s.t0) / (s.t1 - s.t0)));
+  }
+  const segAt = (x) => (x < INTRO || x >= END ? null : SEG.find((q) => x < q.t1));
+
+  // ── Рисунок ──
+  // Ширина графика подстраивается под сцену: 85 px на секунду, точка всегда в центре.
+  const H = 230, PX = 85; let W = 1000, SPAN = W / PX;
+  const gy = (l) => 196 - l * 156;
+  const n = (v) => Math.round(v * 10) / 10;
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const stars = Array.from({ length: 70 }, () => `<circle cx="${n(rnd() * 1000)}" cy="${n(rnd() * 620)}" r="${n(.6 + rnd() * 1.4)}" opacity="${n(.25 + rnd() * .6)}"/>`).join('');
+  const LOBE = 'M150 38C112 38 78 118 64 222C57 280 58 318 92 322L163 322C176 322 179 310 178 293C176 250 179 150 173 92C171 60 166 38 150 38Z';
+  const rungs = Array.from({ length: 9 }, (_, i) => `<path d="M188 ${18 + i * 9}H212"/>`).join('');
+  const dashes = [1 / 3, 2 / 3].map((l) => { const y = n(322 - l * 278); return `<path d="M62 ${y}H178M222 ${y}H338" stroke-dasharray="7 6"/>`; }).join('');
+  function html() {
+    return `<svg class="br-stars" viewBox="0 0 1000 620" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><g fill="#fff">${stars}</g></svg>
+      <h3 class="br-title">Вдох, вдох, вдох… и отпусти</h3>
+      <p class="br-sub">3 коротких вдоха носом · один длинный выдох ртом</p>
+      <svg class="br-graph" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid meet" aria-hidden="true"><defs><filter id="br-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter><radialGradient id="br-sun"><stop offset="0" stop-color="#FFE9A6"/><stop offset=".55" stop-color="#F7B92F"/><stop offset="1" stop-color="#E59A12"/></radialGradient></defs><g id="br-line"></g><circle id="br-halo" r="30" fill="#FFD25A" opacity=".28" filter="url(#br-glow)"/><circle id="br-dot" r="15" fill="url(#br-sun)" stroke="#FFF3C9" stroke-width="2.5"/></svg>
+      <svg class="br-lungs" viewBox="0 0 400 340" aria-label="Лёгкие наполняются воздухом"><defs>
+        <clipPath id="br-clip"><path d="${LOBE}"/><path d="${LOBE}" transform="translate(400 0) scale(-1 1)"/></clipPath>
+        <linearGradient id="br-air" gradientUnits="userSpaceOnUse" x1="0" y1="322" x2="0" y2="40"><stop offset="0" stop-color="#F2BE45"/><stop offset=".45" stop-color="#F5D9B8"/><stop offset="1" stop-color="#B9A8F2"/></linearGradient>
+        <filter id="br-soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <g clip-path="url(#br-clip)"><rect x="0" y="0" width="400" height="340" fill="#1E1A3C"/><path id="br-air-fill" fill="url(#br-air)"/></g>
+        <g fill="none" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="2">${dashes}</g>
+        <g fill="none" stroke-linecap="round"><path d="M200 112L142 218M200 112L258 218" stroke="#2B2552" stroke-width="13"/><path d="M200 112L142 218M200 112L258 218" stroke="#E7E2FF" stroke-width="2.5"/></g>
+        <g fill="none" stroke="#ECE8FF" stroke-width="4" filter="url(#br-soft)"><path d="${LOBE}"/><path d="${LOBE}" transform="translate(400 0) scale(-1 1)"/><path d="M186 14V112M214 14V112M186 14L190 4L195 11L200 2L205 11L210 4L214 14"/></g>
+        <g stroke="#ECE8FF" stroke-width="2" opacity=".8">${rungs}</g></svg>
+      <div class="br-cap"><b id="br-phase"></b><span id="br-hint"></span><small id="br-count"></small><button type="button" class="btn sm" id="br-again" hidden>Ещё раз</button></div>`;
+  }
+
+  let root = null, start = 0, frame = 0, backup = 0, still = false;
+  function line(now) {
+    const pts = [];
+    for (let i = 0; i <= 240; i++) { const x = now - SPAN / 2 + i * SPAN / 240; pts.push([n(i * W / 240), n(gy(level(x)))]); }
+    const mid = 120, d = (a) => 'M' + a.map((p) => p.join(' ')).join('L');
+    let labels = '';
+    for (const s of SEG) {
+      if (s.t1 < now - SPAN / 2 - 1 || s.t0 > now + SPAN / 2 + 1) continue;
+      const past = s.t1 <= now + .05, fill = past ? '#FFD25A' : '#A79FE6';
+      if (s.kind === 'hold') labels += `<text x="${n(W / 2 + ((s.t0 + s.t1) / 2 - now) * PX)}" y="${n(gy(s.to) - 16)}" fill="${fill}" text-anchor="middle" class="br-lbl">вдох</text>`;
+      if (s.kind === 'out') { const xm = W / 2 + ((s.t0 + s.t1) / 2 - now) * PX, ang = Math.atan2((gy(BASE) - gy(1)) * 1, (s.t1 - s.t0) * PX) * 180 / Math.PI; labels += `<text x="${n(xm)}" y="${n((gy(1) + gy(BASE)) / 2 - 16)}" fill="${fill}" text-anchor="middle" class="br-lbl" transform="rotate(${n(ang)} ${n(xm)} ${n((gy(1) + gy(BASE)) / 2 - 16)})">выдох</text>`; }
+    }
+    return `<path d="${d(pts.slice(mid))}" fill="none" stroke="#9C93E0" stroke-width="4" stroke-linejoin="round"/><path d="${d(pts.slice(0, mid + 1))}" fill="none" stroke="#FFD84D" stroke-width="5" stroke-linejoin="round" filter="url(#br-glow)"/>${labels}`;
+  }
+  function fit() {
+    const g = root.querySelector('.br-graph'), r = g.getBoundingClientRect();
+    const w = r.height > 0 ? Math.max(500, Math.round(H * r.width / r.height)) : 1000;
+    if (w !== W) { W = w; SPAN = W / PX; g.setAttribute('viewBox', `0 0 ${W} ${H}`); }
+  }
+  function draw() {
+    if (!root) return;
+    fit();
+    const now = (performance.now() - start) / 1000, l = level(now), y = gy(l);
+    root.querySelector('#br-line').innerHTML = line(now);
+    for (const id of ['#br-dot', '#br-halo']) { const c = root.querySelector(id); c.setAttribute('cx', W / 2); c.setAttribute('cy', n(y)); }
+    const top = 322 - l * 278, amp = still ? 0 : 3.5, ph = now * 2.2;
+    let wave = `M40 ${n(top)}`;
+    for (let x = 40; x <= 360; x += 10) wave += `L${x} ${n(top + Math.sin(x / 26 + ph) * amp)}`;
+    root.querySelector('#br-air-fill').setAttribute('d', wave + 'L360 340L40 340Z');
+    const s = segAt(now), done = now >= END;
+    const [title, hint, kind] = done ? ['Готово', 'возвращаемся к опыту', 'end'] : s ? CAP[s.cap] : ['Устройся удобно', 'расслабь плечи и лицо', 'intro'];
+    const ph1 = root.querySelector('#br-phase');
+    if (ph1.textContent !== title) { ph1.textContent = title; ph1.dataset.kind = kind; }
+    root.querySelector('#br-hint').textContent = hint;
+    root.querySelector('#br-count').textContent = s ? `цикл ${s.cycle + 1} из ${CYCLES}` : done ? `${CYCLES} циклов` : '';
+    root.querySelector('#br-again').hidden = !done;
+    return done;
+  }
+  function loop() { clearTimeout(backup); const done = draw(); if (!done && root) { frame = requestAnimationFrame(loop); backup = setTimeout(() => { cancelAnimationFrame(frame); loop(); }, 90); } }
+  function run(el) {
+    stop(); root = el; still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!el.querySelector('.br-graph')) { el.innerHTML = html(); el.querySelector('#br-again').addEventListener('click', () => run(el)); }
+    start = performance.now(); loop();
+  }
+  function stop() { cancelAnimationFrame(frame); clearTimeout(backup); root = null; }
+  return { run, stop, level, END, CYCLES };
 })();
 
 // Журнал ЛР «Определение удельной теплоты плавления льда».
@@ -1093,7 +1202,7 @@ const LAB = (() => {
       ${writeBox('таблицу. Заполни её по своим измерениям; λ посчитаешь на шаге «Расчёт».')}${bigTable()}
       <p class="hint-s">Лупы под сценой: «Объём», «Масса», «t воды», «t льда». Лёд перетащи с весов в калориметр или нажми «Поместить лёд». Когда растает — «Перемешать».</p>
       ${ladder('measure',HELP.measure)}${ladder('temp',HELP.temp)}${light('exp1')}`},
-    {title:'Пауза',act:2,min:1,screen:'pause',kori:['rest','Дышим вместе'],head:'Микро-пауза',html:()=>`<div class="box note">${w('Отведи','Отведите')} взгляд от экрана, ${w('выпрями','выпрямите')} спину. Вдох — 3 счёта, задержка — 3, выдох — 3, задержка — 3.</div>`},
+    {title:'Пауза',act:2,min:1,screen:'pause',kori:['rest','Дышим вместе'],head:'Микро-пауза',html:()=>`<div class="box note">${w('Выпрями','Выпрямите')} спину, ${w('расслабь','расслабьте')} плечи. Пять циклов: три коротких вдоха носом — лёгкие наполняются — и один длинный мягкий выдох ртом. Следи за точкой на линии.</div>${teach('Дышите вместе с классом вслух: «вдох, вдох, вдох… и отпусти». Около минуты.')}`},
     {title:'Расчёт',act:2,min:9,screen:'lab',kori:['hint','Сначала джоули, потом кДж'],head:'Вычисляем удельную теплоту плавления',html:()=>`
       <div class="box balance-formula">${formula}</div>
       <p>Подставь массы в кг; массу воды найди по объёму: mв = ρв·Vв. Формула даёт Дж/кг; в таблицу запиши λ в кДж/кг — раздели на 1000.</p>
@@ -1125,7 +1234,7 @@ const LAB = (() => {
   } catch (_) { kori = null; }
   const play = (b, text) => { if (kori) kori.play(b, text); };
   // Клик по Кори: короткая анимация и шутливая реплика по теме работы. Без подсказок к ответам.
-  const POKE = ["Давай физичим!", "Брр, лёд холодный!", "Только не урони лёд!", "Лупа — моя суперсила", "Я не таю, я думаю", "Каждый градус на счету", "Физика — это когда интересно", "Ещё разок? Я не замёрз"];
+  const POKE = ["Давай физичить!", "Брр, лёд холодный!", "Только не урони лёд!", "Лупа — моя суперсила", "Я не таю, я думаю", "Каждый градус на счету", "Физика — это когда интересно", "Ещё разок? Я не замёрз"];
   const POKE_MOVES = ["ok", "streak3", "ok_hard", "eureka", "self_fix"];
   let pokeLast = -1, pokeAt = 0;
   function poke() {
@@ -1193,16 +1302,10 @@ const LAB = (() => {
   }
   setInterval(tick, 1000);
 
-  // ── Пауза: дыхание по квадрату, 3 счёта на фазу ──
-  let breathTimer = 0;
+  // ── Пауза: 5 циклов «три вдоха — длинный выдох» (breath.js) ──
   function breathe(on) {
     $("#pause").hidden = !on;
-    clearInterval(breathTimer);
-    if (!on) return;
-    const phases = ["Вдох", "Задержка", "Выдох", "Задержка"];
-    let i = 0;
-    $("#breath-phase").textContent = phases[0];
-    breathTimer = setInterval(() => { i = (i + 1) % 4; $("#breath-phase").textContent = phases[i]; }, 3000);
+    if (on) BREATH.run($("#pause")); else BREATH.stop();
   }
 
   // ── Отрисовка журнала ──
