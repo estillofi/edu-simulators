@@ -3,24 +3,43 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Тренажёры онлайн-школы Корифей</title>
+<title>Тренажёры и лабораторные онлайн-школы Корифей</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap">
 <style>
-/* Каталог: шапка школы и список тренажёров карточками. */
-:root{--bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;--teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#E3F5F8;
+/* Каталог: разделы по предметам (Математика 1–4, Алгебра 5–11, Физика 7–11), внутри — подразделы по классам со счётчиком страниц. */
+:root{--bg:#F1F3F5;--card:#FFFFFF;--ink:#1B3A52;--text:#466983;--muted:#8E9FAB;--line:#E0E4E8;--teal:#00A3B9;--teal-ink:#007F91;--teal-soft:#E3F5F8;--orange:#FF5B00;
   --font:"Raleway",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-@media (prefers-color-scheme:dark){:root{--bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;--teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;color-scheme:dark}}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1B26;--card:#142636;--ink:#E8F0F5;--text:#A9BFCE;--muted:#6F8797;--line:#24394B;--teal:#2BC3D6;--teal-ink:#5ED6E5;--teal-soft:#123A45;--orange:#FF7A33;color-scheme:dark}}
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--font)}
-.page{max-width:960px;margin:0 auto;padding:24px clamp(12px,3vw,24px) 48px;display:grid;gap:20px}
+.page{max-width:960px;margin:0 auto;padding:24px clamp(12px,3vw,24px) 48px;display:grid;gap:28px}
 .brand{margin:0;color:var(--ink);font-weight:800}
-h1{margin:4px 0 0;color:var(--ink);font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.1}
+h1{margin:4px 0 0;color:var(--ink);font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1.1;text-wrap:balance}
+.jump{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.jump a{display:inline-flex;align-items:baseline;gap:8px;padding:8px 16px;border-radius:999px;background:var(--card);box-shadow:0 0 0 1px var(--line);color:var(--ink);font-weight:700;text-decoration:none}
+.jump a:hover,.jump a:focus-visible{box-shadow:0 0 0 2px var(--teal);outline:none}
+.jump small,.chip small{color:var(--muted);font-weight:600;font-size:13px}
+.subject{display:grid;gap:14px;scroll-margin-top:16px}
+.subject>header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;border-bottom:2px solid var(--line);padding-bottom:8px}
+.subject h2{margin:0;color:var(--ink);font-weight:800;font-size:clamp(22px,3.4vw,28px)}
+.range{color:var(--teal-ink);font-weight:700}
+.total{margin-left:auto;color:var(--muted);font-weight:600;font-size:14px}
+.grades{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:baseline;gap:6px;padding:4px 12px;border-radius:999px;font-weight:700;font-size:14px;text-decoration:none;background:var(--teal-soft);color:var(--teal-ink)}
+a.chip:hover,a.chip:focus-visible{box-shadow:0 0 0 2px var(--teal);outline:none}
+.chip.empty{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1px var(--line);font-weight:600}
+.grade{display:grid;gap:10px;scroll-margin-top:16px}
+.grade h3{margin:6px 0 0;color:var(--ink);font-size:18px;font-weight:800;display:flex;align-items:baseline;gap:10px}
+.grade h3 .n{color:var(--muted);font-size:14px;font-weight:600}
 .list{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-a.card{display:grid;gap:6px;background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:20px 22px;text-decoration:none;color:inherit}
+a.card{display:grid;align-content:start;gap:6px;background:var(--card);border-radius:28px;box-shadow:0 0 0 1px var(--line);padding:20px 22px;text-decoration:none;color:inherit;min-width:0}
 a.card:hover,a.card:focus-visible{box-shadow:0 0 0 2px var(--teal);outline:none}
 .tag{color:var(--teal-ink);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
-.card h2{margin:0;color:var(--ink);font-size:20px;font-weight:800}
+.tag.lab{color:var(--orange)}
+.card h4{margin:0;color:var(--ink);font-size:20px;font-weight:800;line-height:1.25}
 .card p{margin:0;font-size:15px}
 .note{color:var(--muted);font-size:14px;margin:0}
 </style>
@@ -29,71 +48,154 @@ a.card:hover,a.card:focus-visible{box-shadow:0 0 0 2px var(--teal);outline:none}
 <main class="page">
   <header>
     <p class="brand">Онлайн-школа Корифей</p>
-    <h1>Тренажёры</h1>
+    <h1>Тренажёры и лабораторные</h1>
+    <nav class="jump" aria-label="Разделы">
+      <a href="#math">Математика <small data-total-of="math">1 стр.</small></a>
+      <a href="#algebra">Алгебра <small data-total-of="algebra">4 стр.</small></a>
+      <a href="#physics">Физика <small data-total-of="physics">7 стр.</small></a>
+    </nav>
   </header>
-  <div class="list">
-    <a class="card" href="math-3/area/">
-      <span class="tag">Математика · 3 класс</span>
-      <h2>Площадь на клетках</h2>
-      <p>Прямоугольник, ступенчатая фигура и параллелограмм: закрась квадратики, разрежь и переставь.</p>
-    </a>
-    <a class="card" href="physics-7/density/">
-      <span class="tag">Физика · 7 класс</span>
-      <h2>Плотность твёрдого тела</h2>
-      <p>Лабораторная работа: взвесь три тела на рычажных весах, измерь объём мензуркой и узнай, из чего они сделаны.</p>
-    </a>
-    <a class="card" href="physics-7/density-v3/">
-      <span class="tag">Физика · 7 класс · версия 3</span>
-      <h2>Плотность твёрдого тела — ведёт учитель</h2>
-      <p>Правила взвешивания, весы и мензурка на разных экранах, линейка, оформление как на экзамене. Без готовых ответов.</p>
-    </a>
-    <a class="card" href="physics-7/density-v3-1/">
-      <span class="tag">Физика · 7 класс · версия 3.1</span>
-      <h2>Плотность твёрдого тела — Живой урок</h2>
-      <p>Та же лабораторная, собранная как урок «Живой урок 360»: захват, победа до теории, светофор, роли, пауза, кульминация, билет на выход.</p>
-    </a>
-    <a class="card" href="physics-9/energy/">
-      <span class="tag">Физика · 9 класс · Живой урок</span>
-      <h2>Проверка закона сохранения механической энергии</h2>
-      <p>Шарик на стержне: угол по транспортиру, высота по линейке, дальность по отметке на копирке. Сравниваем Eₚ наверху и Eₖ внизу.</p>
-    </a>
-    <a class="card" href="physics-7/spring/">
-      <span class="tag">Физика · 7 класс · Живой урок</span>
-      <h2>Изучение зависимости растяжения пружины от приложенной силы</h2>
-      <p>Грузы на пружине, отсчёт указателя по линейке через лупу, таблица и график F(Δl). Ученик сам находит, что удлинение растёт пропорционально силе.</p>
-    </a>
-    <a class="card" href="physics-8/ice-melting/">
-      <span class="tag">Физика · 8 класс · Живой урок</span>
-      <h2>Определение удельной теплоты плавления льда</h2>
-      <p>Калориметр, термометры, весы и мензурка. Три опыта: базовый, больше льда, холоднее лёд. Расчёт λ по уравнению теплового баланса и сравнение с табличным.</p>
-    </a>
-    <a class="card" href="physics-7/units/">
-      <span class="tag">Физика · 7 класс</span>
-      <h2>Единицы и приставки</h2>
-      <p>Миллиграммы в килограммы, см² в м², миллилитры и литры в м³: лестница степеней, ловушки и подсказки.</p>
-    </a>
-    <a class="card" href="math-7/power/">
-      <span class="tag">Алгебра · 7 класс</span>
-      <h2>Степень с натуральным показателем</h2>
-      <p>Пять тренажёров: смысл степени, минус и скобки, большие числа, умножение степеней, уравнения.</p>
-    </a>
-    <a class="card" href="math-7/power-practice/">
-      <span class="tag">Алгебра · 7 класс · повторение</span>
-      <h2>Степень — тренировка</h2>
-      <p>390 заданий пяти типов, раунды по 10 в новом порядке, уровень подстраивается под ученика.</p>
-    </a>
-    <a class="card" href="math-7/expressions/">
-      <span class="tag">Алгебра · 7 класс · МЭО 5.1</span>
-      <h2>Скобки и подобные слагаемые</h2>
-      <p>Законы умножения, раскрытие скобок, подобные слагаемые, значение выражения. Уровни А/Б/В, ответ пишется как в тетради, Кори подсказывает.</p>
-    </a>
-    <a class="card" href="math-7/mental-rational/">
-      <span class="tag">Математика · 7 класс · устный счёт</span>
-      <h2>Дроби и отрицательные числа</h2>
-      <p>Обыкновенные и десятичные дроби, отрицательные числа, сравнение. 43 шаблона, уровни А/Б/В, числа каждый раз новые — ответы не заучить.</p>
-    </a>
-  </div>
-  <p class="note">Тренажёры работают в браузере и не собирают личные данные.</p>
+
+  <!-- Как добавить страницу: положите карточку a.card в .list нужного класса. Если класса ещё нет — замените span.chip.empty на a.chip и добавьте section.grade. Счётчики пересчитывает скрипт внизу. -->
+
+  <section class="subject" id="math" aria-labelledby="math-h">
+    <header><h2 id="math-h">Математика</h2><span class="range">1–4 классы</span><span class="total" data-total-of="math">1 страница</span></header>
+    <nav class="grades" aria-label="Математика по классам">
+      <span class="chip empty" data-for="math-1">1 класс <small>пока нет</small></span>
+      <span class="chip empty" data-for="math-2">2 класс <small>пока нет</small></span>
+      <a class="chip" href="#math-3" data-for="math-3">3 класс <small>1</small></a>
+      <span class="chip empty" data-for="math-4">4 класс <small>пока нет</small></span>
+    </nav>
+    <section class="grade" id="math-3">
+      <h3>3 класс <span class="n">1 страница</span></h3>
+      <div class="list">
+        <a class="card" href="math-3/area/">
+          <span class="tag">Тренажёр</span>
+          <h4>Площадь на клетках</h4>
+          <p>Прямоугольник, ступенчатая фигура и параллелограмм: закрась квадратики, разрежь и переставь.</p>
+        </a>
+      </div>
+    </section>
+  </section>
+
+  <section class="subject" id="algebra" aria-labelledby="algebra-h">
+    <header><h2 id="algebra-h">Алгебра</h2><span class="range">5–11 классы</span><span class="total" data-total-of="algebra">4 страницы</span></header>
+    <nav class="grades" aria-label="Алгебра по классам">
+      <span class="chip empty" data-for="algebra-5">5 класс <small>пока нет</small></span>
+      <span class="chip empty" data-for="algebra-6">6 класс <small>пока нет</small></span>
+      <a class="chip" href="#algebra-7" data-for="algebra-7">7 класс <small>4</small></a>
+      <span class="chip empty" data-for="algebra-8">8 класс <small>пока нет</small></span>
+      <span class="chip empty" data-for="algebra-9">9 класс <small>пока нет</small></span>
+      <span class="chip empty" data-for="algebra-10">10 класс <small>пока нет</small></span>
+      <span class="chip empty" data-for="algebra-11">11 класс <small>пока нет</small></span>
+    </nav>
+    <section class="grade" id="algebra-7">
+      <h3>7 класс <span class="n">4 страницы</span></h3>
+      <div class="list">
+        <a class="card" href="math-7/power/">
+          <span class="tag">Тренажёр</span>
+          <h4>Степень с натуральным показателем</h4>
+          <p>Пять тренажёров: смысл степени, минус и скобки, большие числа, умножение степеней, уравнения.</p>
+        </a>
+        <a class="card" href="math-7/power-practice/">
+          <span class="tag">Тренажёр · повторение</span>
+          <h4>Степень — тренировка</h4>
+          <p>390 заданий пяти типов, раунды по 10 в новом порядке, уровень подстраивается под ученика.</p>
+        </a>
+        <a class="card" href="math-7/expressions/">
+          <span class="tag">Тренажёр · МЭО 5.1</span>
+          <h4>Скобки и подобные слагаемые</h4>
+          <p>Законы умножения, раскрытие скобок, подобные слагаемые, значение выражения. Уровни А/Б/В, ответ пишется как в тетради, Кори подсказывает.</p>
+        </a>
+        <a class="card" href="math-7/mental-rational/">
+          <span class="tag">Тренажёр · устный счёт</span>
+          <h4>Дроби и отрицательные числа</h4>
+          <p>Обыкновенные и десятичные дроби, отрицательные числа, сравнение. 43 шаблона, уровни А/Б/В, числа каждый раз новые — ответы не заучить.</p>
+        </a>
+      </div>
+    </section>
+  </section>
+
+  <section class="subject" id="physics" aria-labelledby="physics-h">
+    <header><h2 id="physics-h">Физика</h2><span class="range">7–11 классы</span><span class="total" data-total-of="physics">7 страниц</span></header>
+    <nav class="grades" aria-label="Физика по классам">
+      <a class="chip" href="#physics-7" data-for="physics-7">7 класс <small>5</small></a>
+      <a class="chip" href="#physics-8" data-for="physics-8">8 класс <small>1</small></a>
+      <a class="chip" href="#physics-9" data-for="physics-9">9 класс <small>1</small></a>
+      <span class="chip empty" data-for="physics-10">10 класс <small>пока нет</small></span>
+      <span class="chip empty" data-for="physics-11">11 класс <small>пока нет</small></span>
+    </nav>
+    <section class="grade" id="physics-7">
+      <h3>7 класс <span class="n">5 страниц</span></h3>
+      <div class="list">
+        <a class="card" href="physics-7/spring/">
+          <span class="tag lab">Лабораторная · Живой урок</span>
+          <h4>Изучение зависимости растяжения пружины от приложенной силы</h4>
+          <p>Грузы на пружине, отсчёт указателя по линейке через лупу, таблица четырёх опытов. Ученик сам находит, как удлинение зависит от числа грузов.</p>
+        </a>
+        <a class="card" href="physics-7/density-v3-1/">
+          <span class="tag lab">Лабораторная · Живой урок · версия 3.1</span>
+          <h4>Плотность твёрдого тела — Живой урок</h4>
+          <p>Лабораторная, собранная как урок «Живой урок 360»: захват, победа до теории, светофор, роли, пауза, кульминация, билет на выход.</p>
+        </a>
+        <a class="card" href="physics-7/density-v3/">
+          <span class="tag lab">Лабораторная · версия 3</span>
+          <h4>Плотность твёрдого тела — ведёт учитель</h4>
+          <p>Правила взвешивания, весы и мензурка на разных экранах, линейка, оформление как на экзамене. Без готовых ответов.</p>
+        </a>
+        <a class="card" href="physics-7/density/">
+          <span class="tag lab">Лабораторная · первая версия</span>
+          <h4>Плотность твёрдого тела</h4>
+          <p>Взвесь три тела на рычажных весах, измерь объём мензуркой и узнай, из чего они сделаны.</p>
+        </a>
+        <a class="card" href="physics-7/units/">
+          <span class="tag">Тренажёр</span>
+          <h4>Единицы и приставки</h4>
+          <p>Миллиграммы в килограммы, см² в м², миллилитры и литры в м³: лестница степеней, ловушки и подсказки.</p>
+        </a>
+      </div>
+    </section>
+    <section class="grade" id="physics-8">
+      <h3>8 класс <span class="n">1 страница</span></h3>
+      <div class="list">
+        <a class="card" href="physics-8/ice-melting/">
+          <span class="tag lab">Лабораторная · Живой урок</span>
+          <h4>Определение удельной теплоты плавления льда</h4>
+          <p>Калориметр, термометры, весы и мензурка. Три опыта: базовый, больше льда, холоднее лёд. Расчёт λ по уравнению теплового баланса и сравнение с табличным.</p>
+        </a>
+      </div>
+    </section>
+    <section class="grade" id="physics-9">
+      <h3>9 класс <span class="n">1 страница</span></h3>
+      <div class="list">
+        <a class="card" href="physics-9/energy/">
+          <span class="tag lab">Лабораторная · Живой урок</span>
+          <h4>Проверка закона сохранения механической энергии</h4>
+          <p>Шарик на стержне: угол по транспортиру, высота по линейке, дальность по отметке на копирке. Сравниваем Eₚ наверху и Eₖ внизу.</p>
+        </a>
+      </div>
+    </section>
+  </section>
+
+  <p class="note">Тренажёры и лабораторные работают в браузере и не собирают личные данные.</p>
 </main>
+<script>
+// Пересчёт счётчиков по карточкам: число в HTML верно на момент правки, скрипт держит его верным, когда добавляют карточки.
+(() => {
+  const pages = (n) => n % 10 === 1 && n % 100 !== 11 ? "страница" : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? "страницы" : "страниц";
+  for (const subject of document.querySelectorAll(".subject")) {
+    let total = 0;
+    for (const grade of subject.querySelectorAll(".grade")) {
+      const n = grade.querySelectorAll("a.card").length;
+      total += n;
+      grade.querySelector("h3 .n").textContent = `${n} ${pages(n)}`;
+      const chip = subject.querySelector(`[data-for="${grade.id}"] small`);
+      if (chip) chip.textContent = n || "пока нет";
+    }
+    const totals = document.querySelectorAll(`[data-total-of="${subject.id}"]`);
+    totals.forEach((el) => { el.textContent = el.closest(".jump") ? `${total} стр.` : `${total} ${pages(total)}`; });
+  }
+})();
+</script>
 </body>
 </html>
