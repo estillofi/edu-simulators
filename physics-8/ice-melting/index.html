@@ -646,6 +646,24 @@ table.big.fit th:nth-child(2),table.big.fit td:nth-child(2){width:19%;overflow-w
 .full-table input{letter-spacing:-.4px}
 @media(max-width:500px){.stage{height:500px}.kori-spot{right:auto;left:0;--kori-size:75px}.lupa-cap{background:#EAF3F9;border-radius:8px;padding:2px;bottom:-30px}.scene .kori__bubble{font-size:12px}}
 @media(max-width:500px){.kori-spot{top:27%;bottom:auto;left:2%}}
+
+/* Правки учителя 24.11: одна таблица в одну строку, крупные величины */
+.one-table{min-width:0}
+.one-table table.big{width:100%;table-layout:fixed;font-size:16px;margin:0}
+.one-table table.big th,.one-table table.big td{white-space:normal;overflow-wrap:anywhere;padding:7px 3px;line-height:1.25}
+.one-table table.big th{font-weight:700}
+.one-table table.big th:first-child,.one-table table.big td:first-child{width:8%}
+.one-table table.big td{height:44px;font-size:16px}
+.one-table input{display:block;width:100%;min-width:0;border:0;background:#F1F7FA;color:#14324A;font:600 16px var(--mono);padding:8px 1px;text-align:center;border-radius:4px}
+.panel h3.sub{margin:0;color:var(--ink);font-size:16px}
+.balance-formula{font-size:15px}
+.balance-formula .frac{font-size:14px}
+.kori-spot .kori__stage{pointer-events:auto;cursor:pointer;border-radius:24px}
+.kori-spot .kori__stage:focus-visible{outline:3px solid var(--teal);outline-offset:4px}
+@media(max-width:500px){.one-table table.big,.one-table table.big td,.one-table input{font-size:12px}.one-table table.big td{height:34px}.balance-formula{font-size:12px}.balance-formula .frac{font-size:11px}}
+.balance-formula .nw{white-space:nowrap}
+#notebook{padding-bottom:170px}
+@media(max-width:500px){#notebook{padding-bottom:18px}}
 </style>
 
 </head>
@@ -933,17 +951,18 @@ const ART = (() => {
  function calorimeter(f,mixed){return `<rect x="380" y="266" width="208" height="220" rx="16" fill="url(#metal)" stroke="#647887" stroke-width="3"/><rect x="402" y="286" width="164" height="173" rx="8" fill="#EAF6FB" stroke="#8BAAB9"/><path d="M405 332H563V454H405Z" fill="#3FB6E8" opacity=".7"/>${f>0?ice(484,344,f):''}<path d="M536 245L517 427" stroke="#657B88" stroke-width="7" stroke-linecap="round"/>${mixed?'<path d="M425 381q42 -14 111 0M433 399q42 15 99 0" fill="none" stroke="#D3F3FF" stroke-width="3"/>':''}${text(485,528,'Калориметр',19,'text-anchor="middle"')}`;}
  function balance(g,hasIce){let ticks='';for(let v=0;v<=80;v+=1){const a=(-120+v*3)*Math.PI/180,r=v%10===0?58:v%5===0?64:68;ticks+=`<path d="M${n(800+Math.sin(a)*r)} ${n(400-Math.cos(a)*r)}L${n(800+Math.sin(a)*72)} ${n(400-Math.cos(a)*72)}" stroke="#4D5B67"/>${v%20===0?text(n(800+Math.sin(a)*47),n(405-Math.cos(a)*47),v,13,'text-anchor="middle"'):''}`;}const a=(-120+g*3)*Math.PI/180;return `<path d="M746 488L756 335H844L854 488Z" fill="url(#metal)" stroke="#647887" stroke-width="2"/><path d="M800 332V304M742 303H858" stroke="#71818E" stroke-width="7"/><circle cx="800" cy="400" r="78" fill="#F7FBFE" stroke="#71818E" stroke-width="5"/>${ticks}<path d="M800 400L${n(800+Math.sin(a)*57)} ${n(400-Math.cos(a)*57)}" stroke="#FF5B00" stroke-width="3"/><circle cx="800" cy="400" r="5" fill="#14324A"/>${text(800,445,'г',17,'text-anchor="middle"')}${text(800,528,'Весы · тара вычтена',17,'text-anchor="middle"')}${hasIce?`<g id="ice-drag" class="item" tabindex="0" role="button" aria-label="Лёд: перетащи в калориметр или нажми Enter">${ice(800,275)}<rect x="766" y="239" width="68" height="65" fill="transparent"/></g>`:''}`;}
  function linearZoom(value,kind){const temp=kind==='water'||kind==='ice',step=kind==='volume'?2:1,major=kind==='volume'?10:5,scale=kind==='volume'?6:11,vertical=kind!=='mass';let ticks='';for(let v=Math.floor((value-16)/step)*step;v<=value+16;v+=step){if(!temp&&v<0)continue;const p=150-(v-value)*scale,big=v%major===0;ticks+=vertical?`<path d="M147 ${n(p)}h${big?48:25}" stroke="#14324A" stroke-width="${big?2:1}"/>${big?text(205,n(p+6),v,20):''}`:`<path d="M${n(300-p)} 142v${big?45:23}" stroke="#14324A" stroke-width="${big?2:1}"/>${big?text(n(300-p),214,v,20,'text-anchor="middle"'):''}`;}const mark=vertical?`<path d="M65 150H148" stroke="#FF5B00" stroke-width="3" stroke-dasharray="6 4"/>${temp?'<path d="M90 35V250" stroke="#BCCBD3" stroke-width="14"/><path d="M90 250V150" stroke="#FF5B00" stroke-width="10"/>':'<rect x="35" y="150" width="100" height="150" fill="#3FB6E8" opacity=".4"/>'}`:'<path d="M150 65V148" stroke="#FF5B00" stroke-width="4"/>';return `<svg viewBox="0 0 300 300"><defs><clipPath id="zoom-clip"><circle cx="150" cy="150" r="138"/></clipPath></defs><circle cx="150" cy="150" r="147" fill="#14324A"/><g clip-path="url(#zoom-clip)"><rect width="300" height="300" fill="#F7FBFE"/>${ticks}${mark}</g><circle cx="150" cy="150" r="139" fill="none" stroke="#fff" stroke-width="3"/></svg>`;}
- const scheme=()=>`<svg viewBox="0 0 600 240" aria-label="Схема теплового баланса"><g fill="none" stroke="#111" stroke-width="2"><path d="M40 55V200H260V55M60 65V180H240V65M60 110H240M210 25V160M370 55H530V195H370Z"/><path d="M360 120H280m12 -8l-12 8 12 8"/></g><g fill="#111" font-family="sans-serif" font-size="17"><text x="77" y="140">вода mв, t₀ → t</text><text x="67" y="222">калориметр mк, cк</text><text x="385" y="100">лёд mл, tл</text><text x="385" y="130">нагрев к 0 °C</text><text x="385" y="155">плавление</text><text x="385" y="180">вода 0 °C → t</text></g></svg>`;
+ const scheme=()=>`<svg viewBox="0 0 600 240" aria-label="Схема теплового баланса"><g fill="none" stroke="#111" stroke-width="2"><path d="M40 55V200H260V55M60 65V180H240V65M60 110H240M210 25V160M370 55H530V195H370Z"/><path d="M360 120H280m12 -8l-12 8 12 8"/></g><g fill="#111" font-family="sans-serif" font-size="17"><text x="77" y="140">вода mв, tв → t</text><text x="67" y="222">отдаёт тепло</text><text x="385" y="100">лёд mл, t₀ = 0 °C</text><text x="385" y="135">плавление</text><text x="385" y="165">вода t₀ → t</text><text x="385" y="222">получает тепло</text></g></svg>`;
  return {n,text,defs,room,cylinder,thermo,calorimeter,balance,ice,linearZoom,scheme};
 })();
 
-// Чистая модель: один переданный Q охлаждает воду и нагревает/плавит лёд.
+// Чистая модель, как в формуле 8 класса: тёплая вода отдаёт тепло, лёд при 0 °C плавится, талая вода нагревается.
+// Теплоёмкость калориметра и теплообмен с комнатой не учитываются (правка учителя 24.11). Один опыт.
 const PHYSICS = (() => {
- const cw=4200,ci=2100,rho=1000,mk=.183,ck=900,lambda=334000;
- const experiments=[null,{mi:.038,ti:0},{mi:.056,ti:0},{mi:.038,ti:-24}];
- function model(id){const p=experiments[id];if(!p)throw new Error('Неизвестный опыт');const mw=.287,tw=48,C=cw*mw+ck*mk,qWarm=ci*p.mi*(0-p.ti),qMelt=lambda*p.mi,tf=(C*tw-qWarm-qMelt)/(C+cw*p.mi);return {id,...p,mw,tw,V:mw/rho,mk,ck,ci,cw,lambda,C,tf,qWarm,qMelt};}
+ const cw=4200,ci=2100,rho=1000,lambda=334000;
+ const experiments=[null,{mi:.038,ti:0}];
+ function model(id){const p=experiments[id];if(!p)throw new Error('Неизвестный опыт');const mw=.286,tw=48,C=cw*mw,qWarm=ci*p.mi*(0-p.ti),qMelt=lambda*p.mi,tf=(C*tw-qWarm-qMelt)/(C+cw*p.mi);return {id,...p,mw,tw,V:mw/rho,ci,cw,lambda,C,tf,qWarm,qMelt};}
  function at(id,progress){const r=model(id),u=Math.max(0,Math.min(1,progress)),q=u*r.C*(r.tw-r.tf);let iceT,fraction,stage;if(q<r.qWarm){iceT=r.ti+q/(r.ci*r.mi);fraction=1;stage='Лёд нагревается до температуры плавления';}else if(q<r.qWarm+r.qMelt){iceT=0;fraction=1-(q-r.qWarm)/r.qMelt;stage='Лёд плавится; его температура постоянна';}else{iceT=(q-r.qWarm-r.qMelt)/(r.cw*r.mi);fraction=0;stage='Талая вода нагревается';}return {waterT:r.tw-q/r.C,iceT,fraction,stage};}
- return {cw,ci,rho,mk,ck,lambda,model,at};
+ return {cw,ci,rho,lambda,model,at};
 })();
 const LAB = (() => {
  const $=s=>document.querySelector(s);
@@ -953,27 +972,27 @@ const LAB = (() => {
  function say(message){const el=$('#toast');clearTimeout(toastTimer);el.textContent=message;el.hidden=!message;if(message)toastTimer=setTimeout(()=>el.hidden=true,5000);}
  function stop(){cancelAnimationFrame(frame);clearTimeout(backup);frame=0;last=0;}
  function select(id){if(st.dragging||st.phase==='running'){say('Дождись окончания опыта.');return;}stop();st.id=Number(id);st.phase='ready';st.progress=0;st.mixed=false;st.demo=false;render();emit('select');}
- function resetScreen(){cancelDrag?.();stop();st.phase='ready';st.progress=0;st.mixed=false;st.demo=false;render();say('Текущий опыт подготовлен заново. Завершённые опыты в отчёте сохранены.');emit('reset');}
+ function resetScreen(){cancelDrag?.();stop();st.phase='ready';st.progress=0;st.mixed=false;st.demo=false;render();say('Опыт подготовлен заново. Завершённый опыт в отчёте сохранён.');emit('reset');}
  function addIce(){if(st.phase!=='ready'||st.demo||st.dragging)return false;st.phase='running';st.progress=0;st.mixed=false;render();emit('start');last=performance.now();schedule();return true;}
  function stir(){if(st.phase!=='melted'){say('Сначала дождись полного таяния льда.');return false;}st.phase='done';st.mixed=true;st.runs.push(p());st.runs=st.runs.slice(-30);render();say('Температура установилась. Сними показание термометра воды.');emit('complete');return true;}
  function demo(){cancelDrag?.();stop();st.demo=true;st.demoProgress=0;st.phase='demo';render();last=performance.now();schedule();}
  function schedule(){frame=requestAnimationFrame(loop);clearTimeout(backup);backup=setTimeout(()=>{cancelAnimationFrame(frame);loop(performance.now());},90);}
  function loop(now){clearTimeout(backup);const dt=last?Math.min((now-last)/1000,30):.016;last=now;if(st.phase==='running'){st.progress=Math.min(1,st.progress+dt/12);if(st.progress===1){st.phase='melted';say('Лёд растаял. Перемешай воду перед отсчётом.');}}else if(st.phase==='demo'){st.demoProgress=Math.min(.88,st.demoProgress+dt/6);if(st.demoProgress>=.88){st.phase='demo-done';emit('kori',{behavior:'surprise',text:'Тепло поступает. Что со шкалой?'});}}draw();zoom();if(st.phase==='running'||st.phase==='demo')schedule();else{stop();render();emit('phase');}}
  function values(){if(st.demo)return {waterT:0,iceT:0,fraction:1-st.demoProgress,stage:'Нагреватель подводит тепло к смеси льда и воды'};return PHYSICS.at(st.id,st.progress);}
- function draw(){if(st.dragging)return;const v=values(),r=p(),ready=st.phase==='ready',label=st.demo?'Смесь':st.progress>0&&v.fraction===0?'Талая вода':'Лёд';$('#scene-svg').innerHTML=`${ART.defs}${ART.room()}${ART.cylinder(r.V*1e6)}${ART.thermo(310,v.waterT,'Вода')}${ART.calorimeter(st.demo||!ready?v.fraction:0,st.mixed)}${ART.thermo(650,ready?r.ti:v.iceT,label)}${ART.balance(ready?r.mi*1000:0,ready&&!st.demo)}${st.demo?`<path d="M410 488h150" stroke="#FF5B00" stroke-width="7"/>${ART.text(485,558,'Подводим тепло →',18,'text-anchor="middle"')}`:''}${ART.text(485,75,st.demo?'Наблюдение: плавление':`Опыт ${st.id}`,24,'font-weight="700" text-anchor="middle"')}${ART.text(485,104,ready&&!st.demo?'Прочитай шкалы, затем перенеси лёд в калориметр':st.phase==='done'?'Перемешано · можно снимать конечную температуру':st.phase==='melted'?'Лёд растаял · перемешай воду':v.stage,15,'text-anchor="middle"')}`;wire();}
+ function draw(){if(st.dragging)return;const v=values(),r=p(),ready=st.phase==='ready',label=st.demo?'Смесь':st.progress>0&&v.fraction===0?'Талая вода':'Лёд';$('#scene-svg').innerHTML=`${ART.defs}${ART.room()}${ART.cylinder(r.V*1e6)}${ART.thermo(310,v.waterT,'Вода')}${ART.calorimeter(st.demo||!ready?v.fraction:0,st.mixed)}${ART.thermo(650,ready?r.ti:v.iceT,label)}${ART.balance(ready?r.mi*1000:0,ready&&!st.demo)}${st.demo?`<path d="M410 488h150" stroke="#FF5B00" stroke-width="7"/>${ART.text(485,558,'Подводим тепло →',18,'text-anchor="middle"')}`:''}${ART.text(485,75,st.demo?'Наблюдение: плавление':'Опыт',24,'font-weight="700" text-anchor="middle"')}${ART.text(485,104,ready&&!st.demo?'Прочитай шкалы, затем перенеси лёд в калориметр':st.phase==='done'?'Перемешано · можно снимать конечную температуру':st.phase==='melted'?'Лёд растаял · перемешай воду':v.stage,15,'text-anchor="middle"')}`;wire();}
  function zoom(){const v=values(),r=p(),kinds={volume:[r.V*1e6,'Цилиндр · мл · деление 2 мл'],mass:[st.phase==='ready'&&!st.demo?r.mi*1000:0,'Весы · г · деление 1 г'],water:[v.waterT,'Температура воды · °C · деление 1 °C'],ice:[st.phase==='ready'&&!st.demo?r.ti:v.iceT,'Лёд / талая вода · °C · деление 1 °C']};const [value,label]=kinds[st.zoom];$('#lupa').innerHTML=ART.linearZoom(value,st.zoom)+`<div class="lupa-cap">${label}</div>`;}
- function toolbar(){const busy=st.phase==='running'||st.phase==='demo';$('#tools').innerHTML=`<span class="seg" role="group" aria-label="Опыт">${[1,2,3].map(id=>`<button data-exp="${id}" aria-pressed="${st.id===id&&!st.demo}"${busy?' disabled':''}>Опыт ${id}</button>`).join('')}</span><button class="btn sm" id="add-ice"${st.phase!=='ready'||st.demo?' disabled':''}>Поместить лёд</button><button class="btn sm ghost" id="stir"${st.phase!=='melted'?' disabled':''}>Перемешать</button><span class="seg" role="group" aria-label="Лупа">${[['volume','Объём'],['mass','Масса'],['water','t воды'],['ice','t льда']].map(([key,name])=>`<button data-zoom="${key}" aria-pressed="${st.zoom===key}">${name}</button>`).join('')}</span>`;$('#tools').querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>select(b.dataset.exp));$('#add-ice').onclick=addIce;$('#stir').onclick=stir;$('#tools').querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{st.zoom=b.dataset.zoom;toolbar();zoom();});}
+ function toolbar(){$('#tools').innerHTML=`<button class="btn sm" id="add-ice"${st.phase!=='ready'||st.demo?' disabled':''}>Поместить лёд</button><button class="btn sm ghost" id="stir"${st.phase!=='melted'?' disabled':''}>Перемешать</button><span class="seg" role="group" aria-label="Лупа">${[['volume','Объём'],['mass','Масса'],['water','t воды'],['ice','t льда']].map(([key,name])=>`<button data-zoom="${key}" aria-pressed="${st.zoom===key}">${name}</button>`).join('')}</span>`;$('#add-ice').onclick=addIce;$('#stir').onclick=stir;$('#tools').querySelectorAll('[data-zoom]').forEach(b=>b.onclick=()=>{st.zoom=b.dataset.zoom;toolbar();zoom();});}
  function render(){$('#scene-svg').toggleAttribute('hidden',st.screen==='notebook');$('#notebook').hidden=st.screen!=='notebook';$('#lupa').hidden=st.screen!=='lab';draw();zoom();toolbar();}
  function setScreen(screen){cancelDrag?.();if(st.demo&&screen!==st.screen){stop();st.demo=false;st.phase='ready';st.progress=0;}st.screen=screen;say('');render();}
  function point(ev){const svg=$('#scene-svg'),q=svg.createSVGPoint();q.x=ev.clientX;q.y=ev.clientY;return q.matrixTransform(svg.getScreenCTM().inverse());}
  function wire(){const el=$('#ice-drag');if(!el)return;el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();addIce();}});el.addEventListener('pointerdown',e=>{if(st.phase!=='ready'||st.dragging||e.button!==0)return;e.preventDefault();st.dragging=true;el.classList.add('dragging');const svg=$('#scene-svg');svg.setPointerCapture(e.pointerId);let target=null;const move=ev=>{target=point(ev);el.setAttribute('transform',`translate(${target.x-800} ${target.y-275})`);};const cleanup=()=>{removeEventListener('pointermove',move);removeEventListener('pointerup',up);removeEventListener('pointercancel',cancel);st.dragging=false;cancelDrag=null;try{svg.releasePointerCapture(e.pointerId);}catch(_){}};const up=ev=>{target=point(ev);const inside=target.x>380&&target.x<588&&target.y>245&&target.y<486;cleanup();if(inside)addIce();else{render();say('Перенеси лёд внутрь калориметра.');}};const cancel=()=>{cleanup();render();};cancelDrag=cancel;addEventListener('pointermove',move);addEventListener('pointerup',up);addEventListener('pointercancel',cancel);});}
  const truth=()=>st.runs.map(r=>({...r}));
- function restore(runs,scene){st.runs=(Array.isArray(runs)?runs:[]).filter(r=>[1,2,3].includes(Number(r.id))).slice(-30).map(r=>PHYSICS.model(Number(r.id)));if(scene&&[1,2,3].includes(Number(scene.id))){st.id=Number(scene.id);if(['done','melted'].includes(scene.phase)){st.phase=scene.phase;st.progress=1;st.mixed=scene.phase==='done';}if(['volume','mass','water','ice'].includes(scene.zoom))st.zoom=scene.zoom;}}
+ function restore(runs,scene){st.runs=(Array.isArray(runs)?runs:[]).filter(r=>Number(r.id)===1).slice(-30).map(r=>PHYSICS.model(Number(r.id)));if(scene&&Number(scene.id)===1){st.id=Number(scene.id);if(['done','melted'].includes(scene.phase)){st.phase=scene.phase;st.progress=1;st.mixed=scene.phase==='done';}if(['volume','mass','water','ice'].includes(scene.zoom))st.zoom=scene.zoom;}}
  return {st,render,setScreen,resetScreen,on,emit,say,truth,select,addIce,stir,demo,restore};
 })();
 
 // Журнал ЛР «Определение удельной теплоты плавления льда».
-// Три акта, наблюдение до теории, три опыта, пауза и отчёт учителю.
+// Три акта, наблюдение до теории, один опыт, пауза и отчёт учителю. Правки учителя 24.11: без калориметра в расчёте и без погрешностей.
 // Два режима: «Ведёт учитель» (демонстрация экрана) и «Ученик сам». По личной ссылке сервиса — только «Ученик сам», ответы уходят учителю.
 (() => {
   const $ = (s, r = document) => r.querySelector(s);
@@ -983,13 +1002,15 @@ const LAB = (() => {
   const S = { step: 0, mode: "teacher", seen: new Set([0]), data: {}, pred: {}, votes: {}, light: {}, help: {}, unlocked: false, finished: false, revealed: false };
 
   const SES = window.KORI_SESSION || null;
+  // Версия 2 (24.11): 8 шагов. У сохранений версии 1 был шаг «Опыты 2 и 3» (индекс 5) — сдвигаем на один назад.
+  const stepOf = (o) => { const n = Number(o.step) || 0; return Math.max(0, Math.min(7, o.v === 2 ? n : n >= 6 ? n - 1 : n)); };
   if (SES) {
     S.mode = "student";
     const o = SES.state || {};
     Object.assign(S.data, o.data); Object.assign(S.pred, o.pred); Object.assign(S.help, o.help);
     for (const [k, v] of Object.entries(o.light || {})) S.light[k] = { mine: v };
-    S.finished = !!o.finished; S.revealed = !!o.revealed; S.step = o.step || 0;
-    (o.seen || []).forEach((i) => S.seen.add(i));
+    S.finished = !!o.finished; S.revealed = !!o.revealed; S.step = stepOf(o);
+    (o.seen || []).filter((i) => i < 8).forEach((i) => S.seen.add(i));
   }
   if (!SES) {
     try { const o = JSON.parse(localStorage.getItem('kori-ice-v1') || '{}');
@@ -1002,12 +1023,10 @@ const LAB = (() => {
   const w = (one, many) => (T() ? many : one);
   const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
   const frac = (a, b) => `<span class="frac"><span>${a}</span><span>${b}</span></span>`;
-  const sqrt = (x) => `√<span style="text-decoration:overline">${x}</span>`;
 
   // ── Блоки журнала ──
-  const cell = (key, ph = "") => (T() ? "<td></td>" : `<td><input data-k="${key}" inputmode="decimal" autocomplete="off" value="${esc(S.data[key])}" placeholder="${ph}" aria-label="${({mi:"Масса льда",ti:"Температура льда",ci:"Удельная теплоёмкость льда",V:"Объём воды",tw:"Начальная температура воды",cw:"Удельная теплоёмкость воды",mk:"Масса калориметра",ck:"Удельная теплоёмкость калориметра",tf:"Конечная температура",le:"Экспериментальное значение λ",lt:"Табличное значение λ",dl:"Абсолютное расхождение",err:"Относительное расхождение"})[key.replace(/[0-9]/g, "")]} — опыт ${key.match(/[0-9]+/)[0]}"${S.finished ? " disabled" : ""}></td>`);
+  const cell = (key, ph = "") => (T() ? "<td></td>" : `<td><input data-k="${key}" inputmode="decimal" autocomplete="off" value="${esc(S.data[key])}" placeholder="${ph}" aria-label="${({mi:"Масса льда",ti:"Температура льда",V:"Объём воды",tw:"Начальная температура воды",tf:"Установившаяся температура",le:"Удельная теплота плавления λ"})[key.replace(/[0-9]/g, "")]} — опыт ${key.match(/[0-9]+/)[0]}"${S.finished ? " disabled" : ""}></td>`);
   const tbl = (head, rows) => `<div class="tbl-wrap"><table class="tbl${T() ? " tpl" : ""}"><thead><tr>${head.map((h) => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
-  const rows3 = (cols) => [1, 2, 3].map((r) => `<tr><td class="name">${r}</td>${cols.map(([k, ph]) => cell(`${k}${r}`, ph)).join("")}</tr>`);
   const writeBox = (text) => `<div class="box write"><b>${w("Запиши в тетрадь", "Запишите в тетрадь")}</b>${text}</div>`;
   const nb = (title, text) => `<div class="box nb"><b>ⓘ ${title}</b>${text}</div>`;
   const teach = (text) => (T() ? `<div class="box teach"><b>Учителю</b>${text}</div>` : "");
@@ -1030,67 +1049,61 @@ const LAB = (() => {
   const EMO = ["😊", "🙂", "😐", "😕", "😫"];
   const emoji = (key) => `<div class="choices" role="group">${EMO.map((e) => `<button type="button" data-emo="${key}" data-v="${e}" aria-pressed="${S.data[key] === e}">${e}</button>`).join("")}</div>`;
 
-  // Таблица из описания работы — одна на всю работу.
-  const H1=['№ п/п','mл, кг','tл, °C','cл, Дж/(кг·°C)','Vв, м³','t₀, °C','cв, Дж/(кг·°C)'];
-  const H2=['mк, кг','cк, Дж/(кг·°C)','t, °C','λэ, кДж/кг','λт, кДж/кг','Δλ, кДж/кг','ελ, %'];
-  const K1=['mi','ti','ci','V','tw','cw'], K2=['mk','ck','tf','le','lt','dl','err'];
-  function bigTable(cls='',rows=[1,2,3],blank=false){
-    const table=(headers,keys,number)=>`<table class="big ${cls}"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${number?`<td>${r}</td>`:''}${keys.map(k=>blank||T()?'<td></td>':cell(k+r)).join('')}</tr>`).join('')}</tbody></table>`;
-    return `<div class="full-table"><p class="table-caption">Таблица · исходные данные · опыты ${rows.join(', ')}</p>${table(H1,K1,true)}<p class="table-caption">Продолжение · те же опыты сверху вниз</p>${table(H2,K2,false)}</div>`;
+  // Таблица из описания работы — одна строка: на уроке успевают один опыт (правка учителя 24.11).
+  // Без cл, cв (их записывают из теории), без калориметра и без погрешностей.
+  const HEAD=['№','mл, кг','tл, °C','Vв, м³','tв, °C','t, °C','λ, кДж/кг'];
+  const KEYS=['mi','ti','V','tw','tf','le'];
+  function bigTable(blank=false){
+    return `<div class="one-table"><table class="big"><thead><tr>${HEAD.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody><tr><td>1</td>${KEYS.map(k=>blank||T()?'<td></td>':cell(k+'1')).join('')}</tr></tbody></table></div>`;
   }
-  const formula=`λ = ${frac('(cв·ρв·Vв + cк·mк)(t₀ − t) − cл·mл(0 − tл) − cв·mл·t','mл')}`;
-  const constants=`cв = 4200, cл = 2100, cк = 900 Дж/(кг·°C); mк = 0,183 кг; ρв = 1000 кг/м³. λт = 334 кДж/кг.`;
+  const balance=`<span class="nw">cв·mв·(tв − t)</span> = <span class="nw">λ·mл + cв·mл·(t − t₀)</span>`;
+  const formula=`λ = ${frac('cв·mв·(tв − t) − cв·mл·(t − t₀)','mл')}`;
+  const constants=`cв = 4200 Дж/(кг·°C) — удельная теплоёмкость воды<br>cл = 2100 Дж/(кг·°C) — удельная теплоёмкость льда<br>Массу воды найди по объёму: mв = ρв·Vв, ρв = 1000 кг/м³.`;
   const HELP={
-    measure:[['Вопрос','Какая величина нужна в формуле: объём в мл или в м³? Масса в г или в кг?'],['Подсказка','Выбери лупу под сценой. Отсчитай маленькие деления от ближайшего подписанного. В 1 м³ — 1 000 000 мл, в 1 кг — 1000 г.'],['Пример с другими числами','246 мл = 0,000246 м³; 42 г = 0,042 кг. Эти числа не относятся к твоей установке.']],
-    temp:[['Вопрос','До какого момента температура ещё меняется? Что покажет термометр у отдельного кусочка льда?'],['Подсказка','Сначала запиши t₀ воды и tл льда. Затем помести лёд, дождись полного таяния и перемешай. Конечную t сними по термометру воды.'],['Пример с другими числами','Между 25 и 30 °C пять делений: каждое по 1 °C. На четвёртом после 25 — 29 °C.']],
-    balance:[['Вопрос','На какие три процесса лёд и получившаяся вода получают тепло?'],['Подсказка','Нагрев льда до 0 °C; плавление; нагрев талой воды до t. Тепло отдают и тёплая вода, и калориметр.'],['Пример с другими числами','Для 0,020 кг льда при −10 °C только нагрев до нуля потребует 2100 · 0,020 · 10 = 420 Дж. Плавление нужно учитывать отдельно.']],
-    calc:[['Вопрос','Не смешались ли джоули и килоджоули?'],['Подсказка','Полная формула даёт Дж/кг. Для λэ в таблице раздели результат на 1000. Затем найди модуль разности с λт и долю от λт.'],['Пример с другими числами','Для другого вещества: λэ = 120 кДж/кг, λт = 125 кДж/кг. Разность 5 кДж/кг, относительное расхождение 5/125 · 100% = 4%.']]
+    measure:[['Вопрос','В каких единицах величины в таблице: объём — в м³, масса — в кг?'],['Подсказка','Выбери лупу под сценой. Отсчитай маленькие деления от ближайшего подписанного. В 1 м³ — 1 000 000 мл, в 1 кг — 1000 г.'],['Пример с другими числами','246 мл = 0,000246 м³; 42 г = 0,042 кг. Эти числа не относятся к твоей установке.']],
+    temp:[['Вопрос','Когда снимать установившуюся температуру t: пока лёд ещё тает или после?'],['Подсказка','Сначала запиши tв воды и tл льда. Затем помести лёд, дождись, пока он растает целиком, и перемешай воду. Температуру t сними по термометру воды.'],['Пример с другими числами','Между 25 и 30 °C пять делений: каждое по 1 °C. На четвёртом после 25 — 29 °C.']],
+    balance:[['Вопрос','Кто отдаёт тепло и кто его получает?'],['Подсказка','Отдаёт тёплая вода, остывая от tв до t. Получают лёд при плавлении и талая вода, нагреваясь от t₀ = 0 °C до t.'],['Пример с другими числами','0,020 кг талой воды нагрелись от 0 до 30 °C: 4200 · 0,020 · 30 = 2520 Дж.']],
+    calc:[['Вопрос','Не смешались ли джоули и килоджоули?'],['Подсказка','Сначала посчитай числитель в джоулях: тепло, которое отдала вода, минус тепло на нагрев талой воды. Раздели на mл — получишь Дж/кг. Для таблицы раздели ещё на 1000.'],['Пример с другими числами','Для другого вещества: 1500 Дж / 0,025 кг = 60 000 Дж/кг = 60 кДж/кг.']]
   };
+  const HINT_SAY={measure:'Смотри в лупу',temp:'Дождись, пока лёд растает',balance:'Кто отдаёт тепло?',calc:'Сначала джоули, потом кДж'};
   const ACTS={1:'Акт I · Захват',2:'Акт II · Развитие',3:'Акт III · Кульминация и рефлексия'};
   const STEPS=[
-    {title:'Загадка',act:1,min:3,screen:'lab',kori:['think','Лёд или вода?'],head:'Кто охладит сильнее?',html:()=>`
+    {title:'Загадка',act:1,min:3,screen:'lab',kori:['think','Что охладит сильнее?'],head:'Кто охладит сильнее?',html:()=>`
       ${teach('Чек-ин: эмодзи в чат. Запишите прогнозы до объяснения. Вернёмся к ним после опыта.')}
       ${T()?'':`<div class="box"><b>Как ты сейчас?</b>${emoji('checkin')}</div>`}
-      <div class="box note riddle">В два одинаковых стакана с тёплой водой добавили одинаковые массы: в первый — лёд при 0 °C, во второй — воду при 0 °C. Начальная температура добавок одна. Одинаково ли остынут стаканы?</div>
+      <div class="box note riddle">В два одинаковых стакана с тёплой водой добавили одинаковые массы: в первый — лёд при 0 °C, во второй — воду при 0 °C. Одинаково ли остынут стаканы?</div>
       <div class="qcard"><h3>Что охладит сильнее?</h3>${vote('p1',[['ice','лёд'],['water','вода'],['eq','одинаково'],['?','пока не знаю']])}</div>`},
-    {title:'Первая победа',act:1,min:2,screen:'lab',kori:['point','Смотри на шкалу'],head:'Тепло поступает. А температура?',html:()=>`
+    {title:'Первая победа',act:1,min:3,screen:'lab',kori:['point','Следи за термометром льда'],head:'Тепло поступает. А температура?',html:()=>`
       <div class="box">Смесь льда и воды уже при температуре плавления. Нагреватель передаёт ей тепло. Что будет с температурой, пока лёд ещё не растаял?</div>
       ${vote('p2',[['rise','будет расти'],['flat','останется прежней'],['?','не знаю']])}
       <button class="btn" id="try-run" type="button">Проверить</button>
-      <p class="hint-s">Нажми «t льда» в лупах. Следи за шкалой и размером кусочка. Это отдельное наблюдение, в таблицу трёх опытов оно не входит.</p>
+      <p class="hint-s">Нажми «t льда» в лупах. Следи за шкалой и размером кусочка. Это отдельное наблюдение, в таблицу оно не входит.</p>
       ${teach('Попросите описать две вещи, которые изменились или остались прежними. Пока не вводите формулу.')}`},
-    {title:'Теория',act:1,min:7,screen:'lab',kori:['enter','Составим баланс'],head:'На что уходит теплота',html:()=>`
-      <div class="box note"><b>Цель:</b> определить удельную теплоту плавления льда по тепловому балансу.<br><b>Оборудование:</b> калориметр с мешалкой, тёплая вода, обсушенный лёд, цилиндр, весы, два термометра.</div>
-      <p>Удельная теплота плавления — теплота, нужная для плавления 1 кг вещества при температуре плавления. Qпл = λmл. Во время плавления температура льда не растёт.</p>
-      <div class="box"><b>Тепло отдают:</b> тёплая вода и калориметр.<br><b>Тепло получают:</b> холодный лёд до 0 °C, лёд при плавлении и талая вода при нагревании.</div>
-      <div class="box balance-formula">(cв·ρв·Vв + cк·mк)(t₀ − t) =<br>cл·mл(0 − tл) + λ·mл + cв·mл·t</div>
-      <p><b>Обозначения:</b> t₀ — начальная температура тёплой воды; tл — начальная температура льда; t — конечная температура смеси. Температура плавления — отдельно 0 °C.</p>
+    {title:'Теория',act:1,min:8,screen:'lab',kori:['enter','Кто отдаёт тепло, а кто получает?'],head:'На что уходит теплота',html:()=>`
+      <div class="box note"><b>Цель:</b> определить удельную теплоту плавления льда.<br><b>Оборудование:</b> калориметр с мешалкой, тёплая вода, лёд при 0 °C, мерный цилиндр, весы, два термометра.</div>
+      <p>Удельная теплота плавления λ показывает, сколько теплоты нужно, чтобы расплавить 1 кг вещества при температуре плавления: Qпл = λ·mл. Пока лёд тает, его температура не меняется.</p>
+      <div class="box"><b>Тепло отдаёт:</b> тёплая вода.<br><b>Тепло получают:</b> лёд при плавлении и талая вода при нагревании.</div>
+      <div class="box"><b>Уравнение теплового баланса</b><br>Q тёплой воды = Q плавления льда + Q нагрева талой воды<div class="balance-formula">${balance}</div></div>
+      <p><b>Обозначения:</b> t₀ — температура плавления льда, равная 0 °C; tв — начальная температура воды; t — установившаяся температура.</p>
       <div class="box">${constants}</div>
-      <ol class="rules"><li>До опыта калориметр и вода имеют общую температуру.</li><li>Лёд обсушен: вода на поверхности не должна попасть в его массу.</li><li>Массу и начальные температуры запиши до переноса льда.</li><li>После таяния перемешай воду; затем снимай конечную температуру.</li></ol>
+      <h3 class="sub">Ход работы</h3>
+      <ol class="rules"><li>Измерь объём тёплой воды и её начальную температуру tв.</li><li>Измерь массу льда на весах и его температуру tл. Лёд обсушен: капли воды не должны попасть в его массу.</li><li>Перенеси лёд в калориметр и дождись, пока он растает целиком.</li><li>Перемешай воду и сними установившуюся температуру t.</li></ol>
       ${writeBox('тему, цель, оборудование и уравнение теплового баланса. Схема оформления будет на последнем шаге.')}`},
-    {title:'Опыт 1',act:2,min:10,screen:'lab',kori:['look','Измеряем сами'],head:'Первый опыт · от шкалы к записи',html:()=>`
-      ${writeBox('таблицу на всю работу. Два блока ниже — одна таблица, по три строки опытов.')}${bigTable('fit')}
-      ${T()?'<div class="box roles"><b>Роли:</b> экспериментатор переносит лёд; контролёр читает шкалы; протоколист записывает; докладчик объясняет. Меняйте роли между опытами.</div>':'<div class="box roles"><b>Работаешь в паре?</b> Один проводит опыт, второй читает и записывает. Затем поменяйтесь.</div>'}
-      <div class="box"><b>Порядок.</b> Выбери «Опыт 1». В лупах прочитай объём воды, массу льда и обе начальные температуры. Запиши константы из теории. Перетащи лёд с весов в калориметр или нажми «Поместить лёд». Дождись таяния, нажми «Перемешать» и прочитай конечную t воды.</div>
+    {title:'Опыт',act:2,min:12,screen:'lab',kori:['look','Читай шкалы через лупу'],head:'Опыт · от шкалы к записи',html:()=>`
+      ${writeBox('таблицу. Заполни её по своим измерениям; λ посчитаешь на шаге «Расчёт».')}${bigTable()}
+      <p class="hint-s">Лупы под сценой: «Объём», «Масса», «t воды», «t льда». Лёд перетащи с весов в калориметр или нажми «Поместить лёд». Когда растает — «Перемешать».</p>
       ${ladder('measure',HELP.measure)}${ladder('temp',HELP.temp)}${light('exp1')}`},
     {title:'Пауза',act:2,min:1,screen:'pause',kori:['rest','Дышим вместе'],head:'Микро-пауза',html:()=>`<div class="box note">${w('Отведи','Отведите')} взгляд от экрана, ${w('выпрями','выпрямите')} спину. Вдох — 3 счёта, задержка — 3, выдох — 3, задержка — 3.</div>`},
-    {title:'Опыты 2 и 3',act:2,min:9,screen:'lab',kori:['look','Меняем одно условие'],head:'Что влияет на охлаждение?',html:()=>`
-      <div class="box"><b>Опыт 2.</b> Больше льда, остальные начальные условия как в опыте 1.<br><b>Опыт 3.</b> Масса как в опыте 1, но лёд холоднее. Перед каждым переносом снова прочитай шкалы.</div>
-      ${bigTable('fit')}
-      <p>Повтори порядок первого опыта. Сравни конечные температуры: 1 с 2, затем 1 с 3. Почему нельзя сравнивать только 2 с 3 и объяснять разницу одним фактором?</p>
-      ${ladder('temp',HELP.temp)}${light('exp23')}`},
-    {title:'Расчёт',act:2,min:6,screen:'lab',kori:['hint','Проверим единицы'],head:'Вычисляем удельную теплоту',html:()=>`
+    {title:'Расчёт',act:2,min:9,screen:'lab',kori:['hint','Сначала джоули, потом кДж'],head:'Вычисляем удельную теплоту плавления',html:()=>`
       <div class="box balance-formula">${formula}</div>
-      <p>Подставь массы в кг, объём в м³. Формула даёт Дж/кг; для таблицы раздели на 1000. t₀ и tл — разные начальные температуры.</p>
-      ${bigTable('fit')}
-      <div class="box">Δλ = |λэ − λт|<br>ελ = Δλ / λт · 100%<br>λт = 334 кДж/кг.</div>
-      ${nb('Точность','В лупе: термометр — 1 °C, весы — 1 г, цилиндр — 2 мл. Оцени отсчёт между делениями. Δλ и ελ здесь — расхождение с таблицей, а не полный расчёт погрешности. Модель не обменивается теплом с комнатой; расхождение возникает при чтении и округлении.')}
+      <p>Подставь массы в кг; массу воды найди по объёму: mв = ρв·Vв. Формула даёт Дж/кг; в таблицу запиши λ в кДж/кг — раздели на 1000.</p>
+      ${bigTable()}
       ${ladder('balance',HELP.balance)}${ladder('calc',HELP.calc)}${light('calc')}`},
-    {title:'Кульминация',act:3,min:4,screen:'lab',kori:['think','Вернёмся к прогнозу'],head:'Лёд и холодная вода',html:()=>culmination()},
-    {title:'Вывод',act:3,min:3,screen:'notebook',kori:['greet','Объясни своими словами'],head:'Вывод и билет на выход',html:()=>`
-      ${writeBox('вывод своими словами: какие λэ получились; насколько отличаются от λт; что менялось в опытах; куда ушла теплота при плавлении. Как опыт помогает ответить на загадку?')}
-      <div class="box"><b>Контрольные вопросы</b><ol><li>Чем отличаются теплоёмкость тела и удельная теплоёмкость вещества?</li><li>На каком законе основан тепловой баланс?</li><li>Чем пренебрегли в модели?</li><li>Зачем перемешивать воду?</li><li>Когда можно пренебречь теплоёмкостью калориметра?</li><li>Почему в реальной работе важно выполнять измерения без лишней задержки?</li></ol></div>
-      <details><summary>Дополнительное обсуждение</summary><p>Что называют фазовыми переходами первого рода? Почему обледенение опасно для самолёта? Какие способы удаления льда используют?</p></details>
+    {title:'Кульминация',act:3,min:5,screen:'lab',kori:['think','Вернёмся к прогнозу'],head:'Лёд и холодная вода',html:()=>culmination()},
+    {title:'Вывод',act:3,min:4,screen:'notebook',kori:['greet','Объясни своими словами'],head:'Вывод и билет на выход',html:()=>`
+      ${writeBox('вывод своими словами: какое значение λ у тебя получилось; на что ушла теплота тёплой воды; как опыт помогает ответить на загадку.')}
+      <div class="box"><b>Контрольные вопросы</b><ol><li>Чем отличаются теплоёмкость тела и удельная теплоёмкость вещества?</li><li>На каком законе основан тепловой баланс?</li><li>Чем пренебрегли в опыте?</li><li>Зачем перемешивать воду?</li><li>Почему в реальной работе важно выполнять измерения без лишней задержки?</li></ol></div>
+      <details><summary>Дополнительное обсуждение</summary><p>Почему обледенение опасно для самолёта? Какие способы удаления льда используют?</p></details>
       <div class="box ticket"><b>Билет на выход</b>${T()?'<p>В чат: одна мысль, один оставшийся вопрос и эмодзи настроения.</p>':`<label for="t-idea">Что ты сегодня понял?</label><textarea id="t-idea" data-t="idea" rows="2">${esc(S.data.idea)}</textarea><label for="t-q">Что осталось непонятным?</label><textarea id="t-q" data-t="q" rows="2">${esc(S.data.q)}</textarea>${emoji('checkout')}`}</div>
       ${T()?'':`<button class="btn" id="finish" type="button">${S.finished?'Отправить ещё раз':'Завершить работу'}</button><p id="save-status" role="status">${SES?'Сохранение ответов…':'Записи сохраняются в этом браузере. Перенеси их в тетрадь и отправь учителю.'}</p>`}
       ${teacherBlock()}`}
@@ -1098,11 +1111,12 @@ const LAB = (() => {
   const PRED_TXT={p1:{ice:'лёд',water:'вода',eq:'одинаково','?':'пока не знаю'},p2:{rise:'температура растёт',flat:'температура прежняя','?':'не знаю'}};
   const number=v=>{const s=String(v??'').trim().replace(',','.');return s&&Number.isFinite(Number(s))?Number(s):null;};
   function voteLine(key){if(T()){const c=S.votes[key]||{};return Object.entries(PRED_TXT[key]).map(([v,t])=>`${t}: ${c[v]||0}`).join('; ');}return PRED_TXT[key][S.pred[key]]||'прогноз не записан';}
-  function culmination(){const can=T()||LAB.truth().some(r=>number(S.data['le'+r.id])>0);return `<div class="box"><b>Прогноз до опыта:</b> ${voteLine('p1')}<br><b>При подводе теплоты:</b> ${voteLine('p2')}</div><div class="box">Сравни опыты 1 и 2, затем 1 и 3. Какие числа поддерживают твоё объяснение? Чем опыт отличается от мысленного сравнения льда и воды при 0 °C?</div>${S.revealed?'<div class="box reveal"><b>Разгадка.</b> Холодная вода при 0 °C получает тепло только при нагревании. Лёд при 0 °C сначала получает теплоту плавления, а затем талая вода нагревается. Поэтому при одинаковых массах лёд охлаждает сильнее. Третий опыт добавляет ещё один расход теплоты — нагрев льда до нуля.</div>':`<button class="btn" id="reveal"${can?'':' disabled'}>Раскрыть загадку</button>${can?'':'<p class="hint-s">Заверши хотя бы один опыт и запиши численный положительный λэ на шаге «Расчёт».</p>'}`}${teach('Попросите обосновать ответ уравнением и собственными измерениями. Совпадение прогноза с разгадкой ещё не доказывает понимание.')}`;}
+  function culmination(){const can=T()||(LAB.truth().length>0&&number(S.data.le1)>0);return `<div class="box"><b>Прогноз до опыта:</b> ${voteLine('p1')}<br><b>При подводе теплоты:</b> ${voteLine('p2')}</div><div class="box">Вернись к своему расчёту. На что тёплая вода отдала больше тепла: на плавление льда (λ·mл) или на нагрев талой воды (cв·mл·(t − t₀))? Как это помогает ответить на загадку?</div>${S.revealed?'<div class="box reveal"><b>Разгадка.</b> Холодная вода при 0 °C получает тепло только на нагревание. Лёд при 0 °C сначала получает теплоту на плавление, и только потом талая вода нагревается. Поэтому при одинаковых массах лёд охлаждает сильнее.</div>':`<button class="btn" id="reveal"${can?'':' disabled'}>Раскрыть загадку</button>${can?'':'<p class="hint-s">Заверши опыт и запиши λ в таблицу на шаге «Расчёт».</p>'}`}${teach('Попросите обосновать ответ уравнением и собственными измерениями. Совпадение прогноза с разгадкой ещё не доказывает понимание.')}`;}
   function teacherBlock(){if(SES)return '';if(!S.unlocked)return `<details class="teacher"><summary>Для учителя: эталон и отчёт</summary><p>Введите PIN учителя.</p><input id="pin" aria-label="PIN учителя" inputmode="numeric" autocomplete="off"><button id="pin-go" class="btn sm">Открыть</button></details>`;
     const f=x=>String(Math.round(x*1000)/1000).replace('.',',');
-    const rows=LAB.truth().map(r=>`<tr><td>${r.id}</td><td>${f(r.mi)}</td><td>${r.ti}</td><td>${r.tw}</td><td>${f(r.tf)}</td><td>${f(r.lambda/1000)}</td></tr>`).join('');
-    return `<details class="teacher" open><summary>Для учителя: эталон и отчёт</summary><p>Теплообмена с комнатой нет. Теплоёмкость калориметра учитывается. Отсчёт и округление могут изменить вычисленное учеником λ.</p>${tbl(['Опыт','mл, кг','tл, °C','t₀, °C','t, °C','λ, кДж/кг'],rows?[rows]:['<tr><td colspan="6">Завершённых опытов нет</td></tr>'])}<p>Прогноз: ${voteLine('p1')}. Наблюдение: ${voteLine('p2')}.</p><p>Подсказки: ${Object.entries(S.help).map(([k,v])=>`${k}: ${v}/3`).join(', ')||'не открывали'}. Светофор: ${esc(JSON.stringify(S.light))}.</p><p>Уточнить у учителя: 8 класс и полный баланс с холодным льдом. Вопрос 6 оригинальной методички противоречит её формуле; в этой версии теплоёмкость калориметра учтена.</p><p class="dev">Закройте отчёт перед демонстрацией классу.</p></details>`;
+    const r=LAB.truth().slice(-1)[0];
+    const row=r?`<tr><td>${f(r.V*1e6)}</td><td>${f(r.mi*1000)}</td><td>${r.tw}</td><td>${f(r.tf)}</td><td>${f(r.lambda/1000)}</td></tr>`:'<tr><td colspan="5">Опыт ещё не завершён</td></tr>';
+    return `<details class="teacher" open><summary>Для учителя: эталон и отчёт</summary><p>Модель как в формуле учеников: теплоёмкость калориметра и теплообмен с комнатой не учитываются, лёд при 0 °C. Если t прочитана с точностью до 1 °C, получится λ около 336 кДж/кг; табличное значение — 334 кДж/кг.</p>${tbl(['Vв, мл','mл, г','tв, °C','t, °C','λ модели, кДж/кг'],[row])}<p>Прогноз: ${voteLine('p1')}. Наблюдение: ${voteLine('p2')}.</p><p>Подсказки: ${Object.entries(S.help).map(([k,v])=>`${k}: ${v}/3`).join(', ')||'не открывали'}. Светофор: ${esc(JSON.stringify(S.light))}.</p><p class="dev">Закройте отчёт перед демонстрацией классу.</p></details>`;
   }
   let kori = null;
   try {
@@ -1110,6 +1124,24 @@ const LAB = (() => {
       behaviors: { rest: { group: "Ожидание", title: "Отдыхает", when: "микро-пауза", pose: "joy", motion: "breathe", fx: [], phrases: [], hold: 0 } } });
   } catch (_) { kori = null; }
   const play = (b, text) => { if (kori) kori.play(b, text); };
+  // Клик по Кори: короткая анимация и шутливая реплика по теме работы. Без подсказок к ответам.
+  const POKE = ["Давай физичим!", "Брр, лёд холодный!", "Только не урони лёд!", "Лупа — моя суперсила", "Я не таю, я думаю", "Каждый градус на счету", "Физика — это когда интересно", "Ещё разок? Я не замёрз"];
+  const POKE_MOVES = ["ok", "streak3", "ok_hard", "eureka", "self_fix"];
+  let pokeLast = -1, pokeAt = 0;
+  function poke() {
+    if (!kori || Date.now() - pokeAt < 900) return;
+    pokeAt = Date.now();
+    let i; do { i = Math.floor(Math.random() * POKE.length); } while (i === pokeLast && POKE.length > 1);
+    pokeLast = i;
+    play(POKE_MOVES[Math.floor(Math.random() * POKE_MOVES.length)], POKE[i]);
+  }
+  const koriEl = $("#kori .kori__stage"); // корень #kori прозрачен для мыши, кликается только фигура
+  if (koriEl) {
+    Object.assign(koriEl, { tabIndex: 0, title: "Нажми на Кори" });
+    koriEl.setAttribute("role", "button"); koriEl.setAttribute("aria-label", "Кори: нажми, чтобы он ответил");
+    koriEl.addEventListener("click", poke);
+    koriEl.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); poke(); } });
+  }
   LAB.on((type, d) => { if (type === "kori" && d.behavior) play(d.behavior, d.text); });
 
   // ── Отправка ответов учителю (только по личной ссылке) ──
@@ -1118,7 +1150,7 @@ const LAB = (() => {
   try { who = decodeURIComponent(location.hash.slice(1)).trim().slice(0, 60); } catch (_) {}
   if (SES && !who) who = SES.label;
   const snapshot = () => ({
-    step: S.step, seen: [...S.seen], data: S.data, pred: S.pred, help: S.help, finished: S.finished, revealed: S.revealed,
+    v: 2, step: S.step, seen: [...S.seen], data: S.data, pred: S.pred, help: S.help, finished: S.finished, revealed: S.revealed,
     light: Object.fromEntries(Object.entries(S.light).filter(([, v]) => v.mine).map(([k, v]) => [k, v.mine])),
     runs: LAB.truth().slice(-30),
     scene: {id:LAB.st.id,phase:LAB.st.phase,zoom:LAB.st.zoom},
@@ -1193,9 +1225,9 @@ const LAB = (() => {
       if (!b.dataset.d && v === "r") play("wrong_support", "Возьми подсказку"); render();
     }));
     $$("[data-emo]").forEach((b) => b.addEventListener("click", () => { S.data[b.dataset.emo] = b.dataset.v; render(); }));
-    $$("[data-more]").forEach((b) => b.addEventListener("click", () => { const k = b.dataset.more; S.help[k] = Math.min(Number(b.dataset.max), (S.help[k] || 0) + 1); LAB.emit("help", { k, level: S.help[k] }); play("hint"); render(); }));
+    $$("[data-more]").forEach((b) => b.addEventListener("click", () => { const k = b.dataset.more; S.help[k] = Math.min(Number(b.dataset.max), (S.help[k] || 0) + 1); LAB.emit("help", { k, level: S.help[k] }); play("hint", HINT_SAY[k]); render(); }));
     $('#try-run')?.addEventListener('click', () => { LAB.st.zoom = 'ice'; LAB.demo(); });
-    $("#reveal")?.addEventListener("click", () => { S.revealed = true; LAB.emit("reveal"); play("streak5", "Тепло для плавления!"); render(); });
+    $("#reveal")?.addEventListener("click", () => { S.revealed = true; LAB.emit("reveal"); play("streak5", "Тепло ушло на плавление!"); render(); });
     $("#finish")?.addEventListener("click", () => { S.finished = true; LAB.emit("finish"); play("module_done", "Работа готова!"); render(); push(); });
     $("#pin-go")?.addEventListener("click", () => { if ($("#pin").value.trim() === PIN) { S.unlocked = true; render(); } else { $("#pin").value = ""; $("#pin").placeholder = "Не тот PIN"; } });
     $("#pin")?.addEventListener("keydown", (e) => { if (e.key === "Enter") $("#pin-go").click(); });
@@ -1231,10 +1263,10 @@ const LAB = (() => {
   addEventListener("resize", fitHead); fitHead();
 
   $('#notebook').innerHTML = `<h3>Как оформить работу в тетради</h3>
-    <div class="exam"><p>Лабораторная работа «Определение удельной теплоты плавления льда».</p><ol><li>Тема, цель и оборудование.</li><li>Схема и полный тепловой баланс.</li><li>Таблица трёх опытов, подстановка чисел с единицами.</li><li>Расхождение с табличным значением и вывод своими словами.</li></ol></div>
-    <div class="schemes"><figure>${ART.scheme()}<figcaption>Тёплая вода и калориметр отдают тепло льду и талой воде.</figcaption></figure></div>
-    <p class="balance-formula">${formula}</p>${bigTable('fit', [1,2,3], true)}`;
-  LAB.on((type) => { if (type === 'complete') { dirty = true; localSave(); } });
+    <div class="exam"><p>Лабораторная работа «Определение удельной теплоты плавления льда».</p><ol><li>Тема, цель и оборудование.</li><li>Схема и уравнение теплового баланса.</li><li>Таблица, расчёт λ с подстановкой чисел и единицами.</li><li>Вывод своими словами.</li></ol></div>
+    <div class="schemes"><figure>${ART.scheme()}<figcaption>Тёплая вода отдаёт тепло: лёд плавится, талая вода нагревается.</figcaption></figure></div>
+    <p class="balance-formula">${balance}<br>${formula}</p>${bigTable(true)}`;
+  LAB.on((type) => { if (type === 'complete') { dirty = true; localSave(); play('point', 'Сними t по термометру воды'); } });
   go(SES ? S.step : 0);
 })();
 </script>
